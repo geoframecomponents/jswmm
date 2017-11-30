@@ -1,6 +1,7 @@
-package org.altervista.growworkinghard.jswmm.dataStructure.options;
+package org.altervista.growworkinghard.jswmm.dataStructure.runoff;
 
-public class RunoffSetup {
+public class SWMM5RunoffSetup implements RunoffSetup {
+
     /**
      * Minimum step size to use for ODE integration
      */
@@ -30,6 +31,5 @@ public class RunoffSetup {
      * Final time for the current step of data
      */
     Double finalTime;
-
 
 }

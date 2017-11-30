@@ -1,4 +1,14 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
-public abstract class AbstractSubarea extends AbstractSubcatchments {
+abstract class AbstractSubarea extends AbstractSubcatchments {
+
+    SubareaSetup subareaSetup;
+
+    String raingageName;
+    String receiverRunoffName;
+
+    Double imperviousPercentage;
+    Double characteristicWidth;
+    Double subareaSlope;
+    Double curbLength;
 }

@@ -1,10 +1,10 @@
-package org.altervista.growworkinghard.jswmm.dataStructure.formatData;
+package org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData;
 
 import java.io.*;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public class fileData extends AbstractFilesData{
+public class ReadSWMM5RainfallFile implements ReadDataFromFile {
 
     LinkedHashMap<String, LinkedHashMap<Instant, Double>> readDataFile(File file)
             throws IOException {

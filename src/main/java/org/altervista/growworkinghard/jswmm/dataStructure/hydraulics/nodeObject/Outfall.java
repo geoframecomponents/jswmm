@@ -1,9 +1,9 @@
-package org.altervista.growworkinghard.jswmm.dataStructure;
+package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public class Outfall extends AbstractNode {
+class Outfall extends AbstractNode {
 
     Double fixedStage;//TODO verify from where
     LinkedHashMap<Instant, Double> tidalCurve;
