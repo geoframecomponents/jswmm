@@ -1,8 +1,6 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.INPlocator;
-
-public abstract class AbstractLinks implements INPlocator {
+public abstract class AbstractLinks {
     String linkID;
     String upstreamNode;
     String downstreamNode;
