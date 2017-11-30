@@ -1,6 +1,6 @@
-package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
+package org.altervista.growworkinghard.jswmm.dataStructure;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.AbstractNodes;
+import org.altervista.growworkinghard.jswmm.dataStructure.AbstractNode;
 
-public class Divider extends AbstractNodes {
+public class Divider extends AbstractNode {
 }

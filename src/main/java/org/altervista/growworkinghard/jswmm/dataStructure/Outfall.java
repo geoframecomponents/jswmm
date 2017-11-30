@@ -3,7 +3,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public class Outfall extends AbstractNodes {
+public class Outfall extends AbstractNode {
 
     Double fixedStage;//TODO verify from where
     LinkedHashMap<Instant, Double> tidalCurve;

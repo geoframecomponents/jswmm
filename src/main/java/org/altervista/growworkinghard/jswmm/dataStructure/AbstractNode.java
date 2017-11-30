@@ -1,10 +1,10 @@
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
-public abstract class AbstractNodes {
+public abstract class AbstractNode {
 
     ReadDataFromFile readDataFromFile;
     WriteDataToFile writeDataToFile;
-    DryWeatherFlow dryWeatherFlow;
+    DryWeatherFlow dryWeatherInlow;
     RainfallDependentInfiltrationInflow rainfallDependentInfiltrationInflow;
 
     ProjectUnits nodeUnits;

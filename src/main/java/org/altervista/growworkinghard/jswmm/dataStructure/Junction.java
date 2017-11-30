@@ -1,8 +1,6 @@
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.AbstractNodes;
-
-public class Junction extends AbstractNodes {
+public class Junction extends AbstractNode {
 
     Double maximumDepthNode;
     Double initialDepthnode;
