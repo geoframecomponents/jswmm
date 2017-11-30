@@ -13,7 +13,7 @@ public class SWMMobject {
 
     AbstractRaingage raingages;
 
-    AbstractNodes nodes;
+    AbstractNode nodes;
     AbstractLinks links;
     AbstractSubcatchments subcatchments;
     AbstractSubarea subareas;
