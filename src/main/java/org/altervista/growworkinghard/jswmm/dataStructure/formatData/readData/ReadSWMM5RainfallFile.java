@@ -6,6 +6,18 @@ import java.util.LinkedHashMap;
 
 public class ReadSWMM5RainfallFile implements ReadDataFromFile {
 
+    File fileName;
+    LinkedHashMap<String, LinkedHashMap<Instant, Double>> fileRead;
+
+    public ReadSWMM5RainfallFile(String fileName) throws IOException {
+        this.fileName = new File(fileName);
+        try {
+            this.fileRead = readDataFile(this.fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     LinkedHashMap<String, LinkedHashMap<Instant, Double>> readDataFile(File file)
             throws IOException {
 

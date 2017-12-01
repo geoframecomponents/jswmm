@@ -12,4 +12,13 @@ public abstract class AbstractLink {
     String upstreamNodeName;
     String downstreamNodeName;
 
+    public AbstractLink(CrossSectionType crossSectionType, ProjectUnits linkUnits, String linkName,
+                        String upstreamNodeName, String downstreamNodeName) {
+
+        this.crossSectionType = crossSectionType;
+        this.linkUnits = linkUnits;
+        this.linkName = linkName;
+        this.upstreamNodeName = upstreamNodeName;
+        this.downstreamNodeName = downstreamNodeName;
+    }
 }

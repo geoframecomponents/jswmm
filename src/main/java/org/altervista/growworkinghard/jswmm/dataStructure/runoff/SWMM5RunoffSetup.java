@@ -1,5 +1,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.runoff;
 
+import java.time.Instant;
+
 public class SWMM5RunoffSetup implements RunoffSetup {
 
     /**
@@ -32,4 +34,17 @@ public class SWMM5RunoffSetup implements RunoffSetup {
      */
     Double finalTime;
 
+
+    Instant runoffStepSize;
+
+    public SWMM5RunoffSetup(Double minimumStepSize, Double maximumStepSize, Double absoluteTolerance,
+                            Double relativeTolerance, Double initialTime, Double finalTime, Instant runoffStepSize) {
+        this.minimumStepSize = minimumStepSize;
+        this.maximumStepSize = maximumStepSize;
+        this.absoluteTolerance = absoluteTolerance;
+        this.relativeTolerance = relativeTolerance;
+        this.initialTime = initialTime;
+        this.finalTime = finalTime;
+        this.runoffStepSize = runoffStepSize;
+    }
 }
