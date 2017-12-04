@@ -27,18 +27,18 @@ public class SWMM5RunoffSetup implements RunoffSetup {
     /**
      * Initial time for the current step of data
      */
-    Double initialTime;
+    Instant initialTime;
 
     /**
      * Final time for the current step of data
      */
-    Double finalTime;
+    Instant finalTime;
 
 
-    Instant runoffStepSize;
+    long runoffStepSize;
 
     public SWMM5RunoffSetup(Double minimumStepSize, Double maximumStepSize, Double absoluteTolerance,
-                            Double relativeTolerance, Double initialTime, Double finalTime, Instant runoffStepSize) {
+                            Double relativeTolerance, Instant initialTime, Instant finalTime, long runoffStepSize) {
         this.minimumStepSize = minimumStepSize;
         this.maximumStepSize = maximumStepSize;
         this.absoluteTolerance = absoluteTolerance;

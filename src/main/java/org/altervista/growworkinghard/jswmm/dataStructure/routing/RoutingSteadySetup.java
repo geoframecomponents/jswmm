@@ -4,10 +4,10 @@ import java.time.Instant;
 
 public class RoutingSteadySetup implements RoutingSetup {
 
-    Instant routingStepSize;
+    long routingStepSize;
     //TODO instantiate the variables!!!!
 
-    public RoutingSteadySetup(Instant routingStepSize) {
+    public RoutingSteadySetup(long routingStepSize) {
         this.routingStepSize = routingStepSize;
     }
 }

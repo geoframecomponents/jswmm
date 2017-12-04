@@ -16,9 +16,12 @@ public abstract class AbstractNode {
     String nodeName;
     Double nodeElevation;
 
+    Double[] nodeDepth;
+
     public AbstractNode(ReadDataFromFile readDataFromFile, WriteDataToFile writeDataToFile, ExternalInflow dryWeatherInflow,
-                        ExternalInflow rainfallDependentInfiltrationInflow,
-                        ProjectUnits nodeUnits, String nodeName, Double nodeElevation) {
+                        ExternalInflow rainfallDependentInfiltrationInflow, ProjectUnits nodeUnits, String nodeName,
+                        Double nodeElevation, Double[] nodeDepth) {
+
         this.readDataFromFile = readDataFromFile;
         this.writeDataToFile = writeDataToFile;
         this.dryWeatherInflow = dryWeatherInflow;
@@ -26,5 +29,6 @@ public abstract class AbstractNode {
         this.nodeUnits = nodeUnits;
         this.nodeName = nodeName;
         this.nodeElevation = nodeElevation;
+        this.nodeDepth = nodeDepth;
     }
 }

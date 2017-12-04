@@ -25,13 +25,20 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.OUTLET;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.NODE;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.SUBCATCHMENT;
+
 public class SWMMobject {
 
-    Instant runoffStepSize;
-    Instant routingStepSize;
+    long runoffStepSize; //must be in seconds!!
+    long routingStepSize;
+
+    Instant initialTime;
+    Instant finalTime;
 
     RunoffSetup runoffSetup = new SWMM5RunoffSetup(0.1,0.1,
-            0.1,0.1,0.1,0.1, runoffStepSize);
+            0.1,0.1, initialTime, finalTime, runoffStepSize);
 
     RoutingSetup routingSetup = new RoutingSteadySetup(routingStepSize);
 
@@ -181,16 +188,38 @@ public class SWMMobject {
         Double subcatchmentArea = 1000.0;
 
         String relativeRaingageName = "STA01";
-        String receiverRunoffName = "SUB1_A1";
+        SubcatchmentReceiverRunoff subcatchmentReceiverRunoff = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
+
         Double imperviousPercentage = 0.0;
         Double characteristicWidth = 100.0;
         Double subareaSlope = 0.2;
         Double curbLength = 0.0;
 
-        subcatchments[0] = new Subarea(subcatchmentReadDataFromFile, acquiferSetup, subcatchmentSnowpack,
-                subcatchmentUnits, subcatchmentName, subcatchmentArea, relativeRaingageName, receiverRunoffName,
-                imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
+        SubareaReceiver.SubareaReceiverRunoff perviousSubareaReceiverRunoff = OUTLET;
+        Double percentagePerviousReceiver = 10.0;
 
+        if(imperviousPercentage == 0.0) {
+
+            subcatchments[0] = new Subarea(readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
+                    subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff, perviousSubareaReceiverRunoff,
+                    percentagePerviousReceiver, imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
+        }
+        else {
+
+            SubareaReceiver.SubareaReceiverRunoff imperviousWstorageSubareaReceiverRunoff = OUTLET;
+            Double percentageImperviousWstorageReceiver = 1.0;
+            SubareaReceiver.SubareaReceiverRunoff imperviousWOstorageSubareaReceiverRunoff = OUTLET;
+            Double percentageImperviousWOstorageReceiver = 1.0;
+
+            Double percentageImperviousWOstorage = 1.0;
+
+            subcatchments[0] = new Subarea(subcatchmentReadDataFromFile, acquiferSetup, subcatchmentSnowpack,
+                    subcatchmentUnits, subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff,
+                    imperviousPercentage, perviousSubareaReceiverRunoff, percentagePerviousReceiver,
+                    imperviousWstorageSubareaReceiverRunoff, percentageImperviousWstorageReceiver,
+                    imperviousWOstorageSubareaReceiverRunoff, percentageImperviousWOstorageReceiver,
+                    percentageImperviousWOstorage, characteristicWidth, subareaSlope, curbLength);
+        }
 
         //for (each junction)
         ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
@@ -205,7 +234,7 @@ public class SWMMobject {
         Double maximumDepthSurcharge = 1.0;
         Double nodePondingArea = 200.0;
 
-        nodes[0] = new Junction(readDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
+        nodes[0] = new Junction(junctionReadDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
                 nodeElevation, maximumDepthNode, initialDepthNode, maximumDepthSurcharge, nodePondingArea);
 
         //for (each outfall)
