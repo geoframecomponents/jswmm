@@ -16,7 +16,13 @@ public class Junction extends AbstractNode {
                     String nodeName, Double nodeElevation, Double maximumDepthNode, Double initialDepthnode,
                     Double maximumDepthSurcharge, Double pondingArea) {
 
-        super(readDataFromFile, writeDataToFile, dryWeatherInflow, rainfallDependentInfiltrationInflow, nodeUnits, nodeName, nodeElevation);
+        this.readDataFromFile = readDataFromFile;
+        this.writeDataToFile = writeDataToFile;
+        this.dryWeatherInflow = dryWeatherInflow;
+        this.rainfallDependentInfiltrationInflow =rainfallDependentInfiltrationInflow;
+        this.nodeUnits = nodeUnits;
+        this.nodeName = nodeName;
+        this.nodeElevation = nodeElevation;
 
         this.maximumDepthNode = maximumDepthNode;
         this.initialDepthnode = initialDepthnode;
@@ -24,3 +30,5 @@ public class Junction extends AbstractNode {
         this.pondingArea = pondingArea;
     }
 }
+
+

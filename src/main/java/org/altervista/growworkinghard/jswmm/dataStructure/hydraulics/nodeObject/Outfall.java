@@ -22,7 +22,13 @@ public class Outfall extends AbstractNode {
                    String nodeName, Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
                    LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo) {
 
-        super(readDataFromFile, writeDataToFile, dryWeatherInflow, rainfallDependentInfiltrationInflow, nodeUnits, nodeName, nodeElevation);
+        this.readDataFromFile = readDataFromFile;
+        this.writeDataToFile = writeDataToFile;
+        this.dryWeatherInflow = dryWeatherInflow;
+        this.rainfallDependentInfiltrationInflow =rainfallDependentInfiltrationInflow;
+        this.nodeUnits = nodeUnits;
+        this.nodeName = nodeName;
+        this.nodeElevation = nodeElevation;
 
         this.fixedStage = fixedStage;
         this.tidalCurve = tidalCurve;
