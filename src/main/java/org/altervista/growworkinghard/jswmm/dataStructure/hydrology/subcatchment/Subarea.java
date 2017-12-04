@@ -29,7 +29,7 @@ public class Subarea extends AbstractSubcatchments {
                    Double percentageReceiver, Double imperviousPercentage, Double characteristicWidth, Double subareaSlope,
                    Double curbLength) {
 
-        super(readDataFromFile, acquiferSetup, snowpack, subcatchmentUnits, subcatchmentName, subcatchmentArea);
+        this.readDataFromFile = readDataFromFile;
         this.raingageName = raingageName;
         this.subcatchmentReceiverRunoff = subcatchmentReceiverRunoff;
         this.imperviousPercentage = imperviousPercentage;
