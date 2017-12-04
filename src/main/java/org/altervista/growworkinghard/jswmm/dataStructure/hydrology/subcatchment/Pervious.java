@@ -31,22 +31,8 @@ public class Pervious implements SubareaSetup {
     }
 
     @Override
-    public void evaluateSubareaDepth() {
-
-    }
-
-    @Override
     public Double evaluateAlpha() {
         return null;
     }
 
-    @Override
-    public void upgradeFlowRateRunoff() {
-
-    }
-
-    @Override
-    public Double getSubareaArea() {
-        return perviousArea;
-    }
 }
