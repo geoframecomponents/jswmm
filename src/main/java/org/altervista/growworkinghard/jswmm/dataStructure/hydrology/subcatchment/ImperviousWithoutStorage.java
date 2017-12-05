@@ -1,20 +1,31 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
-public class ImperviousWithoutStorage implements SubareaSetup {
+import java.util.List;
 
-    Double imperviousWOstorageArea;
-    SubareaReceiver subareaReceiverRunoff;
+public class ImperviousWithoutStorage extends Subarea {
 
-    public ImperviousWithoutStorage(Double imperviousWOstorageArea,
-                                    SubareaReceiver.SubareaReceiverRunoff subareaReceiverRunoff,
-                                    Double percentageReceiverRunoff) {
+    Double totalImperviousArea;
 
-        this.imperviousWOstorageArea = imperviousWOstorageArea;
-        this.subareaReceiverRunoff = new SubareaReceiver(subareaReceiverRunoff, percentageReceiverRunoff);
+    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea, Double roughnessCoefficient) {
+        this(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficient, null);
+    }
+
+    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
+                                 Double roughnessCoefficient, List<Subarea> connections) {
+        this.subareaArea = imperviousWStorageArea;
+        this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
+        this.roughnessCoefficient = roughnessCoefficient;
+        this.subareaConnnections = connections;
     }
 
     @Override
-    public Double evaluateAlpha() {
-        return null;
+    public void setDepthFactor(Double subareaSlope, Double characteristicWidth) {
+        if (!subareaConnnections.isEmpty()) {
+            for (Subarea connections : subareaConnnections) {
+                connections.setDepthFactor(subareaSlope, characteristicWidth);
+                this.depthFactor = Math.pow(subareaSlope, 0.5) *
+                        characteristicWidth / (roughnessCoefficient * totalImperviousArea);
+            }
+        }
     }
 }

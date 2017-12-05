@@ -47,4 +47,32 @@ public class SWMM5RunoffSetup implements RunoffSetup {
         this.finalTime = finalTime;
         this.runoffStepSize = runoffStepSize;
     }
+
+    public Double getMinimumStepSize() {
+        return minimumStepSize;
+    }
+
+    public Double getMaximumStepSize() {
+        return maximumStepSize;
+    }
+
+    public Double getAbsoluteTolerance() {
+        return absoluteTolerance;
+    }
+
+    public Double getRelativeTolerance() {
+        return relativeTolerance;
+    }
+
+    public Instant getInitialTime() {
+        return initialTime;
+    }
+
+    public Instant getFinalTime() {
+        return finalTime;
+    }
+
+    public long getRunoffStepSize() {
+        return runoffStepSize;
+    }
 }

@@ -19,17 +19,35 @@ public abstract class AbstractRaingage {
 
     Double snowpack; //TODO where is used?
 
-    public AbstractRaingage(ReadDataFromFile readDataFromFile, ProjectUnits raingageUnits, String raingageName,
-                            String dataSourceName, String stationName, Instant rainfallStartDate,
-                            Instant rainfallEndDate, Double snowpack) {
+    public ReadDataFromFile getReadDataFromFile() {
+        return readDataFromFile;
+    }
 
-        this.readDataFromFile = readDataFromFile;
-        this.raingageUnits = raingageUnits;
-        this.raingageName = raingageName;
-        this.dataSourceName = dataSourceName;
-        this.stationName = stationName;
-        this.rainfallStartDate = rainfallStartDate;
-        this.rainfallEndDate = rainfallEndDate;
-        this.snowpack = snowpack;
+    public ProjectUnits getRaingageUnits() {
+        return raingageUnits;
+    }
+
+    public String getRaingageName() {
+        return raingageName;
+    }
+
+    public String getDataSourceName() {
+        return dataSourceName;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public Instant getRainfallStartDate() {
+        return rainfallStartDate;
+    }
+
+    public Instant getRainfallEndDate() {
+        return rainfallEndDate;
+    }
+
+    public Double getSnowpack() {
+        return snowpack;
     }
 }

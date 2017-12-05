@@ -1,5 +1,6 @@
 package org.altervista.growworkinghard.jswmm.runoff;
 
+import oms3.annotations.Execute;
 import oms3.annotations.In;
 import oms3.annotations.Out;
 
@@ -26,8 +27,9 @@ public class PreRunoff {
     @Out
     LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
+    @Execute
     public void run() {
-        adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime, initialTime, rainfallData);
+        adaptedRainfallData = adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime, initialTime, rainfallData);
         //adaptInfiltrationData();
     }
 
@@ -78,73 +80,3 @@ public class PreRunoff {
         return lowerTimeData + numerator/denominator;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Size of the step used to
- */
-    //@Out
-    //Double runoffStepSize;
-
-    /**
-     * Rainfall data adapted to the runoff step size
-     */
-    //@Out
-    //LinkedHashMap<Instant, Double> adaptedRainfallData;
-
-    /**
-     * Evaporation data adapted to the runoff step size
-     */
-    //@Out
-    //Map<Double, Double> adaptedEvaporationData;
-
-
-    //adaptRunoffStep();
-
-    /**
-     * Take the rainfall data from file and save it in an LinkedHashMap that has elapsed seconds as key and
-     * rainfall value as value.
-     * <p>
-     * Based on FILE data of SWMM with the following structure:
-     * ;Station   Year   Month   Day   Hour   Minutes   Value
-     * STA01      2004     6     12     00      00      0.12
-     */
-    //void adaptRainfallData(LinkedHashMap<String, LinkedHashMap<Instant, Double>> rainfallFromFileData,
-    //                       Double rainfallStepSize, String rainfallStation) {
-
-    //    adaptedRainfallData = rainfallFromFileData.get(rainfallStation);
-    //}
-
-//      throws IOException {
-
-//evaluateEvaporation();
-
-
-/*
-
-        for(Double seconds=0.0; seconds<=simulationTotalTime; seconds+=rainfallStepSize){
-            while(seconds < nextDataTime){
-                adaptedRainfallData.put(seconds, 0.0);
-            }
-
-        }*/
-//readFileLines()
-//transformTimeToSeconds()
-//saveValue()

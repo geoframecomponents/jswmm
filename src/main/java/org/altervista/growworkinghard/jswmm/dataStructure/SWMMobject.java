@@ -55,14 +55,14 @@ public class SWMMobject {
     Instant sweepEnd;
     Integer dryDays;
 
-    TimeSetup timeSetup = new GlobalTimeSetup(startDate, endDate, reportStartDate, reportEndDate, sweepStart, sweepEnd, dryDays);
+    public TimeSetup timeSetup = new GlobalTimeSetup(startDate, endDate, reportStartDate, reportEndDate, sweepStart, sweepEnd, dryDays);
 
     List<String> reportSubcatchment;
     List<String> reportNodes; //TODO define!!
     List<String> reportLinks; //TODO define!!
     List<LIDcontrol> reportLID; //TODO define!!
 
-    ReportSetup reportSetup = new ReportSetup(true, true, true, true,
+    public ReportSetup reportSetup = new ReportSetup(true, true, true, true,
                                     reportSubcatchment, reportNodes, reportLinks, reportLID);
 
     AbstractOptions.OffsetConvention offsetConvention = AbstractOptions.OffsetConvention.DEPTH;
@@ -76,17 +76,17 @@ public class SWMMobject {
     Integer numberOfThreads = 1;
     String temporaryDirectory = "";
 
-    AbstractOptions options = new GlobalOptions(runoffSetup, routingSetup, infiltrationSetup, steadyStateSetup,
+    public AbstractOptions options = new GlobalOptions(runoffSetup, routingSetup, infiltrationSetup, steadyStateSetup,
             projectUnits, timeSetup, reportSetup, offsetConvention, ignoreRainfall, ignoreSnowMelt, ignoreGroundwater,
             ignoreRDII, ignoreQuality, allowPonding, numberOfThreads, temporaryDirectory);
 
-    AbstractRaingage[] raingages;
+    public AbstractRaingage[] raingages;
 
-    AbstractSubcatchments[] subcatchments;
+    public AbstractSubcatchments[] subcatchments;
 
-    AbstractNode[] nodes;
+    public AbstractNode[] nodes;
 
-    AbstractLink[] links;
+    public AbstractLink[] links;
 
     public SWMMobject() throws IOException {
     }

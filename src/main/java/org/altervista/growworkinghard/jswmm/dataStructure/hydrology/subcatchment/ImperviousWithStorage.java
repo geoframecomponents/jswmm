@@ -1,20 +1,34 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
-public class ImperviousWithStorage implements SubareaSetup {
+import java.util.List;
 
-    Double imperviousWstorageArea;
-    SubareaReceiver subareaReceiverRunoff;
+public class ImperviousWithStorage extends Subarea {
 
-    public ImperviousWithStorage(Double imperviousWOstorageArea,
-                                    SubareaReceiver.SubareaReceiverRunoff subareaReceiverRunoff,
-                                    Double percentageReceiverRunoff) {
+    Double depressionStorage;
+    Double totalImperviousArea;
 
-        this.imperviousWstorageArea = imperviousWOstorageArea;
-        this.subareaReceiverRunoff = new SubareaReceiver(subareaReceiverRunoff, percentageReceiverRunoff);
+    public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
+                                 Double depressionStorage, Double roughnessCoefficient) {
+        this(imperviousWStorageArea, imperviousWOStorageArea, depressionStorage, roughnessCoefficient, null);
+    }
+
+    public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
+                                 Double depressionStorage, Double roughnessCoefficient, List<Subarea> connections) {
+        this.subareaArea = imperviousWStorageArea;
+        this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
+        this.depressionStorage = depressionStorage;
+        this.roughnessCoefficient = roughnessCoefficient;
+        this.subareaConnnections = connections;
     }
 
     @Override
-    public Double evaluateAlpha() {
-        return null;
+    public void setDepthFactor(Double subareaSlope, Double characteristicWidth) {
+        if (!subareaConnnections.isEmpty()) {
+            for (Subarea connections : subareaConnnections) {
+                connections.setDepthFactor(subareaSlope, characteristicWidth);
+                this.depthFactor = Math.pow(subareaSlope, 0.5) *
+                        characteristicWidth / (roughnessCoefficient * totalImperviousArea);
+            }
+        }
     }
 }

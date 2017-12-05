@@ -14,8 +14,21 @@ public class GlobalOptions extends AbstractOptions {
                          boolean ignoreGroundwater, boolean ignoreRDII, boolean ignoreQuality, boolean allowPonding,
                          Integer numberOfThreads, String tempDirectory) {
 
-        super(runoffSetup, routingSetup, infiltrationSetup, steadyStateSetup, projectUnits, timeSetup, reportSetup, offsetConvention,
-                ignoreRainfall, ignoreSnowMelt, ignoreGroundwater, ignoreRDII, ignoreQuality, allowPonding,
-                numberOfThreads, tempDirectory);
+        this.runoffSetup = runoffSetup;
+        this.routingSetup = routingSetup;
+        this.infiltrationSetup = infiltrationSetup;
+        this.steadyStateSetup = steadyStateSetup;
+        this.projectUnits = projectUnits;
+        this.timeSetup = timeSetup;
+        this.reportSetup = reportSetup;
+        this.offsetConvention = offsetConvention;
+        this.ignoreRainfall = ignoreRainfall;
+        this.ignoreSnowMelt = ignoreSnowMelt;
+        this.ignoreGroundwater = ignoreGroundwater;
+        this.ignoreRDII = ignoreRDII;
+        this.ignoreQuality = ignoreQuality;
+        this.allowPonding = allowPonding;
+        this.numberOfThreads = numberOfThreads;
+        this.tempDirectory = tempDirectory;
     }
 }

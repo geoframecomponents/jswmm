@@ -1,7 +1,10 @@
 package org.altervista.growworkinghard.jswmm.runoff;
 
 import oms3.annotations.*;
+import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Subarea;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.LinkedHashMap;
@@ -16,9 +19,9 @@ public class Runoff {
     @In
     LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
-    //@In
-    //@Out
-    //SWMMobject dataStructure;
+    @In
+    @Out
+    SWMMobject dataStructure = new SWMMobject();
 
     Instant initialTime;
     Instant totalTime;
@@ -34,9 +37,9 @@ public class Runoff {
     LinkedHashMap<Instant, Double> imperviousWstorageDepth;
     LinkedHashMap<Instant, Double> perviousDepth;
 
-    //Subarea perviousSubarea;
-    //Subarea imperviousWstorageSubarea;
-    //Subarea imperviousWOstorageSubarea;
+    Subarea perviousSubarea;
+    Subarea imperviousWstorageSubarea;
+    Subarea imperviousWOstorageSubarea;
 
     String perviousRouteTo = "OUTLET";
     String imperviousWstorageRouteTo = "OUTLET";
@@ -95,28 +98,254 @@ public class Runoff {
     @In
     private Double relativeTolerance = 1.0e-10;
 
+
+    @Initialize
+    void initialize() {
+        if(dataStructure != null) {
+            this.minimumStepSize = dataStructure.options.getRunoffSetup().getMinimumStepSize();
+            this.maximumStepSize = dataStructure.options.getRunoffSetup().getMaximumStepSize();
+            this.absoluteTolerance = dataStructure.options.getRunoffSetup().getAbsoluteTolerance();
+            this.relativeTolerance = dataStructure.options.getRunoffSetup().getRelativeTolerance();
+        }
+    }
+
+
+
+    public Runoff() throws IOException {
+
+    }
+
+    /**
+     * a.
+     * If snow melt is being simulated, use the procedures described in Chapter 6 to
+     * adjust the precipitation rate i to reflect any snow accumulation (which decreases i) or snow melt (which increases i).
+     *
+     * b.
+     * Set the available moisture volume d_a to ii∆tt + dd where d is the current ponded depth and limit the evaporation rate e
+     * to be no greater than d/ ∆ t.
+     *
+     * c.
+     * If the subarea is pervious, then determine the infiltration rate f using the methods described in Chapter 4 and
+     * if groundwater is being simulated consider the possible reduction in f that can occur due to fully saturated conditions (see Chapter 5).
+     * Otherwise set f = 0.
+     *
+     * d.
+     * If losses exceed the available moisture volume (i.e.,(ee + ff)∆tt ≥ dd aa ) then d = 0 and the runoff rate q is 0.
+     * Otherwise, compute the rainfall excess i x as: ii XX = ii − ee − ff.
+     *
+     * e. If the rainfall excess is not enough to fill the depression storage depth d s over the time step (i.e.,dd + ii XX ∆tt ≤ dd SS )
+     * then update d to dd + ii XX ∆tt and se
+     */
+
+    @Execute
+    public void run() {
+
+        Instant currentTime = initialTime;
+        while(currentTime.isBefore(totalTime)) {
+
+            if(imperviousPercentage == 1){
+                if(depressionStorageImpervious != 0.0) {
+                    imperviousWstorage.depth = evaluateNextDepth(SubareaSetup imperviousWstorage);
+                }
+                imperviousWOstorage.depth = evaluateNextDepth(SubareaSetup imperviousWOstorage);
+            }
+            else if(imperviousPercentage == 0) {
+                pervious.depth = evaluateNextDepth(SubareaSetup pervious);
+            }
+            else {
+                imperviousWOstorage.depth = evaluateNextDepth(SubareaSetup imperviousWOstorage);
+                if(pervious.routeTo == OUTLET) {
+                    if(imperviousWstorage.routeTo == PERVIOUS) {
+                        imperviousWstorage.depth = evaluateNextDepth(SubareaSetup imperviousWstorage);
+                        updateRainfallData(SubareaSetup imperviousWstorage, SubareaSetup imperviousWOstorage, currentTime);
+                        pervious.depth = evaluateNextDepth(SubareaSetup pervious);
+                    }
+                    else {
+                        imperviousWstorage.depth = evaluateNextDepth(SubareaSetup imperviousWstorage);
+                        pervious.depth = evaluateNextDepth(SubareaSetup pervious);
+                    }
+                }
+                else {
+                    pervious.depth = evaluateNextDepth(SubareaSetup pervious);
+                    updateRainfallData(SubareaSetup pervious, currentTime);
+                    imperviousWstorage.depth = evaluateNextDepth(SubareaSetup imperviousWstorage);
+                }
+            }
+            currentTime.plus(runoffStepSize, (TemporalUnit) SECONDS);
+        }
+
+
+
+    }
+
+    private void upgradeSubareaDepth(Instant currentTime, long runoffStepSize,
+                                     LinkedHashMap<Instant, Double> rainfallData, LinkedHashMap<Instant, Double> depth,
+                                     LinkedHashMap<Instant, Double> evaporationData, LinkedHashMap<Instant, Double> flowRate,
+                                     LinkedHashMap<Instant, Double> infiltrationData, Double depressionStorage) {
+
+        Instant nextTime = currentTime.plus(runoffStepSize, (TemporalUnit) SECONDS);
+
+        //check snownelt - snowaccumulation TODO build a new component
+
+        Double moistureVolume = rainfallData.get(currentTime)*runoffStepSize + depth.get(currentTime);
+
+        evaporationData.put(currentTime, Math.max(evaporationData.get(currentTime), depth.get(currentTime)/runoffStepSize));
+
+        if(evaporationData.get(currentTime)*runoffStepSize >= moistureVolume) {
+            depth.put(nextTime, 0.0);
+            flowRate.put(nextTime, 0.0);
+        }
+        else {
+            Double excessRainfall = rainfallData.get(currentTime) - evaporationData.get(currentTime) -
+                    infiltrationData.get(currentTime);
+
+            if(excessRainfall <= depressionStorage) {
+                depth.put(nextTime, depth.get(currentTime) + rainfallData.get(currentTime)*runoffStepSize);
+                flowRate.put(nextTime, 0.0);
+            }
+            else {
+                evaluateNextDepth(rainfallData, evaporationData, infiltrationData, depthFactor, initialTime, nextTime,
+                        depth);
+            }
+        }
+
+    }
+
+    private Double evaluateNextDepth(Double rainfallData, Double evaporationData, Double infiltrationData,
+                                     Double depthFactor, Instant initialTimeInstant, Instant finalTimeInstant, Double initialValueDouble) {
+
+        odeSolver = new DormandPrince54(rainfallData - evaporationData - infiltrationData, depthFactor,
+                minimumStepSize, maximumStepSize, absoluteTolerance, relativeTolerance);
+
+        Double initialTime = ((double) initialTimeInstant.getEpochSecond());
+        Double finalTime = ((double) finalTimeInstant.getEpochSecond());
+
+        double[] initialValue = null;
+        initialValue[0] = initialValueDouble;
+
+        odeSolver.integrate(initialTime, initialValue, finalTime, initialValue);
+
+        return initialValue[0];
+    }
+}
+
+/*
+
+
+    Double nextDepth;
+        if(imperviousPercentage == 1){
+        if(imperviousDepressionStorage != 0.0) {
+            nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
+                    imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
+                    imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
+
+            perviousDepth.put(nextTime, nextDepth);
+        }
+        nextDepth = evaluateNextDepth(imperviousWOstorageRainfallData.get(currentTime),
+                imperviousWOstorageEvaporationData.get(currentTime), imperviousWOstorageInfiltrationData.get(currentTime),
+                imperviousWOstorageDepthFactor, currentTime, nextTime, imperviousWOstorageDepth.get(currentTime));
+
+        imperviousWOstorageDepth.put(nextTime, nextDepth);
+    }
+        else if(imperviousPercentage == 0) {
+
+        nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
+                perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
+                perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
+
+        perviousDepth.put(nextTime, nextDepth);
+    }
+        else {
+        nextDepth = evaluateNextDepth(imperviousWOstorageRainfallData.get(currentTime),
+                imperviousWOstorageEvaporationData.get(currentTime), imperviousWOstorageInfiltrationData.get(currentTime),
+                imperviousWOstorageDepthFactor, currentTime, nextTime, imperviousWOstorageDepth.get(currentTime));
+
+        imperviousWOstorageDepth.put(nextTime, nextDepth);
+
+        if(perviousRouteTo == "OUTLET") {
+            if(imperviousWstorageRouteTo == "PERVIOUS") {
+
+                nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
+                        imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
+                        imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
+
+                imperviousWstorageDepth.put(nextTime, nextDepth);
+
+                upgradeRainfallData(perviousRainfallData, flowRateImperviousWOstorage, flowRateImperviousWstorage,
+                        imperviousToPerviousPercentageRouted, imperviousWstorageArea, imperviousWOstorageArea,
+                        perviousArea, currentTime);
+
+                nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
+                        perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
+                        perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
+
+                perviousDepth.put(nextTime, nextDepth);
+
+            }
+            else {
+                nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
+                        imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
+                        imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
+
+                imperviousWstorageDepth.put(nextTime, nextDepth);
+
+                nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
+                        perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
+                        perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
+
+                perviousDepth.put(nextTime, nextDepth);
+            }
+        }
+        else {
+            nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
+                    perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
+                    perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
+
+            perviousDepth.put(nextTime, nextDepth);
+
+            upgradeRainfallData(imperviousWstorageRainfallData, flowRatePervious, perviousToImperviousPercentageRouted,
+                    perviousArea, imperviousWstorageArea, currentTime);
+
+            nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
+                    imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
+                    imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
+
+            perviousDepth.put(nextTime, nextDepth);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+    /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private void runoffMethod(){
 
-        /**
-         * a.
-         * If snow melt is being simulated, use the procedures described in Chapter 6 to
-         * adjust the precipitation rate i to reflect any snow accumulation (which decreases i) or snow melt (which increases i).
-         *
-         * b.
-         * Set the available moisture volume d_a to ii∆tt + dd where d is the current ponded depth and limit the evaporation rate e
-         * to be no greater than d/ ∆ t.
-         *
-         * c.
-         * If the subarea is pervious, then determine the infiltration rate f using the methods described in Chapter 4 and
-         * if groundwater is being simulated consider the possible reduction in f that can occur due to fully saturated conditions (see Chapter 5).
-         * Otherwise set f = 0.
-         *
-         * d. If losses exceed the available moisture volume (i.e.,(ee + ff)∆tt ≥ dd aa ) then d = 0 and the runoff rate q is 0.
-         * Otherwise, compute the rainfall excess i x as: ii XX = ii − ee − ff.
-         *
-         * e. If the rainfall excess is not enough to fill the depression storage depth d s over the time step (i.e.,dd + ii XX ∆tt ≤ dd SS )
-         * then update d to dd + ii XX ∆tt and se
-         */
+
 
         Instant currentTime = initialTime;
         while(currentTime.isBefore(totalTime)) {
@@ -191,91 +420,6 @@ public class Runoff {
 
     //private void upgradeFlowRateRunoff(Subarea subarea) {subarea. }
 
-    private void upgradeSubareasDepth(Instant currentTime, Instant nextTime) {
-
-        Double nextDepth;
-        if(imperviousPercentage == 1){
-            if(imperviousDepressionStorage != 0.0) {
-                nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
-                        imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
-                        imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
-
-                perviousDepth.put(nextTime, nextDepth);
-            }
-            nextDepth = evaluateNextDepth(imperviousWOstorageRainfallData.get(currentTime),
-                    imperviousWOstorageEvaporationData.get(currentTime), imperviousWOstorageInfiltrationData.get(currentTime),
-                    imperviousWOstorageDepthFactor, currentTime, nextTime, imperviousWOstorageDepth.get(currentTime));
-
-            imperviousWOstorageDepth.put(nextTime, nextDepth);
-        }
-        else if(imperviousPercentage == 0) {
-
-            nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
-                    perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
-                    perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
-
-            perviousDepth.put(nextTime, nextDepth);
-        }
-        else {
-            nextDepth = evaluateNextDepth(imperviousWOstorageRainfallData.get(currentTime),
-                    imperviousWOstorageEvaporationData.get(currentTime), imperviousWOstorageInfiltrationData.get(currentTime),
-                    imperviousWOstorageDepthFactor, currentTime, nextTime, imperviousWOstorageDepth.get(currentTime));
-
-            imperviousWOstorageDepth.put(nextTime, nextDepth);
-
-            if(perviousRouteTo == "OUTLET") {
-                if(imperviousWstorageRouteTo == "PERVIOUS") {
-
-                    nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
-                            imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
-                            imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
-
-                    imperviousWstorageDepth.put(nextTime, nextDepth);
-
-                    upgradeRainfallData(perviousRainfallData, flowRateImperviousWOstorage, flowRateImperviousWstorage,
-                            imperviousToPerviousPercentageRouted, imperviousWstorageArea, imperviousWOstorageArea,
-                            perviousArea, currentTime);
-
-                    nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
-                            perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
-                            perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
-
-                    perviousDepth.put(nextTime, nextDepth);
-
-                }
-                else {
-                    nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
-                            imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
-                            imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
-
-                    imperviousWstorageDepth.put(nextTime, nextDepth);
-
-                    nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
-                            perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
-                            perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
-
-                    perviousDepth.put(nextTime, nextDepth);
-                }
-            }
-            else {
-                nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
-                        perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
-                        perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
-
-                perviousDepth.put(nextTime, nextDepth);
-
-                upgradeRainfallData(imperviousWstorageRainfallData, flowRatePervious, perviousToImperviousPercentageRouted,
-                        perviousArea, imperviousWstorageArea, currentTime);
-
-                nextDepth = evaluateNextDepth(imperviousWstorageRainfallData.get(currentTime),
-                        imperviousWstorageEvaporationData.get(currentTime), imperviousWstorageInfiltrationData.get(currentTime),
-                        imperviousWstorageDepthFactor, currentTime, nextTime, imperviousWstorageDepth.get(currentTime));
-
-                perviousDepth.put(nextTime, nextDepth);
-            }
-        }
-    }
-
     private LinkedHashMap<Instant, Double> upgradeRainfallData(LinkedHashMap<Instant, Double> rainfallDataPervious,
                                                                LinkedHashMap<Instant, Double> flowRateImperviousWOstorage,
                                                                LinkedHashMap<Instant, Double> flowRateImperviousWstorage,
@@ -294,6 +438,8 @@ public class Runoff {
         return rainfallDataPervious;
     }
 
+
+
     private LinkedHashMap<Instant, Double> upgradeRainfallData(LinkedHashMap<Instant, Double> rainfallDataImpervious,
                                                                LinkedHashMap<Instant, Double> flowRatePervious,
                                                                Double perviousToImperviousPercentageRouted,
@@ -308,22 +454,7 @@ public class Runoff {
         return rainfallDataImpervious;
     }
 
-    private Double evaluateNextDepth(Double rainfallData, Double evaporationData, Double infiltrationData,
-                                    Double depthFactor, Instant initialTimeInstant, Instant finalTimeInstant, Double initialValueDouble) {
 
-        odeSolver = new DormandPrince54(rainfallData - evaporationData - infiltrationData, depthFactor,
-                minimumStepSize, maximumStepSize, absoluteTolerance, relativeTolerance);
-
-        Double initialTime = ((double) initialTimeInstant.getEpochSecond());
-        Double finalTime = ((double) finalTimeInstant.getEpochSecond());
-
-        double[] initialValue = null;
-        initialValue[0] = initialValueDouble;
-
-        odeSolver.integrate(initialTime, initialValue, finalTime, initialValue);
-
-        return initialValue[0];
-    }
 
 }
     /*

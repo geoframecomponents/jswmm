@@ -4,6 +4,15 @@ import java.io.*;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
+/**
+ * Take the rainfall data from file and save it in an LinkedHashMap that has elapsed seconds as key and
+ * rainfall value as value.
+ * <p>
+ * Based on FILE data of SWMM with the following structure:
+ * ;Station   Year   Month   Day   Hour   Minutes   Value
+ * STA01      2004     6     12     00      00      0.12
+ */
+
 public class ReadSWMM5RainfallFile implements ReadDataFromFile {
 
     File fileName;

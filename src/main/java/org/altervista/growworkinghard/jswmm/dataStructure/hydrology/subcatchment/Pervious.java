@@ -1,38 +1,33 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import java.util.List;
 
-import org.altervista.growworkinghard.jswmm.runoff.*;
-import java.time.Instant;
-import java.util.LinkedHashMap;
+public class Pervious extends Subarea {
 
-import static java.time.temporal.ChronoUnit.SECONDS;
+    Double infiltrationData;
+    Double depressionStorage;
 
-public class Pervious implements SubareaSetup {
+    public Pervious(Double subareaArea, Double roughnessCoefficient, Double depressionStorage) {
+        this(subareaArea, depressionStorage, roughnessCoefficient,null);
+    }
 
-    Double perviousArea;
-    Double perviousStorage;
-    Double perviousDepthFactor;
+    public Pervious(Double subareaArea, Double depressionStorage,
+                    Double roughnessCoefficient, List<Subarea> connections) {
 
-    LinkedHashMap<Instant, Double> perviousRainfallData;
-    LinkedHashMap<Instant, Double> perviousEvaporationData;
-    LinkedHashMap<Instant, Double> perviousInfiltrationData;
-    LinkedHashMap<Instant, Double> perviousDepth;
-    LinkedHashMap<Instant, Double> perviousFlowRate;
-
-    Double perviousExcessRainfall;
-
-    SubareaReceiver subareaReceiverRunoff;
-
-    public Pervious(Double perviousArea, SubareaReceiver.SubareaReceiverRunoff subareaReceiverRunoff,
-                    Double percentageReceiverRunoff) {
-
-        this.perviousArea = perviousArea;
-        this.subareaReceiverRunoff = new SubareaReceiver(subareaReceiverRunoff, percentageReceiverRunoff);
+        this.subareaArea = subareaArea;
+        this.depressionStorage = depressionStorage;
+        this.roughnessCoefficient = roughnessCoefficient;
+        this.subareaConnnections = connections;
     }
 
     @Override
-    public Double evaluateAlpha() {
-        return null;
+    public void setDepthFactor(Double subareaSlope, Double characteristicWidth) {
+        if (!subareaConnnections.isEmpty()) {
+            for (Subarea connections : subareaConnnections) {
+                connections.setDepthFactor(subareaSlope, characteristicWidth);
+                this.depthFactor = Math.pow(subareaSlope, 0.5) *
+                        characteristicWidth / (roughnessCoefficient * subareaArea);
+            }
+        }
     }
-
 }
