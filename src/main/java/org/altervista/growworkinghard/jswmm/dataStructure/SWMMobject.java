@@ -19,6 +19,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetup;
+import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -88,6 +89,8 @@ public class SWMMobject {
     public AbstractNode[] nodes;
 
     public AbstractLink[] links;
+
+    FirstOrderIntegrator firstOrderIntegrator;
 
     public SWMMobject() throws IOException {
     }
@@ -189,11 +192,13 @@ public class SWMMobject {
         //String subcatchmentName = "SUB1";
         Double subcatchmentArea = 1000.0;
 
-        LinkedHashMap<Instant, Double> roughnessCoefficientPervious = 1.0;
+        Double roughnessCoefficientPervious = 1.0;
         Double roughnessCoefficientImpervious = 1.0;
 
-        LinkedHashMap<Instant, Double> depressionStoragePervious = 1.0;
-        LinkedHashMap<Instant, Double> depressionStorageImpervious = 1.0;
+        LinkedHashMap<Instant, Double> depressionStoragePervious = null;
+        LinkedHashMap<Instant, Double> depressionStorageImpervious = null;
+
+        Double imperviousWstoragePercentage = 1.0;
 
         String subareaName = "A1";
         //String relativeRaingageName = "STA01";
@@ -211,7 +216,7 @@ public class SWMMobject {
         Double percentageFromImpervious = 10.0;
 
 
-        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*depressionStorageImpervious;
+        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*imperviousWstoragePercentage;
         Double imperviousWOStorageArea = subcatchmentArea*imperviousPercentage - imperviousWStorageArea;
 
         //readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
@@ -220,43 +225,51 @@ public class SWMMobject {
 
         List<Subarea> tmpSubareas = null;
         if(imperviousPercentage == 0.0) {
-            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
+            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
+                    depressionStoragePervious, firstOrderIntegrator));
         }
         else if(imperviousPercentage == 1.0) {
-            if (depressionStorageImpervious != 0) {
+            if (1 - imperviousWstoragePercentage != 0) {
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
             }
-            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                    roughnessCoefficientImpervious, firstOrderIntegrator));
         }
         else {
             if (perviousTo == IMPERVIOUS) {
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
 
                 List<Subarea> tmpConnections = null;
-                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
+                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
+                        depressionStoragePervious, firstOrderIntegrator));
 
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious, tmpConnections));
+                        depressionStorageImpervious, roughnessCoefficientImpervious,
+                        percentageFromPervious, tmpConnections, firstOrderIntegrator));
             }
             else if(perviousTo == OUTLET) {
-                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
+                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
+                        depressionStoragePervious, firstOrderIntegrator));
             }
 
             if (imperviousTo == PERVIOUS) {
 
                 List<Subarea> tmpConnections = null;
-                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
                 tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
 
-                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious,
-                        percentageFromImpervious, tmpConnections));
+                tmpSubareas.add(new Pervious(subcatchmentArea, depressionStoragePervious, roughnessCoefficientPervious,
+                        percentageFromImpervious, tmpConnections, firstOrderIntegrator));
             }
             else if (imperviousTo == OUTLET) {
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious));
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
             }
         }
         areas.put(subareaName, new Area(tmpSubareas));
