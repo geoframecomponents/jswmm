@@ -23,7 +23,7 @@ import org.apache.commons.math3.util.FastMath;
  * @copyright GNU Public License v3
  */
 
-class RunoffODE implements FirstOrderDifferentialEquations {
+public class RunoffODE implements FirstOrderDifferentialEquations {
 
     private double precipitation;
     private double alpha;

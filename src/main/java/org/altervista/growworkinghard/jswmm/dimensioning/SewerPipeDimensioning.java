@@ -18,9 +18,9 @@
  */
 package org.altervista.growworkinghard.jswmm.dimensioning;
 
-import it.blogspot.geoframe.utils.GEOconstants;
-import it.blogspot.geoframe.utils.GEOgeometry;
-import it.blogspot.geoframe.hydroGeoEntities.line.*;
+//import it.blogspot.geoframe.utils.GEOconstants;
+//import it.blogspot.geoframe.utils.GEOgeometry;
+//import it.blogspot.geoframe.hydroGeoEntities.line.*;
 
 /**
  * @mainpage On-line Documentation
@@ -81,6 +81,9 @@ import it.blogspot.geoframe.hydroGeoEntities.line.*;
  * @date June 13, 2016
  * @copyright GNU Public License v3 GWH-2b4
  */
+
+/*
+
 public class SewerPipeDimensioning {
 
 	private static double gaucklerStricklerCoefficient;
@@ -94,13 +97,16 @@ public class SewerPipeDimensioning {
 
 	private Pipe pipe;
 
-	/**
+	*/
+/**
 	 * @brief Default constructor.
-	 */
+	 *//*
+
 	public SewerPipeDimensioning() {
 	}
 
-	/**
+	*/
+/**
 	 * @brief Setter of the class fields.
 	 *
 	 *        This method set the fields of the class and the parameters of the
@@ -111,25 +117,30 @@ public class SewerPipeDimensioning {
 	 * 
 	 * @param[in] pipe <strong>Pipe</strong> object that contains all the
 	 *            necessary information about the considered HydroGeoEntity.
-	 */
+	 *//*
+
 	private void setPipe(final Pipe pipe) {
 		this.pipe = pipe;
 		setFields();
 		setFirstAttemptValues();
 	}
 
-	/**
+	*/
+/**
 	 * @brief Setter of the pipe class fields.
-	 */
+	 *//*
+
 	private void setFields() {
 		gaucklerStricklerCoefficient = pipe.getGaucklerStricklerCoefficient();
 		fillCoefficient = pipe.getFillCoefficient();
 		discharge = pipe.getDischarge();
 	}
 
-	/**
+	*/
+/**
 	 * @brief Setter for the first attempt values.
-	 */
+	 *//*
+
 	private void setFirstAttemptValues() {
 		fillAngle = computeFillAngle();
 		elevationEndPoint = pipe.getEndPoint().getTerrainElevation()
@@ -139,19 +150,22 @@ public class SewerPipeDimensioning {
 		minSlope = computeMinSlope();
 	}
 
-	/**
+	*/
+/**
 	 * @brief Computation of <strong>fillAngle</strong>.
 	 * 
 	 *        Computation of <strong>fillAngle</strong> from \f[
 	 *        G=\frac{1-cos(\theta/2)}{2} \f] where \f$ G \f$ is the fill
 	 *        coefficient, \f$ \theta \f$ is the fill angle related to the fill
 	 *        coefficient.
-	 */
+	 *//*
+
 	private double computeFillAngle() {
 		return 2 * Math.acos(1 - 2 * fillCoefficient);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Computation of minimum slope.
 	 * 
 	 *        Evaluation of minimum slope due to fixed shear stress at the base
@@ -160,7 +174,8 @@ public class SewerPipeDimensioning {
 	 *        specific weight of water and \f$R_h\f$ the hydraulic radius.
 	 * 
 	 * @todo Build a method to use commercial pipe dimensions.
-	 */
+	 *//*
+
 	private double computeMinSlope() {
 		double hydraulicRadius = computeHydraulicRadius(diameter);
 
@@ -168,14 +183,16 @@ public class SewerPipeDimensioning {
 				/ (GEOconstants.WSPECIFICWEIGHT * hydraulicRadius);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Computation of diameter due to auto-cleaning.
 	 * 
 	 *        The diameter is related to minimum slope and is evaluated by the
 	 *        relation \f[ D = {\left[ \frac{4^{^{13}/_6} Q}{\theta
 	 *        {(1-\frac{sin(\theta)}{\theta})}^{^7/_6} K_s \sqrt{^\tau/_\gamma}}
 	 *        \right]}^{^6/_{13}} \f]
-	 */
+	 *//*
+
 	private double computeFixedDiameter() {
 		final double pow1 = 13.0 / 6;
 		double numerator = Math.pow(4, pow1);
@@ -190,7 +207,8 @@ public class SewerPipeDimensioning {
 		return Math.pow(numerator / denominator, pow3);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Computation of the hydraulic radius.
 	 * 
 	 *        Computation of the hydraulic radius from \f[ R_h =
@@ -198,17 +216,20 @@ public class SewerPipeDimensioning {
 	 *        the fill angle.
 	 * 
 	 * @param [in] diameter Diameter of the pipe.
-	 */
+	 *//*
+
 	private double computeHydraulicRadius(double diameter) {
 		return diameter / 4 * (1 - Math.sin(fillAngle) / fillAngle);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Computation of <strong>pipeSlope</strong>
 	 * 
 	 *        Evaluation of the slope of the pipe with the end elevation point
 	 *        set by class field <strong>elevationEndPoint</strong>.
-	 */
+	 *//*
+
 	private double computePipeSlope() {
 		return GEOgeometry.computeSlope(pipe.getStartPoint().getX(), pipe
 				.getStartPoint().getY(), pipe.getStartPoint().getElevation(),
@@ -216,7 +237,8 @@ public class SewerPipeDimensioning {
 				elevationEndPoint);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Evaluation of diameter related to fixed slope.
 	 *
 	 *        Computation of the diameter of a pipe with a slope assigned in
@@ -230,7 +252,8 @@ public class SewerPipeDimensioning {
 	 *
 	 * @param[in] slope Slope of the pipe to compute the relative diameter fixed
 	 *            the class fields.
-	 */
+	 *//*
+
 	private double computeDiameter(double slope) {
 		final double pow1 = 3.0 / 8;
 		double numerator = Math.pow((discharge * fillAngle)
@@ -243,7 +266,8 @@ public class SewerPipeDimensioning {
 		return numerator / denominator * Math.pow(10, pow3);
 	}
 
-	/**
+	*/
+/**
 	 * @brief Evaluation of elevation of end point due to a defined slope.
 	 *
 	 *        Computation of the elevation of the end point through the Pitagora
@@ -251,7 +275,8 @@ public class SewerPipeDimensioning {
 	 *
 	 * @param [in] slope The slope of the pipe for that is necessary to evaluate
 	 *        the end point elevation.
-	 */
+	 *//*
+
 	private double computeElevationEndPoint(double slope) {
 		return pipe.getStartPoint().getElevation()
 				- slope
@@ -260,14 +285,16 @@ public class SewerPipeDimensioning {
 						pipe.getEndPoint().getY());
 	}
 
-	/**
+	*/
+/**
 	 * @brief Evaluation of velocity.
 	 *
 	 *        Computation of the velocity of the water in the channel through
 	 *        the relation \f[ v = \frac{8\,Q}{D^2\,(\theta - sin(\theta))} \f]
 	 *        where \f$ D \f$ is the diameter, \f$ Q \f$ the discharge and \f$
 	 *        \theta \f$ the fill angle in the channel.
-	 */
+	 *//*
+
 	private double computeVelocity() {
 		double numerator = discharge * 8;
 		double denominator = diameter * diameter
@@ -275,7 +302,8 @@ public class SewerPipeDimensioning {
 		return numerator / denominator;
 	}
 
-	/**
+	*/
+/**
 	 * @brief Main function of the class.
 	 *
 	 *        Call <strong>setPipe</strong> to setting all the fields and
@@ -287,7 +315,8 @@ public class SewerPipeDimensioning {
 	 *        fields.
 	 * @param [out] pipe Object passed to the class necessary to return all the
 	 *        evaluated fields of the entity.
-	 */
+	 *//*
+
 	public Pipe run(final Pipe pipe) {
 		setPipe(pipe);
 
@@ -309,3 +338,4 @@ public class SewerPipeDimensioning {
 		return this.pipe;
 	}
 }
+*/

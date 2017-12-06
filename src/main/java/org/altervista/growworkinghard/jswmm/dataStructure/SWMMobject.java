@@ -22,12 +22,13 @@ import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetu
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.IMPERVIOUS;
 import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.OUTLET;
-import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.NODE;
-import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.SUBCATCHMENT;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.PERVIOUS;
 
 public class SWMMobject {
 
@@ -80,9 +81,9 @@ public class SWMMobject {
             projectUnits, timeSetup, reportSetup, offsetConvention, ignoreRainfall, ignoreSnowMelt, ignoreGroundwater,
             ignoreRDII, ignoreQuality, allowPonding, numberOfThreads, temporaryDirectory);
 
-    public AbstractRaingage[] raingages;
+    public List<AbstractRaingage> raingages;
 
-    public AbstractSubcatchments[] subcatchments;
+    public HashMap<String, Area> areas;
 
     public AbstractNode[] nodes;
 
@@ -176,50 +177,89 @@ public class SWMMobject {
         Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
         Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
         Double snowpack = 0.0;
-        raingages[0] = new GlobalRaingage(readDataFromFile, raingageUnits, raingageName, dataSourceName, stationName,
-                rainfallStartDate, rainfallEndDate, snowpack);
+        raingages.add(0, new GlobalRaingage(readDataFromFile, raingageUnits, raingageName, dataSourceName, stationName,
+                rainfallStartDate, rainfallEndDate, snowpack));
 
-        //for (each subcatchment)
-        ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        AcquiferSetup acquiferSetup = new Acquifer();
-        SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
-        String subcatchmentName = "SUB1";
+        //////for (each subcatchment)//////
+
+        //ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //AcquiferSetup acquiferSetup = new Acquifer();
+        //SnowPackSetup subcatchmentSnowpack = new SnowPack();
+        //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
+        //String subcatchmentName = "SUB1";
         Double subcatchmentArea = 1000.0;
 
-        String relativeRaingageName = "STA01";
-        SubcatchmentReceiverRunoff subcatchmentReceiverRunoff = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
+        LinkedHashMap<Instant, Double> roughnessCoefficientPervious = 1.0;
+        Double roughnessCoefficientImpervious = 1.0;
+
+        LinkedHashMap<Instant, Double> depressionStoragePervious = 1.0;
+        LinkedHashMap<Instant, Double> depressionStorageImpervious = 1.0;
+
+        String subareaName = "A1";
+        //String relativeRaingageName = "STA01";
+        //SubcatchmentReceiverRunoff subcatchmentReceiverRunoff = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
 
         Double imperviousPercentage = 0.0;
         Double characteristicWidth = 100.0;
         Double subareaSlope = 0.2;
         Double curbLength = 0.0;
 
-        SubareaReceiver.SubareaReceiverRunoff perviousSubareaReceiverRunoff = OUTLET;
-        Double percentagePerviousReceiver = 10.0;
+        SubareaReceiver.SubareaReceiverRunoff perviousTo = OUTLET;
+        Double percentageFromPervious = 10.0;
 
+        SubareaReceiver.SubareaReceiverRunoff imperviousTo = OUTLET;
+        Double percentageFromImpervious = 10.0;
+
+
+        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*depressionStorageImpervious;
+        Double imperviousWOStorageArea = subcatchmentArea*imperviousPercentage - imperviousWStorageArea;
+
+        //readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
+        //subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff, perviousSubareaReceiverRunoff,
+        //percentagePerviousReceiver, imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
+
+        List<Subarea> tmpSubareas = null;
         if(imperviousPercentage == 0.0) {
-
-            subcatchments[0] = new Subarea(readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
-                    subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff, perviousSubareaReceiverRunoff,
-                    percentagePerviousReceiver, imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
+            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
+        }
+        else if(imperviousPercentage == 1.0) {
+            if (depressionStorageImpervious != 0) {
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious));
+            }
+            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
         }
         else {
+            if (perviousTo == IMPERVIOUS) {
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
 
-            SubareaReceiver.SubareaReceiverRunoff imperviousWstorageSubareaReceiverRunoff = OUTLET;
-            Double percentageImperviousWstorageReceiver = 1.0;
-            SubareaReceiver.SubareaReceiverRunoff imperviousWOstorageSubareaReceiverRunoff = OUTLET;
-            Double percentageImperviousWOstorageReceiver = 1.0;
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
 
-            Double percentageImperviousWOstorage = 1.0;
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious, tmpConnections));
+            }
+            else if(perviousTo == OUTLET) {
+                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious));
+            }
 
-            subcatchments[0] = new Subarea(subcatchmentReadDataFromFile, acquiferSetup, subcatchmentSnowpack,
-                    subcatchmentUnits, subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff,
-                    imperviousPercentage, perviousSubareaReceiverRunoff, percentagePerviousReceiver,
-                    imperviousWstorageSubareaReceiverRunoff, percentageImperviousWstorageReceiver,
-                    imperviousWOstorageSubareaReceiverRunoff, percentageImperviousWOstorageReceiver,
-                    percentageImperviousWOstorage, characteristicWidth, subareaSlope, curbLength);
+            if (imperviousTo == PERVIOUS) {
+
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+                tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious));
+
+                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, depressionStoragePervious,
+                        percentageFromImpervious, tmpConnections));
+            }
+            else if (imperviousTo == OUTLET) {
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious));
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficientImpervious));
+            }
         }
+        areas.put(subareaName, new Area(tmpSubareas));
 
         //for (each junction)
         ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");

@@ -3,6 +3,8 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 import org.altervista.growworkinghard.jswmm.dataStructure.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 
+import java.util.List;
+
 public abstract class AbstractSubcatchments {
 
     ReadDataFromFile readDataFromFile;
@@ -12,6 +14,8 @@ public abstract class AbstractSubcatchments {
 
     String subcatchmentName;
     Double subcatchmentArea;
+
+    public List<Subarea> subareas;
 }
 /*
     public void evaluateSubareaDepth(SubareaSetup subarea, Instant currentTime, long runoffStepSize) {
@@ -38,7 +42,7 @@ public abstract class AbstractSubcatchments {
             }
 
             if(perviousExcessRainfall > perviousStorage) {
-                Double nextDepth = evaluateNextDepth(perviousRainfallData.get(currentTime),
+                Double nextDepth = evaluateFlowRate(perviousRainfallData.get(currentTime),
                         perviousEvaporationData.get(currentTime), perviousInfiltrationData.get(currentTime),
                         perviousDepthFactor, currentTime, nextTime, perviousDepth.get(currentTime));
 
