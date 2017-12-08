@@ -23,7 +23,7 @@ public class Area extends AbstractSubcatchments {
         this.subareas = subareas;
     }
 
-    public void evaluateTotalFlowRate(List<Subarea> subareas) {
+    public void evaluateTotalFlowRate() {
         for(Subarea subarea : subareas) {
             subarea.flowRate.forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
         }
@@ -31,5 +31,21 @@ public class Area extends AbstractSubcatchments {
 
     public LinkedHashMap<Instant, Double> getTotalAreaFlowRate() {
         return totalAreaFlowRate;
+    }
+
+    public List<Subarea> getSubareas() {
+        return subareas;
+    }
+
+    public void setTotalAreaFlowRate(LinkedHashMap<Instant, Double> totalAreaFlowRate) {
+        this.totalAreaFlowRate = totalAreaFlowRate;
+    }
+
+    public Double getCharacteristicWidth() {
+        return characteristicWidth;
+    }
+
+    public Double getAreaSlope() {
+        return areaSlope;
     }
 }

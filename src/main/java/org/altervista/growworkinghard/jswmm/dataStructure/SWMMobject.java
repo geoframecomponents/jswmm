@@ -287,8 +287,8 @@ public class SWMMobject {
         Double maximumDepthSurcharge = 1.0;
         Double nodePondingArea = 200.0;
 
-        nodes[0] = new Junction(junctionReadDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
-                nodeElevation, maximumDepthNode, initialDepthNode, maximumDepthSurcharge, nodePondingArea);
+        //nodes[0] = new Junction(junctionReadDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
+        //       nodeElevation, maximumDepthNode, initialDepthNode, maximumDepthSurcharge, nodePondingArea);
 
         //for (each outfall)
         ReadDataFromFile outfallReadDataFromFile = new ReadSWMM5RainfallFile("ciao");

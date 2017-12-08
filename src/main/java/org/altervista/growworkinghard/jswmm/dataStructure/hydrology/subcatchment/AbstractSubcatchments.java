@@ -14,8 +14,6 @@ public abstract class AbstractSubcatchments {
 
     String subcatchmentName;
     Double subcatchmentArea;
-
-    public List<Subarea> subareas;
 }
 /*
     public void evaluateSubareaDepth(SubareaSetup subarea, Instant currentTime, long runoffStepSize) {

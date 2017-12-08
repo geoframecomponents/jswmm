@@ -23,4 +23,32 @@ public class GlobalTimeSetup implements TimeSetup {
         this.sweepEnd = sweepEnd;
         this.dryDays = dryDays;
     }
+
+    public Instant getStartDate() {
+        return startDate;
+    }
+
+    public Instant getEndDate() {
+        return endDate;
+    }
+
+    public Instant getReportStartDate() {
+        return reportStartDate;
+    }
+
+    public Instant getReportEndDate() {
+        return reportEndDate;
+    }
+
+    public Instant getSweepStart() {
+        return sweepStart;
+    }
+
+    public Instant getSweepEnd() {
+        return sweepEnd;
+    }
+
+    public Integer getDryDays() {
+        return dryDays;
+    }
 }
