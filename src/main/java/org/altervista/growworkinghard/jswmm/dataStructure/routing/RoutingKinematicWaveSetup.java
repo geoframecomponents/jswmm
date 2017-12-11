@@ -11,7 +11,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     @Override
     public void evaluateWetArea(Instant currentTime, long routingStepSize, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, CrossSectionType crossSectionType) {
-        
+
     }
 
     @Override
