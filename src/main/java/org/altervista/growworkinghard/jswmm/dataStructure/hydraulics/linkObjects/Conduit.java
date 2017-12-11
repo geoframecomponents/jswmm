@@ -2,7 +2,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
-abstract class Conduit extends AbstractLink {
+public class Conduit extends AbstractLink {
 
     CrossSectionType crossSectionType;
 
@@ -13,7 +13,14 @@ abstract class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    Double evaluateWetArea() {
-        return routingMethod.evaluateWetArea();
+    public Conduit(CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
+                   Double linkLength, Double linkRoughness, Double linkSlope) {
+
+        this.crossSectionType = crossSectionType;
+        this.upstreamOutside = upstreamOutside;
+        this.downstreamOutside = downstreamOutside;
+        this.linkLength = linkLength;
+        this.linkRoughness = linkRoughness;
+        this.linkSlope = linkSlope;
     }
 }

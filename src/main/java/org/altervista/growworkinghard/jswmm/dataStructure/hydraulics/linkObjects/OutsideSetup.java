@@ -7,6 +7,9 @@ public class OutsideSetup {
     LinkedHashMap<Instant, Double> wetArea;
     LinkedHashMap<Instant, Double> flowRate;
 
+    public OutsideSetup() {
+    }
+
     public LinkedHashMap<Instant, Double> getWetArea() {
         return wetArea;
     }

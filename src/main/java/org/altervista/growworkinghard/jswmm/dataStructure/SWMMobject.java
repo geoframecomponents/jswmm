@@ -6,6 +6,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.Re
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.AbstractLink;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.*;
@@ -172,7 +173,7 @@ public class SWMMobject {
 
     public void run() throws IOException {
 
-        fillTables();
+        //fillTables();
 
         //for (each raingage)
         ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("ciao");
@@ -313,20 +314,23 @@ public class SWMMobject {
 
         //for (each link)
         String linkName = "";
+        Double linkSlope = 0.1;
         String upstreamNodeName = "";
         String downstreamNodeName = "";
         Double linkLength = 0.0;
-        Double linkManningRoughness = null;
+        Double linkRoughness = null;
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
         Double initialFlowRate = 0.0;
         Double maximumFlowRate = 0.0;
 
-        CrossSectionType crossSectionType = new Circular();
+        CrossSectionType crossSectionType = new Circular(2.0);
         ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        links[0] = new Conduit(crossSectionType, linkUnits, linkName, upstreamNodeName, downstreamNodeName,
-                linkLength, linkManningRoughness, upstreamOffset, downstreamOffset, initialFlowRate, maximumFlowRate);
+        OutsideSetup upstreamOutside = new OutsideSetup();
+        OutsideSetup downstreamOutside = new OutsideSetup();
+
+        links[0] = new Conduit(crossSectionType, upstreamOutside, downstreamOutside, linkLength, linkRoughness, linkSlope);
 
     }
 }

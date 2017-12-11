@@ -5,9 +5,4 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 
 abstract class AbstractRegulator extends AbstractLink {
 
-    public AbstractRegulator(CrossSectionType crossSectionType, ProjectUnits linkUnits, String linkName,
-                             String upstreamNodeName, String downstreamNodeName) {
-
-        super(crossSectionType, linkUnits, linkName, upstreamNodeName, downstreamNodeName);
-    }
 }
