@@ -2,7 +2,11 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 public interface CrossSectionType {
 
-    public enum Shape {
-        CIRCURAL
-    }
+    Double getDepthFull();
+
+    Double getAreaFull();
+
+    Double getHydraulicRadiousFull();
+
+    Double getSectionFactorFull();
 }

@@ -34,7 +34,6 @@ public class SWMM5RunoffSetup implements RunoffSetup {
      */
     Instant finalTime;
 
-
     long runoffStepSize;
 
     public SWMM5RunoffSetup(Double minimumStepSize, Double maximumStepSize, Double absoluteTolerance,

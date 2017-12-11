@@ -42,7 +42,7 @@ public class SWMMobject {
     RunoffSetup runoffSetup = new SWMM5RunoffSetup(0.1,0.1,
             0.1,0.1, initialTime, finalTime, runoffStepSize);
 
-    RoutingSetup routingSetup = new RoutingSteadySetup(routingStepSize);
+    RoutingSetup routingSetup = new RoutingSteadySetup();
 
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
@@ -93,6 +93,7 @@ public class SWMMobject {
     FirstOrderIntegrator firstOrderIntegrator;
 
     public SWMMobject() throws IOException {
+        routingSetup.fillTables();
     }
 
     /*
@@ -170,6 +171,8 @@ public class SWMMobject {
     */
 
     public void run() throws IOException {
+
+        fillTables();
 
         //for (each raingage)
         ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("ciao");
