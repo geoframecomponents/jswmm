@@ -1,6 +1,6 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.ProjectUnits;
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 
 import java.time.Instant;

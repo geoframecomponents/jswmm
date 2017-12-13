@@ -1,9 +1,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.ProjectUnits;
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
-
-import java.util.List;
 
 public abstract class AbstractSubcatchments {
 

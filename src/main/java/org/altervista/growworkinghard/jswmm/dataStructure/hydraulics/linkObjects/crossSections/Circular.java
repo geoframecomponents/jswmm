@@ -1,7 +1,5 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections;
 
-import java.util.HashMap;
-
 public class Circular implements CrossSectionType {
 
     Double diameter;
@@ -26,12 +24,12 @@ public class Circular implements CrossSectionType {
     }
 
     @Override
-    public Double getHydraulicRadiousFull() {
+    public Double getHydraulicRadiusFull() {
         return 0.25*getDepthFull();
     }
 
     @Override
     public Double getSectionFactorFull() {
-        return getAreaFull()*Math.pow(getHydraulicRadiousFull(), 2.0/3.0);
+        return getAreaFull()*Math.pow(getHydraulicRadiusFull(), 2.0/3.0);
     }
 }

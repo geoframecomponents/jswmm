@@ -6,7 +6,7 @@ public interface CrossSectionType {
 
     Double getAreaFull();
 
-    Double getHydraulicRadiousFull();
+    Double getHydraulicRadiusFull();
 
     Double getSectionFactorFull();
 }

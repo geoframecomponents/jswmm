@@ -7,9 +7,7 @@ import java.time.Instant;
 
 public interface RoutingSetup {
 
-    public void evaluateWetArea(Instant currentTime, long routingStepSize, OutsideSetup upstreamOutside,
+    public void evaluateWetArea(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                 CrossSectionType crossSectionType);
-
-    void fillTables();
 }

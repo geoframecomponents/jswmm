@@ -7,43 +7,43 @@ public class SWMM5RunoffSetup implements RunoffSetup {
     /**
      * Minimum step size to use for ODE integration
      */
-    Double minimumStepSize;
+    private Double minimumStepSize;
 
     /**
      * Maximum step size to use for ODE integration
      */
-    Double maximumStepSize;
+    private Double maximumStepSize;
 
     /**
      * Absolute tolerance for the error in the ODE solution
      */
-    Double absoluteTolerance;
+    private Double absoluteTolerance;
 
     /**
      * Relative tolerance for the error in the ODE solution
      */
-    Double relativeTolerance;
+    private Double relativeTolerance;
 
     /**
      * Initial time for the current step of data
      */
-    Instant initialTime;
+    private Instant initialTime;
 
     /**
      * Final time for the current step of data
      */
-    Instant finalTime;
+    private Instant totalTime;
 
-    long runoffStepSize;
+    private Long runoffStepSize;
 
     public SWMM5RunoffSetup(Double minimumStepSize, Double maximumStepSize, Double absoluteTolerance,
-                            Double relativeTolerance, Instant initialTime, Instant finalTime, long runoffStepSize) {
+                            Double relativeTolerance, Instant initialTime, Instant totalTime, Long runoffStepSize) {
         this.minimumStepSize = minimumStepSize;
         this.maximumStepSize = maximumStepSize;
         this.absoluteTolerance = absoluteTolerance;
         this.relativeTolerance = relativeTolerance;
         this.initialTime = initialTime;
-        this.finalTime = finalTime;
+        this.totalTime = totalTime;
         this.runoffStepSize = runoffStepSize;
     }
 
@@ -67,8 +67,8 @@ public class SWMM5RunoffSetup implements RunoffSetup {
         return initialTime;
     }
 
-    public Instant getFinalTime() {
-        return finalTime;
+    public Instant getTotalTime() {
+        return totalTime;
     }
 
     public long getRunoffStepSize() {

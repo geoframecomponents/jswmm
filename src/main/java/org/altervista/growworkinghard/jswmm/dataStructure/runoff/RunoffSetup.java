@@ -14,7 +14,7 @@ public interface RunoffSetup {
 
     public Instant getInitialTime();
 
-    public Instant getFinalTime();
+    public Instant getTotalTime();
 
     public long getRunoffStepSize();
 }

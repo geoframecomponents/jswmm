@@ -4,13 +4,13 @@ import java.time.Instant;
 
 public class GlobalTimeSetup implements TimeSetup {
 
-    Instant startDate;
-    Instant endDate;
-    Instant reportStartDate;
-    Instant reportEndDate;
-    Instant sweepStart;
-    Instant sweepEnd;
-    Integer dryDays;
+    private Instant startDate;
+    private Instant endDate;
+    private Instant reportStartDate;
+    private Instant reportEndDate;
+    private Instant sweepStart;
+    private Instant sweepEnd;
+    private Integer dryDays;
 
     public GlobalTimeSetup(Instant startDate, Instant endDate, Instant reportStartDate, Instant reportEndDate,
                            Instant sweepStart, Instant sweepEnd, Integer dryDays) {
@@ -36,9 +36,7 @@ public class GlobalTimeSetup implements TimeSetup {
         return reportStartDate;
     }
 
-    public Instant getReportEndDate() {
-        return reportEndDate;
-    }
+    public Instant getReportEndDate() { return reportEndDate; }
 
     public Instant getSweepStart() {
         return sweepStart;

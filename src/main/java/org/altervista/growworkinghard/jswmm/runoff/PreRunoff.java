@@ -11,12 +11,13 @@ public class PreRunoff {
 
     @In
     //SWMMobject dataStructure;
-    long runoffStepSize;
-    long rainfallStepSize;
-    long totalTime;
-    long initialTime;
-    LinkedHashMap<Instant, Double> rainfallData;
+    public Long runoffStepSize;
+    Long rainfallStepSize;
 
+    Long initialTime;
+    Long totalTime;
+
+    LinkedHashMap<Instant, Double> rainfallData;
 
     //@Out
     //Double adaptedRunoffStepSize;
