@@ -21,10 +21,10 @@ public class PreRunoff {
     public Long rainfallStepSize;
 
     @In
-    Long initialTime;
+    Instant initialTime;
 
     @In
-    Long totalTime;
+    Instant totalTime;
 
     @In
     LinkedHashMap<Instant, Double> rainfallData;
@@ -43,12 +43,17 @@ public class PreRunoff {
         if(dataStructure != null) {
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
             this.rainfallStepSize = dataStructure.getRaingages().get(areaName).getRainfallStepSize();
+            this.initialTime = dataStructure.getTimeSetup().getStartDate();
+            this.totalTime = dataStructure.getTimeSetup().getEndDate();
+            String stationRaingage = dataStructure.getRaingages().get(areaName).getStationName();
+            this.rainfallData = dataStructure.getRaingages().get(areaName).getReadDataFromFile().get(stationRaingage);
         }
     }
 
     @Execute
     public void run() {
-        adaptedRainfallData = adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime, initialTime, rainfallData);
+        adaptedRainfallData = adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime.getEpochSecond(),
+                initialTime.getEpochSecond(), rainfallData);
         //adaptInfiltrationData();
     }
 

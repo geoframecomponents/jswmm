@@ -39,6 +39,11 @@ public class GlobalRaingage implements RaingageSetup {
     }
 
     @Override
+    public String getStationName() {
+        return stationName;
+    }
+
+    @Override
     public Long getRainfallStepSize() {
         return rainfallStepSize;
     }

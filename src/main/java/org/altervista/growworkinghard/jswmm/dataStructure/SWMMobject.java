@@ -221,7 +221,7 @@ public class SWMMobject {
     }
 
     private void setLinks() {
-        //for (each link)
+        //for (each link) TODO check if present
         setConduit();
     }
 

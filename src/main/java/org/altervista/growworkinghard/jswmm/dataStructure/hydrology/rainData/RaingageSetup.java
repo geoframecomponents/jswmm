@@ -10,6 +10,8 @@ public interface RaingageSetup {
     //public ProjectUnits getRaingageUnits();
     public String getDataSourceName();
 
+    public String getStationName();
+
     public Long getRainfallStepSize();
 
 }
