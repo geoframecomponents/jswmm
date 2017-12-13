@@ -6,7 +6,6 @@ import oms3.annotations.Initialize;
 
 public class Routing {
 
-
     @Initialize
     void precomputation() {
 
