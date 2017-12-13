@@ -5,6 +5,7 @@ import oms3.annotations.In;
 import oms3.annotations.Initialize;
 import oms3.annotations.Out;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
 import java.time.Instant;
 import java.util.*;
@@ -41,12 +42,15 @@ public class PreRunoff {
     @Initialize
     void initializePreRunoff() {
         if(dataStructure != null) {
+            RaingageSetup raingage = dataStructure.getRaingages().get(areaName);
+
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
-            this.rainfallStepSize = dataStructure.getRaingages().get(areaName).getRainfallStepSize();
+            this.rainfallStepSize = raingage.getRainfallStepSize();
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
-            String stationRaingage = dataStructure.getRaingages().get(areaName).getStationName();
-            this.rainfallData = dataStructure.getRaingages().get(areaName).getReadDataFromFile().get(stationRaingage);
+
+            String stationRaingage = raingage.getStationName();
+            this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
         }
     }
 
