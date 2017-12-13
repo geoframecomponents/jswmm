@@ -76,6 +76,10 @@ public class PreRunoff {
         long rangeTime = upperTime - lowerTime;
 
         long numerator  = rangeTime*(currentRunoffTime - lowerTime);
+
+        if( upperTimeData == null ) { upperTimeData = 0.0; }
+        if( lowerTimeData == null ) { lowerTimeData = 0.0; }
+
         Double denominator = upperTimeData - lowerTimeData;
 
         return lowerTimeData + numerator/denominator;
