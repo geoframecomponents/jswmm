@@ -22,4 +22,28 @@ public class Conduit extends AbstractLink {
         this.linkRoughness = linkRoughness;
         this.linkSlope = linkSlope;
     }
+
+    public CrossSectionType getCrossSectionType() {
+        return crossSectionType;
+    }
+
+    public OutsideSetup getUpstreamOutside() {
+        return upstreamOutside;
+    }
+
+    public OutsideSetup getDownstreamOutside() {
+        return downstreamOutside;
+    }
+
+    public Double getLinkLength() {
+        return linkLength;
+    }
+
+    public Double getLinkRoughness() {
+        return linkRoughness;
+    }
+
+    public Double getLinkSlope() {
+        return linkSlope;
+    }
 }

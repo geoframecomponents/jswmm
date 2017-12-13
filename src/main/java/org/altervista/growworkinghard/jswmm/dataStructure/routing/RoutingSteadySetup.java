@@ -21,6 +21,22 @@ class ChowTable {
 
 public class RoutingSteadySetup implements RoutingSetup {
 
+    private Instant initialTime;
+    private Instant totalTime;
+    private Long routingStepSize;
+
+    public Instant getInitialTime() {
+        return initialTime;
+    }
+
+    public Instant getTotalTime() {
+        return totalTime;
+    }
+
+    public Long getRoutingStepSize() {
+        return routingStepSize;
+    }
+
     private Integer referenceTableLength;
     private List<ChowTable> relationsTable = null;
 
@@ -32,7 +48,11 @@ public class RoutingSteadySetup implements RoutingSetup {
     private Double constantTwo;
     private Double tolerance; //TODO setup!!!
 
-    public RoutingSteadySetup(Integer referenceTableLength, Double iota, Double phi, Double tolerance) {
+    public RoutingSteadySetup(Instant initialTime, Instant totalTime, Long routingStepSize, Integer referenceTableLength,
+                              Double iota, Double phi, Double tolerance) {
+        this.initialTime = initialTime;
+        this.totalTime = totalTime;
+        this.routingStepSize = routingStepSize;
         this.referenceTableLength = referenceTableLength;
         this.iota = iota;
         this.phi = phi;
@@ -40,7 +60,10 @@ public class RoutingSteadySetup implements RoutingSetup {
         fillTables();
     }
 
-    public RoutingSteadySetup(Double tolerance) {
+    public RoutingSteadySetup(Instant initialTime, Instant totalTime, Long routingStepSize, Double tolerance) {
+        this.initialTime = initialTime;
+        this.totalTime = totalTime;
+        this.routingStepSize = routingStepSize;
         this.tolerance = tolerance;
         fillTables();
     }

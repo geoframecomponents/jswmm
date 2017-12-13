@@ -12,8 +12,6 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static org.altervista.growworkinghard.jswmm.runoff.OdeMethod.DP54;
-
 public class Runoff {
 
     @In
@@ -35,7 +33,7 @@ public class Runoff {
      * Area setup
      */
     @In
-    public String subareaName;
+    public String areaName;
 
     @In
     private List<Subarea> subareas;
@@ -67,10 +65,12 @@ public class Runoff {
     @Initialize
     void initialize() {
         if (dataStructure != null) {
+
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
-            Area areas = dataStructure.getAreas().get(subareaName);
+            Area areas = dataStructure.getAreas().get(areaName);
 
+            this.areaName = runoffSetup.getAreaName();
             this.initialTime = timeSetup.getStartDate();
             this.totalTime = timeSetup.getEndDate();
 
@@ -99,6 +99,6 @@ public class Runoff {
             subarea.evaluateFlowRate(adaptedRainfallData.get(currentTime), evaporationData.get(currentTime), currentTime,
                     runoffSetup, slopeArea, characteristicWidth);
         }
-        dataStructure.getAreas().get(subareaName).evaluateTotalFlowRate(); //TODO to be verified
+        dataStructure.getAreas().get(areaName).evaluateTotalFlowRate(); //TODO to be verified
     }
 }

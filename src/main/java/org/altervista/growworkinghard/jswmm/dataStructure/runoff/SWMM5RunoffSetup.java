@@ -8,6 +8,8 @@ import java.time.Instant;
 
 public class SWMM5RunoffSetup implements RunoffSetup {
 
+    private String areaName;
+
     private Instant initialTime;
 
     private Instant totalTime;
@@ -53,5 +55,10 @@ public class SWMM5RunoffSetup implements RunoffSetup {
     @Override
     public void setOde(Double rainfall, Double depthFactor) {
         this.ode = new RunoffODE(rainfall, depthFactor);
+    }
+
+    @Override
+    public String getAreaName() {
+        return areaName;
     }
 }

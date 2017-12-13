@@ -10,4 +10,10 @@ public interface RoutingSetup {
     public void evaluateWetArea(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                 CrossSectionType crossSectionType);
+
+    public Instant getInitialTime();
+
+    public Instant getTotalTime();
+
+    public Long getRoutingStepSize();
 }

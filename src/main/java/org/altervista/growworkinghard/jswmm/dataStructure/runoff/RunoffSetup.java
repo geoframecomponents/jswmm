@@ -19,4 +19,6 @@ public interface RunoffSetup {
     public FirstOrderDifferentialEquations getOde();
 
     public void setOde(Double rainfall, Double depthFactor);
+
+    public String getAreaName();
 }

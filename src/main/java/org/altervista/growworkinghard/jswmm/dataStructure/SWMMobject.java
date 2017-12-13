@@ -15,6 +15,8 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMet
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetup;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -32,6 +34,7 @@ public class SWMMobject {
 
     private TimeSetup timeSetup;
     private RunoffSetup runoffSetup;
+    private RoutingSetup routingSetup;
     private HashMap<String, RaingageSetup> raingageSetup = new HashMap<>();
     private HashMap<String, Area> areas = new HashMap<>();
     private HashMap<String, Junction> junctions = new HashMap<>();
@@ -57,6 +60,8 @@ public class SWMMobject {
     public RunoffSetup getRunoffSetup() {
         return runoffSetup;
     }
+
+    public RoutingSetup getRoutingSetup() { return routingSetup; }
 
     public HashMap<String, RaingageSetup> getRaingages() {
         return raingageSetup;
@@ -120,6 +125,14 @@ public class SWMMobject {
     }
 
     private void setRouting() {
+
+        Instant initialTime = timeSetup.getStartDate();
+        Instant totalTime = timeSetup.getEndDate();
+
+        Long routingStepSize = 180L;
+
+        Double toleranceMethod = 0.1;
+        routingSetup = new RoutingSteadySetup(initialTime, totalTime, routingStepSize, toleranceMethod);
     }
 
     private void setRaingages() throws IOException {
@@ -227,7 +240,7 @@ public class SWMMobject {
 
     private void setConduit() {
 
-        String linkName = "Link1";
+        String linkName = "L1";
         Double linkSlope = 0.1;
         String upstreamNodeName = "";
         String downstreamNodeName = "";
@@ -454,7 +467,7 @@ public class SWMMobject {
 
         Double imperviousWstoragePercentage = 1.0;
 
-        String subareaName = "A1";
+        String areaName = "A1";
         //String relativeRaingageName = "STA01";
         //SubcatchmentReceiverRunoff subcatchmentReceiverRunoff = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
 
@@ -526,7 +539,7 @@ public class SWMMobject {
                         roughnessCoefficientImpervious, firstOrderIntegrator));
             }
         }
-        areas.put(subareaName, new Area(tmpSubareas));
+        areas.put(areaName, new Area(tmpSubareas));
 
         //for (each junction)
         ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
