@@ -13,9 +13,10 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    public Conduit(CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
-                   Double linkLength, Double linkRoughness, Double linkSlope) {
+    public Conduit(String linkName, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
+                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope) {
 
+        this.linkName = linkName;
         this.crossSectionType = crossSectionType;
         this.upstreamOutside = upstreamOutside;
         this.downstreamOutside = downstreamOutside;

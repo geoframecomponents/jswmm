@@ -9,8 +9,8 @@ public class Area extends AbstractSubcatchments {
     String raingageName;
     SubcatchmentReceiverRunoff receiverSubcatchment;
 
-    Double imperviousPercentage;
-    Double percentageImperviousWOstorage;
+    Double imperviousPercentage; //TODO evaluate from subareas
+    Double percentageImperviousWOstorage; //TODO evaluate from subareas
 
     Double characteristicWidth;
     Double areaSlope;
@@ -19,7 +19,15 @@ public class Area extends AbstractSubcatchments {
     List<Subarea> subareas;
     LinkedHashMap<Instant, Double> totalAreaFlowRate = new LinkedHashMap<>();
 
-    public Area(List<Subarea> subareas) {
+    public Area(String subcatchmentName, Double subcatchmentArea, String raingageName, SubcatchmentReceiverRunoff receiverSubcatchment,
+                Double characteristicWidth, Double areaSlope, List<Subarea> subareas) {
+
+        this.subcatchmentName = subcatchmentName;
+        this.subcatchmentArea = subcatchmentArea;
+        this.raingageName = raingageName;
+        this.receiverSubcatchment = receiverSubcatchment;
+        this.characteristicWidth = characteristicWidth;
+        this.areaSlope = areaSlope;
         this.subareas = subareas;
     }
 

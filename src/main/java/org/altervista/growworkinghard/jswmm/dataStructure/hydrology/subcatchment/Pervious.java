@@ -15,17 +15,14 @@ public class Pervious extends Subarea {
 
     LinkedHashMap<Instant, Double> depressionStorage;
 
-    public Pervious(Double subareaArea, Double roughnessCoefficient, LinkedHashMap<Instant, Double> depressionStorage,
-                    FirstOrderIntegrator firstOrderIntegrator) {
-        this(subareaArea, depressionStorage, roughnessCoefficient, null, null, firstOrderIntegrator);
+    public Pervious(Double subareaArea, Double roughnessCoefficient, FirstOrderIntegrator firstOrderIntegrator) {
+        this(subareaArea, roughnessCoefficient, null, null, firstOrderIntegrator);
     }
 
-    public Pervious(Double subareaArea, LinkedHashMap<Instant, Double> depressionStorage,
-                    Double roughnessCoefficient, Double percentageRouted, List<Subarea> connections,
+    public Pervious(Double subareaArea, Double roughnessCoefficient, Double percentageRouted, List<Subarea> connections,
                     FirstOrderIntegrator firstOrderIntegrator) {
 
         this.subareaArea = subareaArea;
-        this.depressionStorage = depressionStorage;
         this.roughnessCoefficient = roughnessCoefficient;
         this.percentageRouted = percentageRouted;
         this.subareaConnections = connections;

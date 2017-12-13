@@ -4,6 +4,9 @@ import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.Re
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+
 public abstract class AbstractNode {
 
     ReadDataFromFile readDataFromFile;
@@ -16,5 +19,5 @@ public abstract class AbstractNode {
     String nodeName;
     Double nodeElevation;
 
-    Double[] nodeDepth;
+    LinkedHashMap<Instant, Double> nodeDepth;
 }

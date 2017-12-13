@@ -4,10 +4,22 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 
 public class OutsideSetup {
+
+    String nodeName;
+
+    Double nodeOffset;
+    Double initialFlowRate;
+    Double maximumFlowRate;
+
     LinkedHashMap<Instant, Double> wetArea;
     LinkedHashMap<Instant, Double> flowRate;
 
-    public OutsideSetup() {
+    public OutsideSetup(String nodeName, Double nodeOffset,
+                        Double initialFlowRate, Double maximumFlowRate) {
+        this.nodeName = nodeName;
+        this.nodeOffset = nodeOffset;
+        this.initialFlowRate = initialFlowRate;
+        this.maximumFlowRate = maximumFlowRate;
     }
 
     public LinkedHashMap<Instant, Double> getWetArea() {

@@ -1,24 +1,55 @@
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
+import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadSWMM5RainfallFile;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.AbstractLink;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.AbstractNode;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.AbstractRaingage;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GlobalRaingage;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMetersperSecond;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetup;
+import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.IMPERVIOUS;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.OUTLET;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubareaReceiver.SubareaReceiverRunoff.PERVIOUS;
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.SUBCATCHMENT;
 
 public class SWMMobject {
 
     private TimeSetup timeSetup;
     private RunoffSetup runoffSetup;
+    private List<AbstractRaingage> raingages;
+    private List<AbstractSubcatchments> subcatchments;
+    private List<AbstractNode> nodes;
+    private List<AbstractLink> links;
 
-    public SWMMobject(String inpFileName) {
+    FirstOrderIntegrator firstOrderIntegrator;
+
+    public SWMMobject(String inpFileName) throws IOException {
         setTime();
         setRunoff();
         setRouting();
         setRaingages();
+        setSubcatchments();
+        setNodes();
+        setLinks();
     }
 
     private void setTime() {
@@ -60,13 +91,13 @@ public class SWMMobject {
     private void setRouting() {
     }
 
-    private void setRaingages() {
+    private void setRaingages() throws IOException {
 
         //for (each raingage)
-        ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("rainfall");
         ProjectUnits raingageUnits = new CubicMetersperSecond();
         String raingageName = "RG1";
-        String dataSourceName = "test1";
+        String dataSourceName = "data1";
         String stationName = "STA01";
         Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
         Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
@@ -77,96 +108,42 @@ public class SWMMobject {
     }
 
     private void setSubcatchments() {
-        //////for (each subcatchment)//////
+        //for (each subcatchment)
+        setAreas();
+    }
 
+    private void setAreas() {
         //ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
         //AcquiferSetup acquiferSetup = new Acquifer();
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
-        //String subcatchmentName = "SUB1";
+        String subcatchmentName = "SUB1";
         Double subcatchmentArea = 1000.0;
 
         Double roughnessCoefficientPervious = 1.0;
         Double roughnessCoefficientImpervious = 1.0;
 
-        LinkedHashMap<Instant, Double> depressionStoragePervious = null;
-        LinkedHashMap<Instant, Double> depressionStorageImpervious = null;
-
         Double imperviousWstoragePercentage = 1.0;
 
-        String subareaName = "A1";
-        //String relativeRaingageName = "STA01";
-        //SubcatchmentReceiverRunoff subcatchmentReceiverRunoff = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
+        String raingageName = "STA01";
+        SubcatchmentReceiverRunoff receiverSubcatchment = new SubcatchmentReceiverRunoff(SUBCATCHMENT, "");
 
         Double imperviousPercentage = 0.0;
         Double characteristicWidth = 100.0;
-        Double subareaSlope = 0.2;
+        Double areaSlope = 0.2;
         Double curbLength = 0.0;
 
-        SubareaReceiver.SubareaReceiverRunoff perviousTo = OUTLET;
-        Double percentageFromPervious = 10.0;
+        String perviousTo = "OUTLET";
+        Double percentageFromPervious = 0.0;
 
-        SubareaReceiver.SubareaReceiverRunoff imperviousTo = OUTLET;
-        Double percentageFromImpervious = 10.0;
+        String imperviousTo = "OUTLET";
+        Double percentageFromImpervious = 0.0;
 
+        List<Subarea> subareas = divideAreas(imperviousPercentage, subcatchmentArea, roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                imperviousWstoragePercentage, perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
 
-        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*imperviousWstoragePercentage;
-        Double imperviousWOStorageArea = subcatchmentArea*imperviousPercentage - imperviousWStorageArea;
-
-        //readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
-        //subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff, perviousSubareaReceiverRunoff,
-        //percentagePerviousReceiver, imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
-
-        List<Subarea> tmpSubareas = null;
-        if(imperviousPercentage == 0.0) {
-            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                    depressionStoragePervious, firstOrderIntegrator));
-        }
-        else if(imperviousPercentage == 1.0) {
-            if (1 - imperviousWstoragePercentage != 0) {
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-            }
-            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                    roughnessCoefficientImpervious, firstOrderIntegrator));
-        }
-        else {
-            if (perviousTo == IMPERVIOUS) {
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                        depressionStoragePervious, firstOrderIntegrator));
-
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious,
-                        percentageFromPervious, tmpConnections, firstOrderIntegrator));
-            }
-            else if(perviousTo == OUTLET) {
-                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                        depressionStoragePervious, firstOrderIntegrator));
-            }
-
-            if (imperviousTo == PERVIOUS) {
-
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-                tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-
-                tmpSubareas.add(new Pervious(subcatchmentArea, depressionStoragePervious, roughnessCoefficientPervious,
-                        percentageFromImpervious, tmpConnections, firstOrderIntegrator));
-            }
-            else if (imperviousTo == OUTLET) {
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-            }
-        }
-        areas.put(subareaName, new Area(tmpSubareas));
+        subcatchments.add(0, new Area(subcatchmentName, subcatchmentArea, raingageName, receiverSubcatchment,
+                characteristicWidth, areaSlope, subareas));
     }
 
     private void setNodes() {
@@ -176,11 +153,11 @@ public class SWMMobject {
 
     private void setJunctions() {
         //for (each junction)
-        ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
-        ExternalInflow dryWeatherInflow = new DryWeatherInflow();
-        ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits nodeUnits = new CubicMetersperSecond();
+        //ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
+        //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
+        //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
+        //ProjectUnits nodeUnits = new CubicMetersperSecond();
         String nodeName = "N1";
         Double nodeElevation = 2.0;
         Double maximumDepthNode = 3.0;
@@ -188,28 +165,27 @@ public class SWMMobject {
         Double maximumDepthSurcharge = 1.0;
         Double nodePondingArea = 200.0;
 
-        //nodes[0] = new Junction(junctionReadDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
-        //       nodeElevation, maximumDepthNode, initialDepthNode, maximumDepthSurcharge, nodePondingArea);
+        nodes.add(0, new Junction(nodeName, nodeElevation, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
     }
 
     private void setOutfalls() {
         //for (each outfall)
-        ReadDataFromFile outfallReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
-        ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
-        ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
-        String outfallName = "N1";
-        Double outfallElevation = 2.0;
+        //ReadDataFromFile outfallReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
+        //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
+        //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
+        //ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
+        String nodeName = "N1";
+        Double nodeElevation = 2.0;
         Double fixedStage = 3.0;
         LinkedHashMap<Instant, Double> tidalCurve = null;
         LinkedHashMap<Instant, Double> stageTimeseries = null;
         boolean gated = false;
         String routeTo = "";
 
-        nodes[1] = new Outfall(outfallReadDataFromFile, outfallWriteDataToFile, outfallDryWeatherInflow, outfallRDII,
-                outfallNodeUnits, outfallName, outfallElevation, fixedStage, tidalCurve, stageTimeseries,
-                gated, routeTo);
+        nodes.add(1, new Outfall(nodeName, nodeElevation, fixedStage, tidalCurve,stageTimeseries,
+                gated, routeTo));
     }
 
     private void setLinks() {
@@ -219,7 +195,7 @@ public class SWMMobject {
 
     private void setConduit() {
 
-        String linkName = "";
+        String linkName = "Link1";
         Double linkSlope = 0.1;
         String upstreamNodeName = "";
         String downstreamNodeName = "";
@@ -231,14 +207,71 @@ public class SWMMobject {
         Double maximumFlowRate = 0.0;
 
         CrossSectionType crossSectionType = new Circular(2.0);
-        ProjectUnits linkUnits = new CubicMetersperSecond();
+        //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside = new OutsideSetup();
-        OutsideSetup downstreamOutside = new OutsideSetup();
+        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, initialFlowRate, maximumFlowRate);
+        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, initialFlowRate, maximumFlowRate);
 
-        links[0] = new Conduit(crossSectionType, upstreamOutside, downstreamOutside, linkLength, linkRoughness, linkSlope);
+        links.add(0, new Conduit(linkName, crossSectionType, upstreamOutside, downstreamOutside, linkLength,
+                linkRoughness, linkSlope));
     }
 
+
+    
+    private List<Subarea> divideAreas(Double imperviousPercentage, Double subcatchmentArea, Double roughnessCoefficientPervious,
+                                      Double roughnessCoefficientImpervious, Double imperviousWstoragePercentage, String perviousTo,
+                                      String imperviousTo, Double percentageFromPervious, Double percentageFromImpervious) {
+
+        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*imperviousWstoragePercentage;
+        Double imperviousWOStorageArea = subcatchmentArea*imperviousPercentage - imperviousWStorageArea;
+
+        List<Subarea> tmpSubareas = null;
+        if(imperviousPercentage == 0.0) {
+            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, firstOrderIntegrator));
+        }
+        else if(imperviousPercentage == 1.0) {
+            if (1 - imperviousWstoragePercentage != 0) {
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+            }
+            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                    roughnessCoefficientImpervious, firstOrderIntegrator));
+        }
+        else {
+            if (perviousTo == "IMPERVIOUS") {
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, firstOrderIntegrator));
+
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        percentageFromPervious, roughnessCoefficientImpervious, tmpConnections, firstOrderIntegrator));
+            }
+            else if(perviousTo == "OUTLET") {
+                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, firstOrderIntegrator));
+            }
+
+            if (imperviousTo == "PERVIOUS") {
+
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+                tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+
+                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious, percentageFromImpervious,
+                        tmpConnections, firstOrderIntegrator));
+            }
+            else if (imperviousTo == "OUTLET") {
+                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, firstOrderIntegrator));
+            }
+        }
+        return tmpSubareas;
+    }
 }
 
 

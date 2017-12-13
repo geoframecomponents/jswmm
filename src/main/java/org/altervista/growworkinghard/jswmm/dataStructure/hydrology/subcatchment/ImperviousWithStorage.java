@@ -15,19 +15,15 @@ public class ImperviousWithStorage extends Subarea {
     Double totalImperviousArea;
 
     public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                 LinkedHashMap<Instant, Double> depressionStorage, Double roughnessCoefficient,
-                                 FirstOrderIntegrator firstOrderIntegrator) {
-        this(imperviousWStorageArea, imperviousWOStorageArea,
-                depressionStorage, roughnessCoefficient, null, null, firstOrderIntegrator);
+                                 Double roughnessCoefficient, FirstOrderIntegrator firstOrderIntegrator) {
+        this(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficient, null, null, firstOrderIntegrator);
     }
 
-    public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                 LinkedHashMap<Instant, Double> depressionStorage, Double roughnessCoefficient,
+    public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea, Double roughnessCoefficient,
                                  Double percentageRouted, List<Subarea> connections, FirstOrderIntegrator firstOrderIntegrator) {
 
         this.subareaArea = imperviousWStorageArea;
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
-        this.depressionStorage = depressionStorage;
         this.roughnessCoefficient = roughnessCoefficient;
         this.percentageRouted = percentageRouted;
         this.subareaConnections = connections;

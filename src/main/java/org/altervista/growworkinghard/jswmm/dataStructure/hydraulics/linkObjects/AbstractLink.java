@@ -17,6 +17,6 @@ public abstract class AbstractLink {
     }
     LinkShape linkShape;
 
-    long routingStepSize;
+    Long routingStepSize;
     RoutingSetup routingMethod;
 }

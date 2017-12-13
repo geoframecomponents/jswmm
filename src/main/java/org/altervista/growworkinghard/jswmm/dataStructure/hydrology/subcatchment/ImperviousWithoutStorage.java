@@ -10,7 +10,6 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class ImperviousWithoutStorage extends Subarea {
 
-    LinkedHashMap<Instant, Double> depressionStorage;
     Double totalImperviousArea;
 
     public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,

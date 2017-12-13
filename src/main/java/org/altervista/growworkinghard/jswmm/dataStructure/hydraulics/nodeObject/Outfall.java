@@ -17,16 +17,9 @@ public class Outfall extends AbstractNode {
 
     //TODO solve the conflict with tidal/timeseries
 
-    public Outfall(ReadDataFromFile readDataFromFile, WriteDataToFile writeDataToFile, ExternalInflow dryWeatherInflow,
-                   ExternalInflow rainfallDependentInfiltrationInflow, ProjectUnits nodeUnits,
-                   String nodeName, Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
+    public Outfall(String nodeName, Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
                    LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo) {
 
-        this.readDataFromFile = readDataFromFile;
-        this.writeDataToFile = writeDataToFile;
-        this.dryWeatherInflow = dryWeatherInflow;
-        this.rainfallDependentInfiltrationInflow =rainfallDependentInfiltrationInflow;
-        this.nodeUnits = nodeUnits;
         this.nodeName = nodeName;
         this.nodeElevation = nodeElevation;
 

@@ -65,4 +65,8 @@ public class ReadSWMM5RainfallFile implements ReadDataFromFile {
     }
 
 
+    @Override
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getData() {
+        return fileRead;
+    }
 }
