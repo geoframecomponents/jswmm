@@ -1,21 +1,45 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
-public class GlobalRaingage extends AbstractRaingage {
+public class GlobalRaingage implements RaingageSetup {
 
-    public GlobalRaingage(ReadDataFromFile readDataFromFile, ProjectUnits raingageUnits, String dataSourceName,
-                          String stationName, Instant rainfallStartDate, Instant rainfallEndDate, Double snowpack) {
+    ReadDataFromFile readDataFromFile;
+    //ProjectUnits raingageUnits;
 
+    String dataSourceName;
+    String stationName;
+    Long rainfallStepSize;
+
+    //Instant rainfallStartDate;
+    //Instant rainfallEndDate;
+
+    //Double snowpack; TODO where is used?
+
+    public GlobalRaingage(ReadDataFromFile readDataFromFile, String dataSourceName,
+                          String stationName, Long rainfallStepSize) {
             this.readDataFromFile = readDataFromFile;
-            this.raingageUnits = raingageUnits;
             this.dataSourceName = dataSourceName;
             this.stationName = stationName;
-            this.rainfallStartDate = rainfallStartDate;
-            this.rainfallEndDate = rainfallEndDate;
-            this.snowpack = snowpack;
+            this.rainfallStepSize = rainfallStepSize;
+    }
+
+
+    @Override
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getReadDataFromFile() {
+        return readDataFromFile.getData();
+    }
+
+    @Override
+    public String getDataSourceName() {
+        return dataSourceName;
+    }
+
+    @Override
+    public Long getRainfallStepSize() {
+        return rainfallStepSize;
     }
 }

@@ -2,16 +2,14 @@ package org.altervista.growworkinghard.jswmm.dataStructure;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadSWMM5RainfallFile;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.AbstractLink;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.AbstractNode;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.AbstractRaingage;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GlobalRaingage;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMetersperSecond;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
@@ -34,7 +32,7 @@ public class SWMMobject {
 
     private TimeSetup timeSetup;
     private RunoffSetup runoffSetup;
-    private HashMap<String, GlobalRaingage> raingages = new HashMap<>();
+    private HashMap<String, RaingageSetup> raingageSetup = new HashMap<>();
     private HashMap<String, Area> areas = new HashMap<>();
     private HashMap<String, Junction> junctions = new HashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
@@ -60,8 +58,8 @@ public class SWMMobject {
         return runoffSetup;
     }
 
-    public HashMap<String, GlobalRaingage> getRaingages() {
-        return raingages;
+    public HashMap<String, RaingageSetup> getRaingages() {
+        return raingageSetup;
     }
 
     public HashMap<String, Area> getAreas() {
@@ -132,12 +130,12 @@ public class SWMMobject {
         String raingageName = "RG1";
         String dataSourceName = "data1";
         String stationName = "STA01";
-        Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
-        Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
-        Double snowpack = 0.0;
+        Long rainfallStepSize = 180L;
+        //Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
+        //Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
+        //Double snowpack = 0.0;
 
-        raingages.put(raingageName, new GlobalRaingage(readDataFromFile, raingageUnits, dataSourceName, stationName,
-                rainfallStartDate, rainfallEndDate, snowpack));
+        raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
     }
 
     private void setSubcatchments() {
@@ -176,7 +174,7 @@ public class SWMMobject {
         List<Subarea> subareas = divideAreas(imperviousPercentage, subcatchmentArea, roughnessCoefficientPervious, roughnessCoefficientImpervious,
                 imperviousWstoragePercentage, perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
 
-        areas.put(subareaName, new Area(subcatchmentArea, raingageName, receiverSubcatchment,
+        areas.put(subareaName, new Area(subcatchmentArea, raingageSetup.get(subareaName), receiverSubcatchment,
                 characteristicWidth, areaSlope, subareas));
     }
 
@@ -343,7 +341,7 @@ public class SWMMobject {
             projectUnits, timeSetup, reportSetup, offsetConvention, ignoreRainfall, ignoreSnowMelt, ignoreGroundwater,
             ignoreRDII, ignoreQuality, allowPonding, numberOfThreads, temporaryDirectory);
 
-    public List<AbstractRaingage> raingages;
+    public List<RaingageSetup> raingages;
 
     public HashMap<String, Area> areas;
 

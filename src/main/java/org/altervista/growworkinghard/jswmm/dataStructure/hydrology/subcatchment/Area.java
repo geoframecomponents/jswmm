@@ -1,12 +1,14 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
+
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class Area extends AbstractSubcatchment {
 
-    String raingageName;
+    RaingageSetup raingageSetup;
     SubcatchmentReceiverRunoff receiverSubcatchment;
 
     Double imperviousPercentage; //TODO evaluate from subareas
@@ -19,10 +21,10 @@ public class Area extends AbstractSubcatchment {
     List<Subarea> subareas;
     LinkedHashMap<Instant, Double> totalAreaFlowRate = new LinkedHashMap<>();
 
-    public Area(Double subcatchmentArea, String raingageName, SubcatchmentReceiverRunoff receiverSubcatchment,
+    public Area(Double subcatchmentArea, RaingageSetup raingageSetup, SubcatchmentReceiverRunoff receiverSubcatchment,
                 Double characteristicWidth, Double areaSlope, List<Subarea> subareas) {
         this.subcatchmentArea = subcatchmentArea;
-        this.raingageName = raingageName;
+        this.raingageSetup = raingageSetup;
         this.receiverSubcatchment = receiverSubcatchment;
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
