@@ -3,7 +3,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 
-public abstract class AbstractSubcatchments {
+public abstract class AbstractSubcatchment {
 
     ReadDataFromFile readDataFromFile;
     AcquiferSetup acquiferSetup;

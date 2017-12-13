@@ -1,77 +1,57 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.runoff;
 
+import org.altervista.growworkinghard.jswmm.runoff.RunoffODE;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
+import org.apache.commons.math3.ode.FirstOrderIntegrator;
+
 import java.time.Instant;
 
 public class SWMM5RunoffSetup implements RunoffSetup {
 
-    /**
-     * Minimum step size to use for ODE integration
-     */
-    private Double minimumStepSize;
-
-    /**
-     * Maximum step size to use for ODE integration
-     */
-    private Double maximumStepSize;
-
-    /**
-     * Absolute tolerance for the error in the ODE solution
-     */
-    private Double absoluteTolerance;
-
-    /**
-     * Relative tolerance for the error in the ODE solution
-     */
-    private Double relativeTolerance;
-
-    /**
-     * Initial time for the current step of data
-     */
     private Instant initialTime;
 
-    /**
-     * Final time for the current step of data
-     */
     private Instant totalTime;
 
     private Long runoffStepSize;
 
-    public SWMM5RunoffSetup(Double minimumStepSize, Double maximumStepSize, Double absoluteTolerance,
-                            Double relativeTolerance, Instant initialTime, Instant totalTime, Long runoffStepSize) {
-        this.minimumStepSize = minimumStepSize;
-        this.maximumStepSize = maximumStepSize;
-        this.absoluteTolerance = absoluteTolerance;
-        this.relativeTolerance = relativeTolerance;
+    private FirstOrderIntegrator firstOrderIntegrator;
+
+    private FirstOrderDifferentialEquations ode;
+
+    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, FirstOrderIntegrator firstOrderIntegrator) {
         this.initialTime = initialTime;
         this.totalTime = totalTime;
         this.runoffStepSize = runoffStepSize;
+        this.firstOrderIntegrator = firstOrderIntegrator;
     }
 
-    public Double getMinimumStepSize() {
-        return minimumStepSize;
-    }
-
-    public Double getMaximumStepSize() {
-        return maximumStepSize;
-    }
-
-    public Double getAbsoluteTolerance() {
-        return absoluteTolerance;
-    }
-
-    public Double getRelativeTolerance() {
-        return relativeTolerance;
-    }
-
+    @Override
     public Instant getInitialTime() {
         return initialTime;
     }
 
+    @Override
     public Instant getTotalTime() {
         return totalTime;
     }
 
-    public long getRunoffStepSize() {
+    @Override
+    public Long getRunoffStepSize() {
         return runoffStepSize;
+    }
+
+    @Override
+    public FirstOrderIntegrator getFirstOrderIntegrator() {
+        return firstOrderIntegrator;
+    }
+
+    @Override
+    public FirstOrderDifferentialEquations getOde() {
+        return ode;
+    }
+
+    @Override
+    public void setOde(Double rainfall, Double depthFactor) {
+        this.ode = new RunoffODE(rainfall, depthFactor);
     }
 }

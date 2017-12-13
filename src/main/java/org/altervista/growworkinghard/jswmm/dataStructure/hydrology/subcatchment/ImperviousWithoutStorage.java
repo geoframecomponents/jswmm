@@ -1,5 +1,6 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
 import java.time.Instant;
@@ -12,21 +13,17 @@ public class ImperviousWithoutStorage extends Subarea {
 
     Double totalImperviousArea;
 
-    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                    Double roughnessCoefficient, FirstOrderIntegrator firstOrderIntegrator) {
-        this(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficient, null, null,
-                firstOrderIntegrator);
+    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea, Double roughnessCoefficient) {
+        this(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficient, null, null);
     }
 
     public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                    Double roughnessCoefficient, Double percentageRouted, List<Subarea> connections,
-                                    FirstOrderIntegrator firstOrderIntegrator) {
+                                    Double roughnessCoefficient, Double percentageRouted, List<Subarea> connections) {
         this.subareaArea = imperviousWStorageArea;
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
         this.roughnessCoefficient = roughnessCoefficient;
         this.percentageRouted = percentageRouted;
         this.subareaConnections = connections;
-        this.firstOrderIntegrator = firstOrderIntegrator;
     }
 
     @Override
@@ -46,9 +43,11 @@ public class ImperviousWithoutStorage extends Subarea {
     }
 
     @Override
-    void evaluateNextDepth(Instant currentTime, long runoffStepSize, Double rainfall, Double evaporation) {
+    void evaluateNextDepth(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation) {
 
-        Instant nextTime = currentTime.plus(runoffStepSize, SECONDS);
+        Long runoffStepSize = runoffSetup.getRunoffStepSize();
+
+        Instant nextTime = currentTime.plusSeconds(runoffStepSize);
         Double moistureVolume = rainfall * runoffStepSize + runoffDepth.get(currentTime);
 
         evaporation = Math.max(evaporation, runoffDepth.get(currentTime)/runoffStepSize);
@@ -58,7 +57,7 @@ public class ImperviousWithoutStorage extends Subarea {
             flowRate.put(nextTime, 0.0);
         }
         else {
-            runoffODEsolver(currentTime, nextTime, rainfall);
+            runoffODEsolver(currentTime, nextTime, rainfall, runoffSetup);
         }
     }
 }

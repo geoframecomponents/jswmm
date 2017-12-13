@@ -10,11 +10,7 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     Instant routingStepSize;
 
     @Override
-    public void evaluateWetArea(Instant currentTime, long routingStepSize, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, CrossSectionType crossSectionType) {
-    }
-
-    @Override
-    public void fillTables() {
+    public void evaluateWetArea(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, CrossSectionType crossSectionType) {
 
     }
 }

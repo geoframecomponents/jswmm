@@ -17,10 +17,8 @@ public class Outfall extends AbstractNode {
 
     //TODO solve the conflict with tidal/timeseries
 
-    public Outfall(String nodeName, Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
+    public Outfall(Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
                    LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo) {
-
-        this.nodeName = nodeName;
         this.nodeElevation = nodeElevation;
 
         this.fixedStage = fixedStage;

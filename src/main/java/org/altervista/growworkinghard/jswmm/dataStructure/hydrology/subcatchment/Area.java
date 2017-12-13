@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class Area extends AbstractSubcatchments {
+public class Area extends AbstractSubcatchment {
 
     String raingageName;
     SubcatchmentReceiverRunoff receiverSubcatchment;
@@ -19,10 +19,8 @@ public class Area extends AbstractSubcatchments {
     List<Subarea> subareas;
     LinkedHashMap<Instant, Double> totalAreaFlowRate = new LinkedHashMap<>();
 
-    public Area(String subcatchmentName, Double subcatchmentArea, String raingageName, SubcatchmentReceiverRunoff receiverSubcatchment,
+    public Area(Double subcatchmentArea, String raingageName, SubcatchmentReceiverRunoff receiverSubcatchment,
                 Double characteristicWidth, Double areaSlope, List<Subarea> subareas) {
-
-        this.subcatchmentName = subcatchmentName;
         this.subcatchmentArea = subcatchmentArea;
         this.raingageName = raingageName;
         this.receiverSubcatchment = receiverSubcatchment;

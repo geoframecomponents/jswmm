@@ -1,20 +1,22 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.runoff;
 
+import org.altervista.growworkinghard.jswmm.runoff.RunoffODE;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
+import org.apache.commons.math3.ode.FirstOrderIntegrator;
+
 import java.time.Instant;
 
 public interface RunoffSetup {
-
-    public Double getMinimumStepSize();
-
-    public Double getMaximumStepSize();
-
-    public Double getAbsoluteTolerance();
-
-    public Double getRelativeTolerance();
 
     public Instant getInitialTime();
 
     public Instant getTotalTime();
 
-    public long getRunoffStepSize();
+    public Long getRunoffStepSize();
+
+    public FirstOrderIntegrator getFirstOrderIntegrator();
+
+    public FirstOrderDifferentialEquations getOde();
+
+    public void setOde(Double rainfall, Double depthFactor);
 }

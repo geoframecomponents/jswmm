@@ -4,101 +4,79 @@ import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Area;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Subarea;
-import org.altervista.growworkinghard.jswmm.dataStructure.options.AbstractOptions;
+import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.time.temporal.TemporalUnit;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.altervista.growworkinghard.jswmm.runoff.Runoff.OdeMethod.DP54;
+import static org.altervista.growworkinghard.jswmm.runoff.OdeMethod.DP54;
 
 public class Runoff {
 
     @In
-    LinkedHashMap<Instant, Double> adaptedRainfallData;
+    public LinkedHashMap<Instant, Double> adaptedRainfallData;
 
     @In
-    LinkedHashMap<Instant, Double> evaporationData;
-
-    @In
-    LinkedHashMap<Instant, Double> adaptedInfiltrationData;
-
-    @In
-    @Out
-    SWMMobject dataStructure;
+    public LinkedHashMap<Instant, Double> evaporationData;
 
     /**
      * Time setup of the simulation
      */
-    private Instant initialTime;
-    private Instant totalTime;
-    private long runoffStepSize;
+    @In
+    public Instant initialTime;
+
+    @In
+    public Instant totalTime;
 
     /**
      * Area setup
      */
+    @In
+    public String subareaName;
+
+    @In
     private List<Subarea> subareas;
 
-    Double slopeArea;
-    Double characteristicWidth;
+    @In
+    public Double slopeArea;
+
+    @In
+    public Double characteristicWidth;
 
     /**
      * Integration method setup
      */
-    public enum OdeMethod {
-        DP54
-    }
-    OdeMethod odeMethod;    //TODO create in dataStructure!!
-    FirstOrderIntegrator firstOrderIntegrator;
-
-    @Description("Minimum step for evaluation of the ODE")
     @In
-    private Double minimumStepSize = 1.0e-8;
+    public FirstOrderIntegrator firstOrderIntegrator;
 
-    @Description("Maximum step for evaluation of the ODE")
     @In
-    private Double maximumStepSize = 1.0e+3;
+    public  Long runoffStepSize;
 
-    @Description("Absolute tolerance for evaluation of the ODE")
+    /**
+     * Data structure
+     */
     @In
-    private Double absoluteTolerance = 1.0e-10;
+    @Out
+    public SWMMobject dataStructure;
 
-    @Description("Relative tolerance for evaluation of the ODE")
-    @In
-    private Double relativeTolerance = 1.0e-10;
-
-    AbstractOptions options = dataStructure.options;
-    RunoffSetup runoffSetup = options.getRunoffSetup();
-    Area areas = dataStructure.areas.get("A1");
+    private RunoffSetup runoffSetup;
 
     @Initialize
     void initialize() {
         if (dataStructure != null) {
+            this.runoffSetup = dataStructure.getRunoffSetup();
+            TimeSetup timeSetup = dataStructure.getTimeSetup();
+            Area areas = dataStructure.getAreas().get(subareaName);
 
-            this.initialTime = options.getTimeSetup().getStartDate();
-            this.totalTime = options.getTimeSetup().getEndDate();
+            this.initialTime = timeSetup.getStartDate();
+            this.totalTime = timeSetup.getEndDate();
 
-            this.runoffStepSize = runoffSetup.getRunoffStepSize();
-
-            this.subareas = areas.getSubareas();//TODO rewrite when SWMMobject is OK
+            this.subareas = areas.getSubareas();
             this.slopeArea = areas.getAreaSlope();
             this.characteristicWidth = areas.getCharacteristicWidth();
-
-            if (odeMethod == DP54) {
-                firstOrderIntegrator = new DormandPrince54Integrator(minimumStepSize, maximumStepSize,
-                        absoluteTolerance, relativeTolerance);
-            }
-
-            this.minimumStepSize = runoffSetup.getMinimumStepSize();
-            this.maximumStepSize = runoffSetup.getMaximumStepSize();
-            this.absoluteTolerance = runoffSetup.getAbsoluteTolerance();
-            this.relativeTolerance = runoffSetup.getRelativeTolerance();
         }
     }
 
@@ -111,7 +89,7 @@ public class Runoff {
             //check snownelt - snowaccumulation TODO build a new component
             upgradeStepValues(currentTime);
 
-            currentTime.plus(runoffStepSize, (TemporalUnit) SECONDS);
+            currentTime.plusSeconds(runoffStepSize);
         }
     }
 
@@ -119,8 +97,8 @@ public class Runoff {
         for (Subarea subarea : subareas) {
             subarea.setDepthFactor(slopeArea, characteristicWidth);
             subarea.evaluateFlowRate(adaptedRainfallData.get(currentTime), evaporationData.get(currentTime), currentTime,
-                    runoffStepSize, slopeArea, characteristicWidth);
+                    runoffSetup, slopeArea, characteristicWidth);
         }
-        areas.evaluateTotalFlowRate();      //TODO to be verified
+        dataStructure.getAreas().get(subareaName).evaluateTotalFlowRate(); //TODO to be verified
     }
 }
