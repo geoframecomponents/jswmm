@@ -1,16 +1,10 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
-import org.altervista.growworkinghard.jswmm.runoff.Runoff;
-import org.altervista.growworkinghard.jswmm.runoff.RunoffODE;
-import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
-import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
 
 public abstract class Subarea {
 
@@ -18,12 +12,26 @@ public abstract class Subarea {
     Double depthFactor;
     Double roughnessCoefficient;
     Double percentageRouted;
+    Double depressionStorage;
 
     List<Subarea> subareaConnections;
 
+    LinkedHashMap<Instant, Double> totalDepth;
     LinkedHashMap<Instant, Double> runoffDepth;
     LinkedHashMap<Instant, Double> flowRate;
     Double excessRainfall;
+
+    public void setTotalDepth(Instant time, Double depthValue) {
+        this.totalDepth.put(time, depthValue);
+    }
+
+    public void setRunoffDepth(Instant time, Double depthValue) {
+        this.runoffDepth.put(time, depthValue);
+    }
+
+    public void setFlowRate(Instant time, Double flowValue) {
+        this.flowRate.put(time, flowValue);
+    }
 
     public abstract void setDepthFactor(Double subareaSlope, Double characteristicWidth);
 
@@ -32,8 +40,9 @@ public abstract class Subarea {
     public void evaluateFlowRate(Double rainfall, Double evaporation, Instant currentTime,
                                  RunoffSetup runoffSetup, Double subareaSlope, Double characteristicWidth) {
 
-        Double tempPrecipitation = null;
-        if (!subareaConnections.isEmpty()) {
+        Double tempPrecipitation = rainfall;
+        if (subareaConnections != null) {
+            tempPrecipitation = null;
             for (Subarea connections : subareaConnections) {
                 connections.evaluateFlowRate(rainfall, evaporation, currentTime,
                         runoffSetup, subareaSlope, characteristicWidth);
@@ -41,21 +50,17 @@ public abstract class Subarea {
                 //infiltration
             }
             tempPrecipitation /= subareaArea;
-
-            evaluateNextDepth(currentTime, runoffSetup, tempPrecipitation, evaporation);
-
-            flowRate.put( currentTime.plusSeconds(runoffSetup.getRunoffStepSize()),
-                            evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                                runoffDepth.get(currentTime.plusSeconds(runoffSetup.getRunoffStepSize()))) );
         }
+        evaluateNextStep(currentTime, runoffSetup, tempPrecipitation, evaporation, subareaSlope, characteristicWidth);
     }
 
-    abstract void evaluateNextDepth(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation);
+    abstract void evaluateNextStep(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
+                                   Double subareaArea, Double characteristicWidth);
 
     void runoffODEsolver(Instant currentTime, Instant nextTime, Double rainfall, RunoffSetup runoffSetup) {
-        double[] inputValues = new double[0];
-        inputValues[0] = flowRate.get(nextTime);
-        double[] outputValues = new double[0];
+        double[] inputValues = new double[1];
+        inputValues[0] = runoffDepth.get(currentTime);
+        double[] outputValues = new double[1];
 
         Double initialTime = (double) currentTime.getEpochSecond();
         Double finalTime = (double) nextTime.getEpochSecond();
@@ -64,10 +69,8 @@ public abstract class Subarea {
         runoffSetup.getFirstOrderIntegrator().integrate(runoffSetup.getOde(), initialTime, inputValues, finalTime, outputValues);
 
         runoffDepth.put(nextTime, outputValues[0]);
+        totalDepth.put(nextTime, totalDepth.get(currentTime) + (outputValues[0]-inputValues[0]));
     }
 
-    private Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        return Math.pow(subareaSlope, 0.5) * characteristicWidth *
-                Math.pow(currentDepth, 5.0/3.0) / (subareaArea * roughnessCoefficient);
-    }
+    abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);
 }

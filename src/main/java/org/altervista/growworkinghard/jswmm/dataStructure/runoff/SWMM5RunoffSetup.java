@@ -18,7 +18,7 @@ public class SWMM5RunoffSetup implements RunoffSetup {
 
     private FirstOrderIntegrator firstOrderIntegrator;
 
-    private FirstOrderDifferentialEquations ode;
+    private FirstOrderDifferentialEquations ode = new RunoffODE(0.0, 0.0);
 
     public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, FirstOrderIntegrator firstOrderIntegrator) {
         this.initialTime = initialTime;

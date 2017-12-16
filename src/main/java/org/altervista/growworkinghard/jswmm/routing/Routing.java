@@ -1,9 +1,6 @@
 package org.altervista.growworkinghard.jswmm.routing;
 
-import oms3.annotations.Execute;
-import oms3.annotations.Finalize;
-import oms3.annotations.In;
-import oms3.annotations.Initialize;
+import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
@@ -45,12 +42,12 @@ public class Routing {
     public RoutingSetup routingSetup;
 
     @In
+    @Out
     public SWMMobject dataStructure = null;
 
     @Initialize
     void init() {
-        if(dataStructure != null) {
-            this.linkName = dataStructure.getRoutingSetup().getLinkName();
+        if(dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
             this.routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();

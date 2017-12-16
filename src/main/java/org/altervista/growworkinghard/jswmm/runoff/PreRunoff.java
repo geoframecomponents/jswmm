@@ -7,13 +7,14 @@ import oms3.annotations.Out;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
-public class PreRunoff {
+public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
     @In
-    String areaName;
+    String areaName = "RG1";
 
     @In
     public Long runoffStepSize;
@@ -31,7 +32,7 @@ public class PreRunoff {
     LinkedHashMap<Instant, Double> rainfallData;
 
     @In
-    SWMMobject dataStructure = null;
+    SWMMobject dataStructure;
 
     @Out
     LinkedHashMap<Instant, Double> adaptedRainfallData;
@@ -39,9 +40,19 @@ public class PreRunoff {
     @Out
     LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
+    public LinkedHashMap<Instant, Double> getAdaptedRainfallData() {
+        return adaptedRainfallData;
+    }
+
+    public PreRunoff() throws IOException {
+    }
+
     @Initialize
-    void initializePreRunoff() {
+    public void initialize(SWMMobject dataStructure) {
         if(dataStructure != null) {
+
+            this.dataStructure = dataStructure;
+
             RaingageSetup raingage = dataStructure.getRaingages().get(areaName);
 
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
@@ -81,20 +92,29 @@ public class PreRunoff {
 
         Long currentRainfallTime = initialTime;
 
-        for (Long currentRunoffTime = initialTime; currentRunoffTime<totalTime; currentRunoffTime+=runoffStepSize) {
+        for (Long currentTime = initialTime; currentTime<totalTime; currentTime+=runoffStepSize) {
 
-            while(currentRainfallTime <= currentRunoffTime) {
+            while(currentRainfallTime <= currentTime) {
                 currentRainfallTime += rainfallStepSize;
             }
+
             Long upperTime = currentRainfallTime;
+            Double upperRaifallData = 0.0;
+            if(rainfallData.get(Instant.ofEpochSecond(upperTime)) != null) {
+                upperRaifallData = rainfallData.get(Instant.ofEpochSecond(upperTime));
+            }
+
             Long lowerTime = upperTime - rainfallStepSize;
+            Double lowerRaifallData = 0.0;
+            if(rainfallData.get(Instant.ofEpochSecond(lowerTime)) != null) {
+                lowerRaifallData = rainfallData.get(Instant.ofEpochSecond(lowerTime));
+            }
 
-            Double currentRainfall = interpolateRainfall(currentRunoffTime, lowerTime, rainfallData.get(lowerTime),
-                    upperTime, rainfallData.get(upperTime));
+            Double currentRainfall = interpolateRainfall(currentTime, lowerTime, lowerRaifallData, upperTime, upperRaifallData);
 
-            adaptedRainfallData.put(Instant.ofEpochSecond(currentRunoffTime), currentRainfall);
+            adaptedRainfallData.put(Instant.ofEpochSecond(currentTime), currentRainfall);
         }
-        adaptedRainfallData.put(Instant.ofEpochSecond(totalTime), rainfallData.get(totalTime));
+        adaptedRainfallData.put(Instant.ofEpochSecond(totalTime), rainfallData.get(Instant.ofEpochSecond(totalTime)));
 
         return adaptedRainfallData;
     }
@@ -104,11 +124,14 @@ public class PreRunoff {
 
         Long numerator  = rangeTime*(currentRunoffTime - lowerTime);
 
-        if( upperTimeData == null ) { upperTimeData = 0.0; }
-        if( lowerTimeData == null ) { lowerTimeData = 0.0; }
-
-        Double denominator = upperTimeData - lowerTimeData;
-
-        return lowerTimeData + numerator/denominator;
+        if(numerator == 0) {
+            return lowerTimeData;
+        }
+        else {
+            if( upperTimeData == null ) { upperTimeData = 0.0; }
+            if( lowerTimeData == null ) { lowerTimeData = 0.0; }
+            Double denominator = upperTimeData - lowerTimeData;
+            return lowerTimeData + numerator/denominator;
+        }
     }
 }

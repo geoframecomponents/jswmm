@@ -7,6 +7,7 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 class ChowTable {
@@ -37,8 +38,8 @@ public class RoutingSteadySetup implements RoutingSetup {
         return routingStepSize;
     }
 
-    private Integer referenceTableLength;
-    private List<ChowTable> relationsTable = null;
+    private Integer referenceTableLength = 180;
+    private List<ChowTable> relationsTable = new LinkedList<>();
 
     private Double iota = 0.6;
     private Double phi = 0.6;
@@ -69,7 +70,7 @@ public class RoutingSteadySetup implements RoutingSetup {
     }
 
     private void fillTables() {
-        for(int i = 0; i<=referenceTableLength; i++) {
+        for(int i = 0; i <= referenceTableLength; i++) {
             Double theta = i*Math.PI/180;
             relationsTable.add(new ChowTable((theta-Math.sin(theta))/(2*Math.PI),
                     Math.pow((theta-Math.sin(theta)), 5.0/3.0) / (2 * Math.PI * Math.pow(theta, 2.0/3.0))));

@@ -11,8 +11,8 @@ public class Area extends AbstractSubcatchment {
     RaingageSetup raingageSetup;
     SubcatchmentReceiverRunoff receiverSubcatchment;
 
-    Double imperviousPercentage; //TODO evaluate from subareas
-    Double percentageImperviousWOstorage; //TODO evaluate from subareas
+    //Double imperviousPercentage; //TODO evaluate from subareas
+    //Double percentageImperviousWOstorage; //TODO evaluate from subareas
 
     Double characteristicWidth;
     Double areaSlope;
