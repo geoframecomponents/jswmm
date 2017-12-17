@@ -81,7 +81,7 @@ import it.blogspot.geoframe.hydroGeoEntities.line.*;
  * @copyright GNU Public License v3 GWH-2b4
  */
 
-public class SewerPipeDimensioning {
+public class Dimensioning {
 
 	private static double gaucklerStricklerCoefficient;
 	private static double fillCoefficient;
@@ -98,7 +98,7 @@ public class SewerPipeDimensioning {
 	 * Default constructor.
 	 */
 
-	public SewerPipeDimensioning() {
+	public Dimensioning() {
 	}
 
 	/**
