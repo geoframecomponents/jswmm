@@ -12,7 +12,7 @@ import java.time.Instant;
 public class Routing {
 
     @In
-    public String linkName;
+    public String linkName = "C1";
 
     @In
     public Instant initialTime;
@@ -46,11 +46,15 @@ public class Routing {
     public SWMMobject dataStructure = null;
 
     @Initialize
-    void init() {
-        if(dataStructure != null && linkName != null) {
+    public void initialize(SWMMobject dataStructure) {
+    //    if(dataStructure != null && linkName != null) {
+
+        this.dataStructure = dataStructure;
+
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
             this.routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
+            this.routingSetup = dataStructure.getRoutingSetup();
 
             Conduit conduit = dataStructure.getConduit().get(linkName);
             this.upstreamOutside = conduit.getUpstreamOutside();
@@ -59,17 +63,18 @@ public class Routing {
             this.linkLength = conduit.getLinkLength();
             this.linkRoughness = conduit.getLinkRoughness();
             this.crossSectionType = conduit.getCrossSectionType();
-        }
+    //    }
     }
 
     @Execute
-    public void routingRun() {
+    public void run() {
 
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
-            routingSetup.evaluateWetArea(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength, linkRoughness,
-                                crossSectionType);
+
+            routingSetup.evaluateWetArea(currentTime, routingStepSize, upstreamOutside, downstreamOutside,
+                    linkLength, linkRoughness, crossSectionType);
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }

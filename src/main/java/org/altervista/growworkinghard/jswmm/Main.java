@@ -1,6 +1,7 @@
 package org.altervista.growworkinghard.jswmm;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import org.altervista.growworkinghard.jswmm.routing.Routing;
 import org.altervista.growworkinghard.jswmm.runoff.PreRunoff;
 import org.altervista.growworkinghard.jswmm.runoff.Runoff;
 
@@ -16,6 +17,10 @@ public class Main {
 
         runoff.initialize(preRunoff.getAdaptedRainfallData(), data);
         runoff.run();
-        runoff.test();
+        //runoff.test();
+
+        Routing routing = new Routing();
+        routing.initialize(data);
+        routing.run();
     }
 }

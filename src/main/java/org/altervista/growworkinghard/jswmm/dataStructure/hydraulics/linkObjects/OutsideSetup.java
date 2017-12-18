@@ -8,17 +8,15 @@ public class OutsideSetup {
     String nodeName;
 
     Double nodeOffset;
-    Double initialFlowRate;
+    //Double initialFlowRate; //TODO setup at initial value of flowRate
     Double maximumFlowRate;
 
     LinkedHashMap<Instant, Double> wetArea;
     LinkedHashMap<Instant, Double> flowRate;
 
-    public OutsideSetup(String nodeName, Double nodeOffset,
-                        Double initialFlowRate, Double maximumFlowRate) {
+    public OutsideSetup(String nodeName, Double nodeOffset, Double maximumFlowRate) {
         this.nodeName = nodeName;
         this.nodeOffset = nodeOffset;
-        this.initialFlowRate = initialFlowRate;
         this.maximumFlowRate = maximumFlowRate;
     }
 

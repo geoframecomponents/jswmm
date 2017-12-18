@@ -85,10 +85,10 @@ public class RoutingSteadySetup implements RoutingSetup {
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
         LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getFlowRate();
-        LinkedHashMap<Instant, Double> downFlowRate = upstreamOutside.getFlowRate();
+        LinkedHashMap<Instant, Double> downFlowRate = downstreamOutside.getFlowRate();
 
         LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getWetArea();
-        LinkedHashMap<Instant, Double> downWetArea = upstreamOutside.getWetArea();
+        LinkedHashMap<Instant, Double> downWetArea = downstreamOutside.getWetArea();
 
 
         beta = evaluateBeta(linkLength, linkRoughness);

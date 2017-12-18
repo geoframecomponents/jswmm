@@ -3,6 +3,7 @@ package org.altervista.growworkinghard.jswmm.runoff;
 import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Area;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Subarea;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Runoff {
 
@@ -35,7 +35,7 @@ public class Runoff {
      * Area setup
      */
     @In
-    public String areaName = "Sub1";
+    public String areaName = "S1";
 
     @In
     private List<Subarea> subareas;
@@ -64,6 +64,8 @@ public class Runoff {
 
     private RunoffSetup runoffSetup;
 
+    private List<ReceiverRunoff> receivers;
+
     public Runoff() throws IOException {
     }
 
@@ -87,6 +89,7 @@ public class Runoff {
             this.characteristicWidth = areas.getCharacteristicWidth();
 
             this.adaptedRainfallData = tempRainfall;
+            this.receivers = areas.getReceivers();
         }
     }
 
@@ -101,7 +104,8 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-        dataStructure.getAreas().get(areaName).evaluateTotalFlowRate(); //TODO to be verified
+        LinkedHashMap<Instant, Double> currentRunoff = dataStructure.getAreas().get(areaName).evaluateTotalFlowRate(); //TODO to be verified
+        tranferRunoffToReceiver(currentRunoff);
     }
 
     private void upgradeStepValues(Instant currentTime) {
@@ -112,10 +116,13 @@ public class Runoff {
         }
     }
 
-    public void test() {
-        LinkedHashMap<Instant, Double> temp = dataStructure.getAreas().get(areaName).getTotalAreaFlowRate();
-        for(Map.Entry<Instant, Double> data : temp.entrySet()) {
-            System.out.println(data.getValue());
+    private void tranferRunoffToReceiver(LinkedHashMap<Instant, Double> currentRunoff) {
+        if(receivers != null) {
+            for(ReceiverRunoff receiverRunoff : receivers) {
+                currentRunoff.forEach((k, v) ->
+                        receiverRunoff.getReceiverObject().getRunoffInflow().merge(k,
+                                v*receiverRunoff.getPercentage(), Double::sum));
+            }
         }
     }
 }
