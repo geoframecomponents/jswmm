@@ -8,11 +8,17 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class Runoff {
 
@@ -112,10 +118,46 @@ public class Runoff {
         }
     }
 
+    private List<Double> testingValues() {
+        String fileName = "./data/testingData/discharges.txt";
+        String line;
+
+        List<Double> testingValues = new ArrayList<>();
+
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                testingValues.add(Double.parseDouble(line));
+            }
+
+            bufferedReader.close();
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" +
+                fileName + "'");
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '"
+                + fileName + "'");
+        }
+
+        return testingValues;
+    }
+
     public void test() {
-        LinkedHashMap<Instant, Double> temp = dataStructure.getAreas().get(areaName).getTotalAreaFlowRate();
-        for(Map.Entry<Instant, Double> data : temp.entrySet()) {
-            System.out.println(data.getValue());
+        LinkedHashMap<Instant, Double> evaluated = dataStructure.getAreas().get(areaName).getTotalAreaFlowRate();
+        List<Double> defined = testingValues();
+
+        int i = 0;
+        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
+            assertEquals(data.getValue(), defined.get(i));
+            //System.out.println(data.getValue());
+            //System.out.println(defined.get(i));
+            i = i + 1;
         }
     }
 }
