@@ -154,6 +154,7 @@ public class Runoff {
 
         int i = 0;
         for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
+            //TODO check a method to do it better - not always is ordered
             assertEquals(data.getValue(), defined.get(i));
             //System.out.println(data.getValue());
             //System.out.println(defined.get(i));
