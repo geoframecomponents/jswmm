@@ -121,6 +121,11 @@ public class Runoff {
         }
     }
 
+    @Finalize
+    public void upgradeDataStructure() {
+        dataStructure.getAreas().get(areaName).setTotalAreaFlowRate(area.getTotalAreaFlowRate());
+    }
+
     private List<Double> testingValues() {
         String fileName = "./data/testingData/discharges.txt";
         String line;
