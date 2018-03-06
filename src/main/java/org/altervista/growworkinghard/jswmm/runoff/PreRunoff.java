@@ -88,8 +88,6 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
                                                              Long initialTime, LinkedHashMap<Instant, Double> rainfallData) {
 
         LinkedHashMap<Instant, Double> adaptedRainfallData = new LinkedHashMap<>();
-
-
         Long currentRainfallTime = initialTime;
 
         for (Long currentTime = initialTime; currentTime<totalTime; currentTime+=runoffStepSize) {
