@@ -97,18 +97,18 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
             }
 
             Long upperTime = currentRainfallTime;
-            Double upperRaifallData = 0.0;
+            Double upperRainfallData = 0.0;
             if(rainfallData.get(Instant.ofEpochSecond(upperTime)) != null) {
-                upperRaifallData = rainfallData.get(Instant.ofEpochSecond(upperTime));
+                upperRainfallData = rainfallData.get(Instant.ofEpochSecond(upperTime));
             }
 
             Long lowerTime = upperTime - rainfallStepSize;
-            Double lowerRaifallData = 0.0;
+            Double lowerRainfallData = 0.0;
             if(rainfallData.get(Instant.ofEpochSecond(lowerTime)) != null) {
-                lowerRaifallData = rainfallData.get(Instant.ofEpochSecond(lowerTime));
+                lowerRainfallData = rainfallData.get(Instant.ofEpochSecond(lowerTime));
             }
 
-            Double currentRainfall = interpolateRainfall(currentTime, lowerTime, lowerRaifallData, upperTime, upperRaifallData);
+            Double currentRainfall = interpolateRainfall(currentTime, lowerTime, lowerRainfallData, upperTime, upperRainfallData);
 
             adaptedRainfallData.put(Instant.ofEpochSecond(currentTime), currentRainfall);
         }
