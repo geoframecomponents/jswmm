@@ -50,7 +50,8 @@ public class Routing {
         if(dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
-            this.routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
+            this.routingSetup = dataStructure.getRoutingSetup();
+            this.routingStepSize = routingSetup.getRoutingStepSize();
 
             Conduit conduit = dataStructure.getConduit().get(linkName);
             this.upstreamOutside = conduit.getUpstreamOutside();
