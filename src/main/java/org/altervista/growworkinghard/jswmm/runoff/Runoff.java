@@ -41,6 +41,9 @@ public class Runoff {
      * Area setup
      */
     @In
+    public Area area;
+
+    @In
     public String areaName = "Sub1";
 
     @In
@@ -81,16 +84,16 @@ public class Runoff {
             //TODO evaporation!!
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
-            Area areas = dataStructure.getAreas().get(areaName);
+            this.area = dataStructure.getAreas().get(areaName);
 
             //this.areaName = runoffSetup.getAreaName();
             this.initialTime = timeSetup.getStartDate();
             this.totalTime = timeSetup.getEndDate();
             this.runoffStepSize = runoffSetup.getRunoffStepSize();
 
-            this.subareas = areas.getSubareas();
-            this.slopeArea = areas.getAreaSlope();
-            this.characteristicWidth = areas.getCharacteristicWidth();
+            this.subareas = area.getSubareas();
+            this.slopeArea = area.getAreaSlope();
+            this.characteristicWidth = area.getCharacteristicWidth();
 
             this.adaptedRainfallData = tempRainfall;
         }
@@ -107,7 +110,7 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-        dataStructure.getAreas().get(areaName).evaluateTotalFlowRate(); //TODO to be verified
+        area.evaluateTotalFlowRate(); //TODO to be verified
     }
 
     private void upgradeStepValues(Instant currentTime) {
@@ -149,7 +152,7 @@ public class Runoff {
     }
 
     public void test() {
-        LinkedHashMap<Instant, Double> evaluated = dataStructure.getAreas().get(areaName).getTotalAreaFlowRate();
+        LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
         List<Double> defined = testingValues();
 
         int i = 0;
