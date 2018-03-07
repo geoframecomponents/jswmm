@@ -84,11 +84,11 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
-        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getFlowRate();
-        LinkedHashMap<Instant, Double> downFlowRate = downstreamOutside.getFlowRate();
+        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate();
+        LinkedHashMap<Instant, Double> downFlowRate = downstreamOutside.getStreamFlowRate();
 
-        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getWetArea();
-        LinkedHashMap<Instant, Double> downWetArea = downstreamOutside.getWetArea();
+        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea();
+        LinkedHashMap<Instant, Double> downWetArea = downstreamOutside.getStreamWetArea();
 
 
         beta = evaluateBeta(linkLength, linkRoughness);
@@ -99,7 +99,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         upstreamOutside.setWetArea(currentTime, tempAdimensionalArea);
 
         //upSF(t+dt)
-        Double upSectionFactor = upstreamOutside.getFlowRate().get(nextTime) / beta;
+        Double upSectionFactor = upstreamOutside.getStreamFlowRate().get(nextTime) / beta;
 
         //A1(t+dt) = readTable(upSF(t+dt))
         tempAdimensionalSF = upSectionFactor / crossSectionType.getSectionFactorFull();
