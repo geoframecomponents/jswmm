@@ -32,7 +32,7 @@ public class OutsideSetup {
         this.wetArea.put(time, value);
     }
 
-    public void setFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-        this.flowRate = flowRate;
+    public void setFlowRate(Instant time, Double flowRate) {
+        this.flowRate.put(time, flowRate);
     }
 }
