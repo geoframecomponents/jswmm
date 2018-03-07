@@ -84,11 +84,11 @@ public class RoutingSteadySetup implements RoutingSetup {
 
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
-        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getFlowRate();
-        LinkedHashMap<Instant, Double> downFlowRate = upstreamOutside.getFlowRate();
+        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate();
+        LinkedHashMap<Instant, Double> downFlowRate = downstreamOutside.getStreamFlowRate();
 
-        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getWetArea();
-        LinkedHashMap<Instant, Double> downWetArea = upstreamOutside.getWetArea();
+        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea();
+        LinkedHashMap<Instant, Double> downWetArea = downstreamOutside.getStreamWetArea();
 
 
         beta = evaluateBeta(linkLength, linkRoughness);
@@ -99,7 +99,7 @@ public class RoutingSteadySetup implements RoutingSetup {
         upstreamOutside.setWetArea(currentTime, tempAdimensionalArea);
 
         //upSF(t+dt)
-        Double upSectionFactor = upstreamOutside.getFlowRate().get(nextTime) / beta;
+        Double upSectionFactor = upstreamOutside.getStreamFlowRate().get(nextTime) / beta;
 
         //A1(t+dt) = readTable(upSF(t+dt))
         tempAdimensionalSF = upSectionFactor / crossSectionType.getSectionFactorFull();
@@ -113,7 +113,15 @@ public class RoutingSteadySetup implements RoutingSetup {
                             upFlowRate.get(currentTime)) - upFlowRate.get(nextTime);
 
         Double tryWetArea = downWetArea.get(currentTime);
-        downstreamOutside.setWetArea(nextTime, evaluateNewWetArea(tryWetArea, crossSectionType));
+        Double newWetArea = evaluateNewWetArea(tryWetArea, crossSectionType);
+
+        downstreamOutside.setWetArea(nextTime, newWetArea);
+        downstreamOutside.setFlowRate(nextTime, evaluateDownstreamFlowRate(newWetArea));
+    }
+
+    @Override
+    public Double evaluateDownstreamFlowRate(Double wetArea) {
+        return areaToSectionFactor(wetArea) * beta;
     }
 
     private Double evaluateNewWetArea(Double tryWetArea, CrossSectionType crossSectionType) {

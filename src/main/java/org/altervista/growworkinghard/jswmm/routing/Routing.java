@@ -69,8 +69,10 @@ public class Routing {
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
-            routingSetup.evaluateWetArea(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength, linkRoughness,
-                                crossSectionType);
+            routingSetup.evaluateWetArea(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength,
+                    linkRoughness, crossSectionType);
+
+            routingSetup.evaluateDownstreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }

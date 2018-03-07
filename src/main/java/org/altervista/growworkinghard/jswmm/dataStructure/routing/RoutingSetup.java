@@ -16,4 +16,6 @@ public interface RoutingSetup {
     public Instant getTotalTime();
 
     public Long getRoutingStepSize();
+
+    public Double evaluateDownstreamFlowRate(Double wetArea);
 }

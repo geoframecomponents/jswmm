@@ -28,4 +28,9 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     public Long getRoutingStepSize() {
         return null;
     }
+
+    @Override
+    public Double evaluateDownstreamFlowRate(Double wetArea) {
+        return null;
+    }
 }

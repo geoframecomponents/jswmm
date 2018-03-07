@@ -8,33 +8,33 @@ public class OutsideSetup {
     String nodeName;
 
     Double nodeOffset;
-    Double initialFlowRate;
-    Double maximumFlowRate;
+    Double initialStreamFlowRate;
+    Double maximumStreamFlowRate;
 
-    LinkedHashMap<Instant, Double> wetArea;
-    LinkedHashMap<Instant, Double> flowRate;
+    LinkedHashMap<Instant, Double> streamWetArea;
+    LinkedHashMap<Instant, Double> streamFlowRate;
 
     public OutsideSetup(String nodeName, Double nodeOffset,
-                        Double initialFlowRate, Double maximumFlowRate) {
+                        Double initialStreamFlowRate, Double maximumFlowRate) {
         this.nodeName = nodeName;
         this.nodeOffset = nodeOffset;
-        this.initialFlowRate = initialFlowRate;
-        this.maximumFlowRate = maximumFlowRate;
+        this.initialStreamFlowRate = initialStreamFlowRate;
+        this.maximumStreamFlowRate = maximumFlowRate;
     }
 
-    public LinkedHashMap<Instant, Double> getWetArea() {
-        return wetArea;
+    public LinkedHashMap<Instant, Double> getStreamWetArea() {
+        return streamWetArea;
     }
 
-    public LinkedHashMap<Instant, Double> getFlowRate() {
-        return flowRate;
+    public LinkedHashMap<Instant, Double> getStreamFlowRate() {
+        return streamFlowRate;
     }
 
     public void setWetArea(Instant time, Double value) {
-        this.wetArea.put(time, value);
+        this.streamWetArea.put(time, value);
     }
 
-    public void setFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-        this.flowRate = flowRate;
+    public void setFlowRate(Instant time, Double flowRate) {
+        this.streamFlowRate.put(time, flowRate);
     }
 }
