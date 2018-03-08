@@ -1,9 +1,5 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
-import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
-import org.altervista.growworkinghard.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
-
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
@@ -26,5 +22,10 @@ public class Outfall extends AbstractNode {
         this.stageTimeseries = stageTimeseries;
         this.gated = gated;
         this.routeTo = routeTo;
+    }
+
+    @Override
+    public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+
     }
 }
