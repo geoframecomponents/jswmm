@@ -1,11 +1,10 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.routing;
 
-import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public interface RoutingSetup {
 
@@ -19,5 +18,5 @@ public interface RoutingSetup {
 
     public Long getRoutingStepSize();
 
-    public HashMap<Instant, Double> getDownstreamFlowRate();
+    public LinkedHashMap<Instant, Double> getDownstreamFlowRate();
 }

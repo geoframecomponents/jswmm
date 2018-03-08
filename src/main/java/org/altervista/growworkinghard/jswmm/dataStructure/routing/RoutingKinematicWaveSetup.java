@@ -6,7 +6,6 @@ import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public HashMap<Instant, Double> getDownstreamFlowRate() {
+    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
         return null;
     }
 

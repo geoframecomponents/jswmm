@@ -87,7 +87,7 @@ public class Routing {
 
     @Finalize
     void upgradeSWMMobject() {
-        //TODO update node inflow
+        dataStructure.getJunctions().get(downstreamNodeName).addRoutingFlowRate(downstreamOutside.getStreamFlowRate());
     }
 
 }
