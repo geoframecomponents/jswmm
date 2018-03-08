@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 public class Divider extends AbstractNode {
 
     @Override
-    public void addNodeFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
+    public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
 
     }
 }
