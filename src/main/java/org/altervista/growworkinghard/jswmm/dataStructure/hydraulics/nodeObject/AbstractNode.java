@@ -20,10 +20,13 @@ public abstract class AbstractNode extends AbstractReceiver {
     String nodeName;
     Double nodeElevation;
     LinkedHashMap<Instant, Double> runoffInflow;
+    LinkedHashMap<Instant, Double> routingInflow;
 
     LinkedHashMap<Instant, Double> nodeDepth;
 
     public LinkedHashMap<Instant, Double> getRunoffInflow() {
         return runoffInflow;
     }
+
+    public abstract void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
 }

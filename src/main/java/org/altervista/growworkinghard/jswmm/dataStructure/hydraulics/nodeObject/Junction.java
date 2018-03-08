@@ -18,6 +18,11 @@ public class Junction extends AbstractNode {
         this.maximumDepthSurcharge = maximumDepthSurcharge;
         this.pondingArea = pondingArea;
     }
+
+    @Override
+    public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+        newFlowRate.forEach((k, v) -> routingInflow.merge(k, v, Double::sum));
+    }
 }
 
 
