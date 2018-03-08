@@ -4,14 +4,11 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.HashMap;
 
 public class RoutingSteadySetup implements RoutingSetup {
-
-
     @Override
-    public void evaluateWetArea(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
-                                OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                CrossSectionType crossSectionType) {
+    public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, CrossSectionType crossSectionType) {
 
     }
 
@@ -27,6 +24,11 @@ public class RoutingSteadySetup implements RoutingSetup {
 
     @Override
     public Long getRoutingStepSize() {
+        return null;
+    }
+
+    @Override
+    public HashMap<Instant, Double> getDownstreamFlowRate() {
         return null;
     }
 }

@@ -6,6 +6,7 @@ import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
 import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,7 @@ class ChowTable {
     Double adimensionalArea;
     Double adimensionalSectionFactor;
 
-    public ChowTable(Double adimensionalArea, Double adimensionalSectionFactor) {
+    ChowTable(Double adimensionalArea, Double adimensionalSectionFactor) {
         this.adimensionalArea = adimensionalArea;
         this.adimensionalSectionFactor = adimensionalSectionFactor;
     }
@@ -36,6 +37,11 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     public Long getRoutingStepSize() {
         return routingStepSize;
+    }
+
+    @Override
+    public HashMap<Instant, Double> getDownstreamFlowRate() {
+        return null;
     }
 
     private Integer referenceTableLength = 180;
@@ -78,7 +84,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public void evaluateWetArea(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
+    public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                 CrossSectionType crossSectionType) {
 

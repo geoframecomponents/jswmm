@@ -18,11 +18,6 @@ public class Junction extends AbstractNode {
         this.maximumDepthSurcharge = maximumDepthSurcharge;
         this.pondingArea = pondingArea;
     }
-
-    @Override
-    public void setRunoffInflow(LinkedHashMap<Instant, Double> runoffInflow) {
-
-    }
 }
 
 

@@ -16,6 +16,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMet
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
@@ -142,7 +143,7 @@ public class SWMMobject {
         Long routingStepSize = 30L;
         Double toleranceMethod = 0.0015;
 
-        this.routingSetup = new RoutingSteadySetup(initialTime, totalTime, routingStepSize, toleranceMethod);
+        routingSetup = new RoutingKinematicWaveSetup(initialTime, totalTime, routingStepSize, toleranceMethod);
     }
 
     private void setRaingages() throws IOException {
@@ -203,7 +204,7 @@ public class SWMMobject {
                 roughnessCoefficientPervious, roughnessCoefficientImpervious,
                 perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
 
-        areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName), receiverSubcatchment,
+        areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
                 characteristicWidth, areaSlope, subareas));
     }
 
@@ -272,8 +273,8 @@ public class SWMMobject {
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, initialFlowRate, maximumFlowRate);
-        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, initialFlowRate, maximumFlowRate);
+        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate);
+        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate);
 
         conduit.put(linkName, new Conduit(crossSectionType, upstreamOutside, downstreamOutside, linkLength,
                 linkRoughness, linkSlope));

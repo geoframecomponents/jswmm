@@ -35,4 +35,8 @@ public class OutsideSetup {
     public void setFlowRate(Instant time, Double flowRate) {
         this.streamFlowRate.put(time, flowRate);
     }
+
+    public String getNodeName() {
+        return nodeName;
+    }
 }

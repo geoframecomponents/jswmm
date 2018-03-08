@@ -30,6 +30,9 @@ public class Routing {
     public OutsideSetup downstreamOutside;
 
     @In
+    private String downstreamNodeName;
+
+    @In
     public Double linkLength;
 
     @In
@@ -45,6 +48,7 @@ public class Routing {
     @Out
     public SWMMobject dataStructure = null;
 
+
     @Initialize
     public void initialize(SWMMobject dataStructure) {
     //    if(dataStructure != null && linkName != null) {
@@ -59,6 +63,7 @@ public class Routing {
             Conduit conduit = dataStructure.getConduit().get(linkName);
             this.upstreamOutside = conduit.getUpstreamOutside();
             this.downstreamOutside = conduit.getDownstreamOutside();
+            this.downstreamNodeName = downstreamOutside.getNodeName();
 
             this.linkLength = conduit.getLinkLength();
             this.linkRoughness = conduit.getLinkRoughness();
@@ -72,8 +77,8 @@ public class Routing {
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
-            routingSetup.evaluateWetArea(currentTime, routingStepSize, upstreamOutside, downstreamOutside,
-                    linkLength, linkRoughness, crossSectionType);
+            routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength,
+                    linkRoughness, crossSectionType);
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
@@ -82,7 +87,7 @@ public class Routing {
 
     @Finalize
     void upgradeSWMMobject() {
-
+        //TODO update node inflow
     }
 
 }
