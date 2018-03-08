@@ -4,6 +4,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public interface RoutingSetup {
 
@@ -18,4 +19,6 @@ public interface RoutingSetup {
     public Long getRoutingStepSize();
 
     public Double evaluateDownstreamFlowRate(Double wetArea);
+
+    //public void addStreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
 }

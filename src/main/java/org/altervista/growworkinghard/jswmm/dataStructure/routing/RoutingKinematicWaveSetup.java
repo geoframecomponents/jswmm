@@ -4,6 +4,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public class RoutingKinematicWaveSetup implements RoutingSetup {
 
