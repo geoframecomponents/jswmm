@@ -20,7 +20,7 @@ public class Junction extends AbstractNode {
     }
 
     @Override
-    public void addStreamFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
+    public void addNodeFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
         newAreaFlowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
     }
 }

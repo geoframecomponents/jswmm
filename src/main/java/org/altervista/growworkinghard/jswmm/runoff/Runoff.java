@@ -131,7 +131,7 @@ public class Runoff {
 
     @Finalize
     public void upgradeNodeFlowRate() {
-        node.addStreamFlowRate(area.getTotalAreaFlowRate());
+        node.addNodeFlowRate(area.getTotalAreaFlowRate());
     }
 
     private List<Double> testingValues() {
