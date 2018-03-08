@@ -136,7 +136,7 @@ public class Runoff {
     }
 
     private List<Double> testingValues() {
-        String fileName = "./data/testingData/discharges.txt";
+        String fileName = "./data/testingData/runoffTesting/discharges.txt";
         String line;
 
         List<Double> testingValues = new ArrayList<>();
