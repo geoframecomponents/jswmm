@@ -1,5 +1,8 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+
 public class Junction extends AbstractNode {
 
     Double maximumDepthNode;
@@ -14,6 +17,11 @@ public class Junction extends AbstractNode {
         this.initialDepthnode = initialDepthnode;
         this.maximumDepthSurcharge = maximumDepthSurcharge;
         this.pondingArea = pondingArea;
+    }
+
+    @Override
+    public void addStreamFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
+        nodeFlowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
     }
 }
 

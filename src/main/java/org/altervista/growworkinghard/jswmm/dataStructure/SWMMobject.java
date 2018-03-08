@@ -209,7 +209,7 @@ public class SWMMobject {
     }
 
     private void setNodes() {
-        //setJunctions();
+        setJunctions();
         setOutfalls();
     }
 

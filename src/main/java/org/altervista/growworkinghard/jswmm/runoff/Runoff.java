@@ -2,6 +2,7 @@ package org.altervista.growworkinghard.jswmm.runoff;
 
 import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Area;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.Subarea;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
@@ -47,6 +48,12 @@ public class Runoff {
     public String areaName = "Sub1";
 
     @In
+    public Junction node;
+
+    @In
+    public String nodeName = "N1";
+
+    @In
     private List<Subarea> subareas;
 
     @In
@@ -85,6 +92,7 @@ public class Runoff {
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
             this.area = dataStructure.getAreas().get(areaName);
+            this.node = dataStructure.getJunctions().get(nodeName);
 
             //this.areaName = runoffSetup.getAreaName();
             this.initialTime = timeSetup.getStartDate();
@@ -122,8 +130,8 @@ public class Runoff {
     }
 
     @Finalize
-    public void upgradeDataStructure() {
-        dataStructure.getAreas().get(areaName).setTotalAreaFlowRate(area.getTotalAreaFlowRate());
+    public void upgradeNodeFlowRate() {
+        node.addStreamFlowRate(area.getTotalAreaFlowRate());
     }
 
     private List<Double> testingValues() {

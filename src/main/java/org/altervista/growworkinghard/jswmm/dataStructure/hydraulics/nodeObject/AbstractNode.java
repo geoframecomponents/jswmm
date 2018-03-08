@@ -19,5 +19,8 @@ public abstract class AbstractNode {
     String nodeName;
     Double nodeElevation;
 
+    LinkedHashMap<Instant, Double> nodeFlowRate;
     LinkedHashMap<Instant, Double> nodeDepth;
+
+    public abstract void addStreamFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate);
 }
