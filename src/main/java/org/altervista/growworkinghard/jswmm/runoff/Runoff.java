@@ -92,6 +92,7 @@ public class Runoff {
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
             this.area = dataStructure.getAreas().get(areaName);
+            //TODO IF node is not Juntions????
             this.node = dataStructure.getJunctions().get(nodeName);
 
             //this.areaName = runoffSetup.getAreaName();
