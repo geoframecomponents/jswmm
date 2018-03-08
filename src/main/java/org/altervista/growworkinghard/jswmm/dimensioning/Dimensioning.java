@@ -18,9 +18,9 @@
  */
 package org.altervista.growworkinghard.jswmm.dimensioning;
 
+import it.blogspot.geoframe.hydroGeoEntities.line.Pipe;
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
-import it.blogspot.geoframe.hydroGeoEntities.line.*;
 
 /**
  * @mainpage On-line Documentation
