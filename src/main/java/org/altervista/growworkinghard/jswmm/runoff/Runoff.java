@@ -105,7 +105,7 @@ public class Runoff {
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
         LinkedHashMap<Instant, Double> currentRunoff = dataStructure.getAreas().get(areaName).evaluateTotalFlowRate(); //TODO to be verified
-        tranferRunoffToReceiver(currentRunoff);
+        transferRunoffToReceiver(currentRunoff);
     }
 
     private void upgradeStepValues(Instant currentTime) {
@@ -116,7 +116,7 @@ public class Runoff {
         }
     }
 
-    private void tranferRunoffToReceiver(LinkedHashMap<Instant, Double> currentRunoff) {
+    private void transferRunoffToReceiver(LinkedHashMap<Instant, Double> currentRunoff) {
         if(receivers != null) {
             for(ReceiverRunoff receiverRunoff : receivers) {
                 currentRunoff.forEach((k, v) ->
