@@ -27,4 +27,9 @@ public class Outfall extends AbstractNode {
         this.gated = gated;
         this.routeTo = routeTo;
     }
+
+    @Override
+    public void addStreamFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
+
+    }
 }
