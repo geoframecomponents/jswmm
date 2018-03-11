@@ -161,6 +161,15 @@ public class SWMMobject {
         //Double snowpack = 0.0;
 
         raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
+
+        ReadDataFromFile readDataFromFile2 = new ReadSWMM5RainfallFile("./data/rainfall2.txt");
+        //ProjectUnits raingageUnits = new CubicMetersperSecond();
+        String raingageName2 = "RG2";
+        String dataSourceName2 = "rainfall.txt";
+        String stationName2 = "RG2";
+        Long rainfallStepSize2 = 60L;
+
+        raingageSetup.put(raingageName2, new GlobalRaingage(readDataFromFile2, dataSourceName2, stationName2, rainfallStepSize2));
     }
 
     private void setSubcatchments() {
@@ -206,6 +215,41 @@ public class SWMMobject {
 
         areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName), receiverSubcatchment,
                 characteristicWidth, areaSlope, subareas));
+
+        //
+
+        String areaName2 = "Sub2";
+        Double subcatchmentArea2 = 1E7;
+
+        Double imperviousPercentage2 = 1.0;
+        Double imperviousWOstoragePercentage2 = 0.0;
+
+        Double depressionStorageImpervious2 = 0.0;
+        Double depressionStoragePervious2 = 0.0;
+
+        String perviousTo2 = "OUTLET";
+        Double percentageFromPervious2 = 0.0;
+
+        String imperviousTo2 = "OUTLET";
+        Double percentageFromImpervious2 = 0.0;
+
+        Double roughnessCoefficientPervious2 = 0.1;
+        Double roughnessCoefficientImpervious2 = 0.01;
+
+        Double characteristicWidth2 = 100.0;
+        Double areaSlope2 = 0.005;
+        Double curbLength2 = 0.0;
+
+        String raingageName2 = "STA01";
+        SubcatchmentReceiverRunoff receiverSubcatchment2 = null;
+
+        List<Subarea> subareas2 = divideAreas(imperviousPercentage2, subcatchmentArea2,
+                imperviousWOstoragePercentage2, depressionStoragePervious2, depressionStorageImpervious2,
+                roughnessCoefficientPervious2, roughnessCoefficientImpervious2,
+                perviousTo2, imperviousTo2, percentageFromPervious2, percentageFromImpervious2);
+
+        areas.put(areaName2, new Area(subcatchmentArea2, raingageSetup.get(areaName2), receiverSubcatchment2,
+                characteristicWidth2, areaSlope2, subareas2));
     }
 
     private void setNodes() {
@@ -230,6 +274,16 @@ public class SWMMobject {
 
         junctions.put(nodeName, new Junction(nodeElevation, maximumDepthNode, initialDepthNode,
                 maximumDepthSurcharge, nodePondingArea));
+
+        String nodeName2 = "N2";
+        Double nodeElevation2 = 2.0;
+        Double maximumDepthNode2 = 3.0;
+        Double initialDepthNode2 = 0.0;
+        Double maximumDepthSurcharge2 = 1.0;
+        Double nodePondingArea2 = 200.0;
+
+        junctions.put(nodeName2, new Junction(nodeElevation2, maximumDepthNode2, initialDepthNode2,
+                maximumDepthSurcharge2, nodePondingArea2));
     }
 
     private void setOutfalls() {
@@ -344,6 +398,12 @@ public class SWMMobject {
     //TODO add at each subcatchment!
     private void setInitialValues() {
         for(Subarea subarea : areas.get("Sub1").getSubareas()) {
+            subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
+            subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
+            subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
+        }
+
+        for(Subarea subarea : areas.get("Sub2").getSubareas()) {
             subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);

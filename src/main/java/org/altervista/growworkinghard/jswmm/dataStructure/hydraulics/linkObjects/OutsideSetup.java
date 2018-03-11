@@ -30,11 +30,11 @@ public class OutsideSetup {
         return streamFlowRate;
     }
 
-    public void setWetArea(Instant time, Double value) {
+    public synchronized void setWetArea(Instant time, Double value) {
         this.streamWetArea.put(time, value);
     }
 
-    public void setFlowRate(Instant time, Double flowRate) {
+    public synchronized void setFlowRate(Instant time, Double flowRate) {
         this.streamFlowRate.put(time, flowRate);
     }
 }

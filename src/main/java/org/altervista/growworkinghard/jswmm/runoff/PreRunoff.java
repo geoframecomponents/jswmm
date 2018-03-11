@@ -14,31 +14,26 @@ import java.util.*;
 public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
     @In
-    String areaName = "RG1";
+    public String areaName = null;
+
+    private Long runoffStepSize;
+
+    private Long rainfallStepSize;
+
+    private Instant initialTime;
+
+    private Instant totalTime;
+
+    private LinkedHashMap<Instant, Double> rainfallData;
 
     @In
-    public Long runoffStepSize;
-
-    @In
-    public Long rainfallStepSize;
-
-    @In
-    Instant initialTime;
-
-    @In
-    Instant totalTime;
-
-    @In
-    LinkedHashMap<Instant, Double> rainfallData;
-
-    @In
-    SWMMobject dataStructure;
+    public SWMMobject dataStructure;
 
     @Out
-    LinkedHashMap<Instant, Double> adaptedRainfallData;
+    public LinkedHashMap<Instant, Double> adaptedRainfallData;
 
     @Out
-    LinkedHashMap<Instant, Double> adaptedInfiltrationData;
+    public LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
     public LinkedHashMap<Instant, Double> getAdaptedRainfallData() {
         return adaptedRainfallData;
@@ -48,10 +43,10 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
     }
 
     @Initialize
-    public void initialize(SWMMobject dataStructure) {
+    public void initialize() {
         if(dataStructure != null) {
 
-            this.dataStructure = dataStructure;
+            //this.dataStructure = dataStructure;
 
             RaingageSetup raingage = dataStructure.getRaingages().get(areaName);
 
@@ -62,6 +57,9 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
             String stationRaingage = raingage.getStationName();
             this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
+        }
+        else {
+            throw new NullPointerException();//TODO
         }
     }
 

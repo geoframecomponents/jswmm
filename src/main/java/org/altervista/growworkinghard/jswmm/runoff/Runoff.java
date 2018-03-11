@@ -26,50 +26,41 @@ public class Runoff {
     @In
     public LinkedHashMap<Instant, Double> adaptedRainfallData;
 
-    @In
-    public LinkedHashMap<Instant, Double> evaporationData = null;
+    private LinkedHashMap<Instant, Double> evaporationData = null;
 
     /**
      * Time setup of the simulation
      */
-    @In
-    public Instant initialTime;
+    private Instant initialTime;
 
-    @In
-    public Instant totalTime;
+    private Instant totalTime;
 
     /**
      * Area setup
      */
-    @In
-    public Area area;
+
+    private Area area;
 
     @In
-    public String areaName = "Sub1";
+    public String areaName = null;
 
-    @In
-    public Junction node;
+    private Junction node;
 
     @In
     public String nodeName = "N1";
 
-    @In
     private List<Subarea> subareas;
 
-    @In
-    public Double slopeArea;
+    private Double slopeArea;
 
-    @In
-    public Double characteristicWidth;
+    private Double characteristicWidth;
 
     /**
      * Integration method setup
      */
-    @In
-    public FirstOrderIntegrator firstOrderIntegrator;
+    private FirstOrderIntegrator firstOrderIntegrator;
 
-    @In
-    public  Long runoffStepSize;
+    private  Long runoffStepSize;
 
     /**
      * Data structure
@@ -84,10 +75,10 @@ public class Runoff {
     }
 
     @Initialize
-    public void initialize(LinkedHashMap<Instant, Double> tempRainfall, SWMMobject dataStructure) {
+    public void initialize() {
         if (dataStructure != null && areaName != null) {
 
-            this.dataStructure = dataStructure;
+            //this.dataStructure = dataStructure;
             //TODO evaporation!!
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
@@ -104,7 +95,9 @@ public class Runoff {
             this.slopeArea = area.getAreaSlope();
             this.characteristicWidth = area.getCharacteristicWidth();
 
-            this.adaptedRainfallData = tempRainfall;
+            //this.adaptedRainfallData = tempRainfall;
+        } else {
+            throw new NullPointerException("");//TODO
         }
     }
 
