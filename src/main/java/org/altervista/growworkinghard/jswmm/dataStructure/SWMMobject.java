@@ -52,7 +52,7 @@ public class SWMMobject {
         setLinks();
     }
 
-    public SWMMobject() throws IOException {
+    public SWMMobject() {
         setTime();
         setRunoff();
         setRouting();
@@ -146,10 +146,15 @@ public class SWMMobject {
         routingSetup = new RoutingSteadySetup(initialTime, totalTime, routingStepSize, toleranceMethod);
     }
 
-    private void setRaingages() throws IOException {
+    private void setRaingages() {
 
         //for (each raingage)
-        ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfall.txt");
+        ReadDataFromFile readDataFromFile = null;
+        try {
+            readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfall.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //ProjectUnits raingageUnits = new CubicMetersperSecond();
         String raingageName = "RG1";
         String dataSourceName = "rainfall.txt";
@@ -162,10 +167,15 @@ public class SWMMobject {
 
         raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
 
-        ReadDataFromFile readDataFromFile2 = new ReadSWMM5RainfallFile("./data/rainfall2.txt");
+        ReadDataFromFile readDataFromFile2 = null;
+        try {
+            readDataFromFile2 = new ReadSWMM5RainfallFile("./data/rainfall2.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //ProjectUnits raingageUnits = new CubicMetersperSecond();
         String raingageName2 = "RG2";
-        String dataSourceName2 = "rainfall.txt";
+        String dataSourceName2 = "rainfall2.txt";
         String stationName2 = "RG2";
         Long rainfallStepSize2 = 60L;
 

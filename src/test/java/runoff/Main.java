@@ -58,11 +58,11 @@ public class Main {
         runoff_1.run();
         runoff_2.run();
 
-        runoff_1.test();
-        //runoff_2.test();
+        //runoff_1.test();
+        runoff_2.test();
 
-        System.out.println(data.getAreas().get("Sub1").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
-        System.out.println(data.getAreas().get("Sub2").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
+        //System.out.println(data.getAreas().get("Sub1").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
+        //System.out.println(data.getAreas().get("Sub2").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
 
     }
 }

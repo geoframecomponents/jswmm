@@ -1,9 +1,6 @@
 package org.altervista.growworkinghard.jswmm.runoff;
 
-import oms3.annotations.Execute;
-import oms3.annotations.In;
-import oms3.annotations.Initialize;
-import oms3.annotations.Out;
+import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
@@ -26,7 +23,8 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
     private LinkedHashMap<Instant, Double> rainfallData;
 
-    @In
+    @InNode
+    @Out
     public SWMMobject dataStructure;
 
     @Out
@@ -39,11 +37,13 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
         return adaptedRainfallData;
     }
 
-    public PreRunoff() throws IOException {
-    }
-
     @Initialize
     public void initialize() {
+    }
+
+    @Execute
+    public void run() {
+
         if(dataStructure != null) {
 
             //this.dataStructure = dataStructure;
@@ -61,10 +61,7 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
         else {
             throw new NullPointerException();//TODO
         }
-    }
 
-    @Execute
-    public void run() {
         adaptedRainfallData = adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime.getEpochSecond(),
                 initialTime.getEpochSecond(), rainfallData);
         //adaptInfiltrationData();
