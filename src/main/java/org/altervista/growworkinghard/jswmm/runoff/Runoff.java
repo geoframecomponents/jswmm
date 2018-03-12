@@ -111,6 +111,8 @@ public class Runoff {
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
         area.evaluateTotalFlowRate(); //TODO to be verified
+        node.addRunoffFlowRate(area.getTotalAreaFlowRate());
+        //System.out.println(area.getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
     }
 
     private void upgradeStepValues(Instant currentTime) {
@@ -123,7 +125,6 @@ public class Runoff {
 
     @Finalize
     public void upgradeNodeFlowRate() {
-        node.addRunoffFlowRate(area.getTotalAreaFlowRate());
     }
 
     private List<Double> testingValues(String fileName) {

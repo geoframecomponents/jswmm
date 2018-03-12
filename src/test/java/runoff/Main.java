@@ -49,7 +49,7 @@ public class Main {
 
         runoff_2.dataStructure = data;
         runoff_2.areaName = "Sub2";
-        runoff_2.nodeName = "N2";
+        runoff_2.nodeName = "N1";
         runoff_2.adaptedRainfallData = preRunoff_2.getAdaptedRainfallData();
 
         runoff_1.initialize();
@@ -61,8 +61,10 @@ public class Main {
         runoff_1.test("./data/testingData/runoffTesting/N1");
         runoff_2.test("./data/testingData/runoffTesting/N2");
 
-        //System.out.println(data.getAreas().get("Sub1").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
-        //System.out.println(data.getAreas().get("Sub2").getTotalAreaFlowRate().get(Instant.parse("2000-01-01T05:00:00Z")));
+        System.out.println(data.getAreas().get("Sub1").getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
+        System.out.println(data.getAreas().get("Sub2").getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
+
+        System.out.println(data.getJunctions().get("N1").getNodeFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
 
     }
 }

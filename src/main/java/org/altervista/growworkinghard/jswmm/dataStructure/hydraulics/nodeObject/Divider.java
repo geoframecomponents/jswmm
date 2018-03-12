@@ -9,4 +9,9 @@ public class Divider extends AbstractNode {
     public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
 
     }
+
+    @Override
+    public LinkedHashMap<Instant, Double> getNodeFlowRate() {
+        return null;
+    }
 }

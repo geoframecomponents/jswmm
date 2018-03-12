@@ -20,7 +20,22 @@ public class Junction extends AbstractNode {
     }
 
     @Override
-    public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
-        newAreaFlowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
+    public synchronized void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
+        if (nodeFlowRate == null) {
+            //System.out.println(newAreaFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
+            nodeFlowRate = new LinkedHashMap<>(newAreaFlowRate);
+            System.out.println("new object");
+        }
+        else {
+            newAreaFlowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
+            System.out.println("merge");
+        }
     }
+
+    @Override
+    public LinkedHashMap<Instant, Double> getNodeFlowRate() {
+        return nodeFlowRate;
+    }
+
+
 }
