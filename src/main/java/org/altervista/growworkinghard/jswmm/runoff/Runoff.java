@@ -126,8 +126,7 @@ public class Runoff {
         node.addRunoffFlowRate(area.getTotalAreaFlowRate());
     }
 
-    private List<Double> testingValues() {
-        String fileName = "./data/testingData/runoffTesting/discharges.txt";
+    private List<Double> testingValues(String fileName) {
         String line;
 
         List<Double> testingValues = new ArrayList<>();
@@ -156,15 +155,15 @@ public class Runoff {
         return testingValues;
     }
 
-    public void test() {
+    public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
-        List<Double> defined = testingValues();
+        List<Double> defined = testingValues(fileChecks);
 
         int i = 0;
         for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
             //TODO check a method to do it better - not always is ordered
-            //assertEquals(data.getValue(), defined.get(i));
-            System.out.println(data.getValue());
+            assertEquals(data.getValue(), defined.get(i), 0.85);
+            //System.out.println(data.getValue());
             //System.out.println(defined.get(i));
             i = i + 1;
         }

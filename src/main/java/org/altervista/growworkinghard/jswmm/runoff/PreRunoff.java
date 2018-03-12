@@ -115,16 +115,18 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
     private Double interpolateRainfall(Long currentRunoffTime, Long lowerTime, Double lowerTimeData, Long upperTime, Double upperTimeData) {
         Long rangeTime = upperTime - lowerTime;
 
-        Long numerator  = rangeTime*(currentRunoffTime - lowerTime);
-
-        if(numerator == 0) {
-            return lowerTimeData;
-        }
+        if( rangeTime == 0 ) { return lowerTimeData; }
         else {
-            if( upperTimeData == null ) { upperTimeData = 0.0; }
-            if( lowerTimeData == null ) { lowerTimeData = 0.0; }
-            Double denominator = upperTimeData - lowerTimeData;
-            return lowerTimeData + numerator/denominator;
+            if (upperTimeData == null) {
+                upperTimeData = 0.0;
+            }
+            if (lowerTimeData == null) {
+                lowerTimeData = 0.0;
+            }
+
+            Double numerator = upperTimeData - lowerTimeData;
+
+            return lowerTimeData + numerator / rangeTime * (currentRunoffTime - lowerTime);
         }
     }
 }

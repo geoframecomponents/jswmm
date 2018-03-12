@@ -42,7 +42,7 @@ public class SWMMobject {
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private HashMap<String, Conduit> conduit = new HashMap<>();
 
-    public SWMMobject(String inpFileName) throws IOException {
+    public SWMMobject(String inpFileName) {
         setTime();
         setRunoff();
         setRouting();
@@ -94,12 +94,12 @@ public class SWMMobject {
     }
 
     private void setTime() {
-        Instant startDate = Instant.parse("2000-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2000-01-01T05:00:00Z");
-        Instant reportStartDate = Instant.parse("2000-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2000-01-02T00:00:00Z");
-        Instant sweepStart = Instant.parse("2000-01-01T00:00:00Z");
-        Instant sweepEnd = Instant.parse("2000-01-02T00:00:00Z");
+        Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
+        Instant endDate = Instant.parse("2018-01-01T00:14:30Z");
+        Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T00:14:30Z");
+        Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
+        Instant sweepEnd = Instant.parse("2018-01-02T00:00:00Z");
         Integer dryDays = 0;
 
         this.timeSetup = new GlobalTimeSetup(startDate, endDate, reportStartDate, reportEndDate,
@@ -115,12 +115,12 @@ public class SWMMobject {
     }
 
     private void setRunoff() {
-        Long runoffStepSize = 60L; //must be in seconds!!
+        Long runoffStepSize = 30L; //must be in seconds!!
 
         Double minimumStepSize = 1.0e-8;
         Double maximumStepSize = 1.0e+3;
-        Double absoluteRunoffTolerance = 1.0e-10;
-        Double relativeRunoffTolerance = 1.0e-10;
+        Double absoluteRunoffTolerance = 1.0e-5;
+        Double relativeRunoffTolerance = 1.0e-5;
 
         Instant initialTime = timeSetup.getStartDate();
         Instant totalTime = timeSetup.getEndDate();
@@ -194,7 +194,7 @@ public class SWMMobject {
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
         String areaName = "Sub1";
-        Double subcatchmentArea = 1E7;
+        Double subcatchmentArea = 10000.0; //meters*meters
 
         Double imperviousPercentage = 1.0;
         Double imperviousWOstoragePercentage = 0.0;
@@ -211,8 +211,8 @@ public class SWMMobject {
         Double roughnessCoefficientPervious = 0.1;
         Double roughnessCoefficientImpervious = 0.01;
 
-        Double characteristicWidth = 100.0;
-        Double areaSlope = 0.005;
+        Double characteristicWidth = 500.0;
+        Double areaSlope = 0.05;
         Double curbLength = 0.0;
 
         String raingageName = "STA01";
@@ -229,7 +229,7 @@ public class SWMMobject {
         //
 
         String areaName2 = "Sub2";
-        Double subcatchmentArea2 = 1E7;
+        Double subcatchmentArea2 = 10000.0;
 
         Double imperviousPercentage2 = 1.0;
         Double imperviousWOstoragePercentage2 = 0.0;
@@ -246,8 +246,8 @@ public class SWMMobject {
         Double roughnessCoefficientPervious2 = 0.1;
         Double roughnessCoefficientImpervious2 = 0.01;
 
-        Double characteristicWidth2 = 100.0;
-        Double areaSlope2 = 0.005;
+        Double characteristicWidth2 = 500.0;
+        Double areaSlope2 = 0.05;
         Double curbLength2 = 0.0;
 
         String raingageName2 = "STA01";
@@ -280,7 +280,7 @@ public class SWMMobject {
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
         Double maximumDepthSurcharge = 1.0;
-        Double nodePondingArea = 200.0;
+        Double nodePondingArea = 0.0;
 
         junctions.put(nodeName, new Junction(nodeElevation, maximumDepthNode, initialDepthNode,
                 maximumDepthSurcharge, nodePondingArea));
@@ -290,7 +290,7 @@ public class SWMMobject {
         Double maximumDepthNode2 = 3.0;
         Double initialDepthNode2 = 0.0;
         Double maximumDepthSurcharge2 = 1.0;
-        Double nodePondingArea2 = 200.0;
+        Double nodePondingArea2 = 0.0;
 
         junctions.put(nodeName2, new Junction(nodeElevation2, maximumDepthNode2, initialDepthNode2,
                 maximumDepthSurcharge2, nodePondingArea2));

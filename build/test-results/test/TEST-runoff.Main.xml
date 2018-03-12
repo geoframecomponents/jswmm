@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="runoff.Main" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-03-12T00:03:26" hostname="nibble" time="0.15">
+  <properties/>
+  <testcase name="execute" classname="runoff.Main" time="0.15"/>
+  <system-out><![CDATA[2.2305207794341166
+6.280695326244231
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
