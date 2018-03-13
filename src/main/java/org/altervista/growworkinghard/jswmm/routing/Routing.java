@@ -50,7 +50,7 @@ public class Routing {
 
 
     @Initialize
-    public void initialize(SWMMobject dataStructure) {
+    public void initialize() {
     //    if(dataStructure != null && linkName != null) {
 
         this.dataStructure = dataStructure;
@@ -83,11 +83,11 @@ public class Routing {
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
+        dataStructure.getJunctions().get(downstreamNodeName).addRoutingFlowRate(downstreamOutside.getStreamFlowRate());
     }
 
     @Finalize
     void upgradeSWMMobject() {
-        dataStructure.getJunctions().get(downstreamNodeName).addRoutingFlowRate(downstreamOutside.getStreamFlowRate());
     }
 
 }
