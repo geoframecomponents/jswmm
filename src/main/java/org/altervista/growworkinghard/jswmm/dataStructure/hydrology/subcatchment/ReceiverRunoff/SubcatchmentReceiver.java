@@ -1,6 +1,5 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.AbstractNode;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
 
 public class SubcatchmentReceiver implements ReceiverRunoff {

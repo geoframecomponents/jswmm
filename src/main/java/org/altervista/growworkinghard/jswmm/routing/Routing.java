@@ -80,7 +80,7 @@ public class Routing {
             routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength,
                     linkRoughness, crossSectionType);
 
-            routingSetup.evaluateDownstreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
+            //routingSetup.evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }

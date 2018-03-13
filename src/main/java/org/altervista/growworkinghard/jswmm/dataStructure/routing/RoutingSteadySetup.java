@@ -4,7 +4,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class RoutingSteadySetup implements RoutingSetup {
     @Override
@@ -28,7 +28,7 @@ public class RoutingSteadySetup implements RoutingSetup {
     }
 
     @Override
-    public HashMap<Instant, Double> getDownstreamFlowRate() {
+    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
         return null;
     }
 }

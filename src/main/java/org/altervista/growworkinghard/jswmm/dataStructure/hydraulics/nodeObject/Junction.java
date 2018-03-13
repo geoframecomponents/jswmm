@@ -23,7 +23,6 @@ public class Junction extends AbstractNode {
     public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
         newFlowRate.forEach((k, v) -> routingInflow.merge(k, v, Double::sum));
     }
-}
 
     public synchronized void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
         if (nodeFlowRate == null) {

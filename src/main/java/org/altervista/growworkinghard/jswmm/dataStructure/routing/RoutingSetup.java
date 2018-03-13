@@ -19,6 +19,4 @@ public interface RoutingSetup {
     public Long getRoutingStepSize();
 
     public LinkedHashMap<Instant, Double> getDownstreamFlowRate();
-    
-    public void addStreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
 }

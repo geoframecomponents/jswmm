@@ -24,9 +24,14 @@ public abstract class AbstractNode {
 
     LinkedHashMap<Instant, Double> nodeFlowRate;
     LinkedHashMap<Instant, Double> nodeDepth;
+
     public LinkedHashMap<Instant, Double> getRunoffInflow() {
         return runoffInflow;
     }
 
     public abstract void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
+
+    public abstract LinkedHashMap<Instant, Double> getNodeFlowRate();
+}
+
 

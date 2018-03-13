@@ -17,7 +17,7 @@ public class OutsideSetup {
     public OutsideSetup(String nodeName, Double nodeOffset, Double maximumFlowRate) {
         this.nodeName = nodeName;
         this.nodeOffset = nodeOffset;
-        this.maximumFlowRate = maximumFlowRate;
+        this.maximumStreamFlowRate = maximumFlowRate;
     }
 
     public LinkedHashMap<Instant, Double> getStreamWetArea() {

@@ -8,7 +8,7 @@ public class Storage extends AbstractNode {
     public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
 
     }
-}
+
     public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
 
     }

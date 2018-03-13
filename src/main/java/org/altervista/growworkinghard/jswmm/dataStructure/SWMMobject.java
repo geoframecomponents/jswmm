@@ -31,8 +31,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.SUBCATCHMENT;
 public class SWMMobject {
 
     private TimeSetup timeSetup;
@@ -253,14 +251,14 @@ public class SWMMobject {
         Double curbLength2 = 0.0;
 
         String raingageName2 = "STA01";
-        SubcatchmentReceiverRunoff receiverSubcatchment2 = null;
+        ReceiverRunoff receiverSubcatchment2 = null;
 
         List<Subarea> subareas2 = divideAreas(imperviousPercentage2, subcatchmentArea2,
                 imperviousWOstoragePercentage2, depressionStoragePervious2, depressionStorageImpervious2,
                 roughnessCoefficientPervious2, roughnessCoefficientImpervious2,
                 perviousTo2, imperviousTo2, percentageFromPervious2, percentageFromImpervious2);
 
-        areas.put(areaName2, new Area(subcatchmentArea2, raingageSetup.get(areaName2), receiverSubcatchment2,
+        areas.put(areaName2, new Area(subcatchmentArea2, raingageSetup.get(areaName2),
                 characteristicWidth2, areaSlope2, subareas2));
     }
 
@@ -421,7 +419,5 @@ public class SWMMobject {
             subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
         }
-    }
-}
     }
 }

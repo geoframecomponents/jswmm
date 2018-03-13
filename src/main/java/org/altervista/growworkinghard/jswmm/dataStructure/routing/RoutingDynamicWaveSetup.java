@@ -5,6 +5,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class RoutingDynamicWaveSetup implements RoutingSetup {
 
@@ -33,8 +34,7 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public Double evaluateDownstreamFlowRate(Double wetArea) {
+    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
         return null;
-        //TODO
     }
 }

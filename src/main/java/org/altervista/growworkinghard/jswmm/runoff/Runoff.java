@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -73,8 +74,6 @@ public class Runoff {
 
     private List<ReceiverRunoff> receivers;
 
-    public Runoff() throws IOException {
-
     @Initialize
     public void initialize() {
     }
@@ -104,7 +103,6 @@ public class Runoff {
         } else {
             throw new NullPointerException("");//TODO
 	}
-    }
 
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
@@ -171,7 +169,6 @@ public class Runoff {
             //System.out.println(data.getValue());
             //System.out.println(defined.get(i));
             i = i + 1;
->>>>>>> doubleRunoffTesting
         }
     }
 }
