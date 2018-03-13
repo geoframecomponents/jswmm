@@ -1,27 +1,22 @@
+/*
+ * This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.altervista.growworkinghard.jswmm.runoff;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.util.FastMath;
-
-/**
- * @brief Implementation of the runoff Ordinary Differential Equation
- *
- * @description This class implements the runoff ODE that is used to evaluate the runoff over a defined watershed.
- *              The <strong>precipitation</strong> variable includes the rainfall data reduced by the evaporation and
- *              increased by the snow melting.
- *              The <strong>alpha</strong> variable is a factor evaluated as follow:
- *              \f{eqnarray*}{
- *                      \alpha_P &=& \frac{1.49\,W\,S^{^1/_2}}{A_1\,n_P}\quad pervious\ area\ A_1\\
- *                      \alpha_I &=& \frac{1.49\,W\,S^{^1/_2}}{(A_2+A_3)\,n_I}\quad impervious\ area\ A_2\ and\ A_3
- *              \f}
- *              where \f$W\f$ is the width, \f$S\f$ is the slope, \f$n_P\f$ and \f$n_I\f$ are the roughness coefficients
- *              for pervious and impervious areas.
- *
- * @author ftt01 dallatorre.daniele@gmail.com
- * @version 0.1
- * @date October 16, 2017
- * @copyright GNU Public License v3
- */
 
 public class RunoffODE implements FirstOrderDifferentialEquations {
 

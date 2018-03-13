@@ -1,85 +1,22 @@
 /*
- * GNU GPL v3 License
- *
- * Copyright 2015 AboutHydrology (Riccardo Rigon)
- *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.altervista.growworkinghard.jswmm.dimensioning;
 
 import it.blogspot.geoframe.hydroGeoEntities.line.Pipe;
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
-
-/**
- * @mainpage On-line Documentation
- * 
- * @section Description Description
- * 			This component compute the pipe diameter of
- *          a sewer with the respect of minimum slope and minimum excavation.
- *          The class take as input a <strong>Pipe</strong> object and, after
- *          the computation, return an object of the same type with some values
- *          changed and some evaluated.
- * 
- * @subsection Units Units
- * 			   The units used in the component are:
- *             <ul>
- *             <li>discharge \f$[l/s]\f$
- *             <li>diameter \f$[m]\f$
- *             <li>fill angle \f$[rad]\f$
- *             <li>hydraulic radius \f$[m]\f$
- *             <li>slope \f$[-]\f$
- *             <li>Gauckler Strickler \f$[\frac{m^{1/3}}{s}]\f$
- *             </ul>
- * 
- * @section Implementation Implementation
- *          <ol>
- *          <li>The component evaluate the first attempt values of diameter and
- *          minimum slope due to shear stress fixed in prior to guarantee the
- *          auto-cleaning at the base of the pipe.
- * 
- *          <li>It evaluate the slope of the pipe with the hypothesis that the
- *          end point elevation is equal to the minimum excavation given.
- * 
- *          <li>With a comparison is evaluated if the slope computed in the last
- *          step is greater of the minimum.
- * 
- *          <ol type="A">
- *          <li>If this check is true the component compute the diameter with
- *          the slope due to set elevation end point and the minimum slope with
- *          that diameter.
- *          <ol type="a">
- *          <li>If the slope of the pipe with this diameter in greater than the
- *          minimum the method returns the pipe object filled with minimum
- *          excavation, diameter and related velocity.
- * 
- *          <li>If this check fail, so the slope should be equal to the minimum
- *          the method returns a pipe object with a new evaluated end elevation
- *          point, same diameter and related velocity.
- *          </ol>
- * 
- *          <li>Else set the diameter equal to the diameter evaluated at the
- *          first step.
- * 
- *          </ol>
- *          </ol>
- * 
- * @author ftt01, dallatorre.daniele@gmail.com
- * @version 0.1
- * @date June 13, 2016
- * @copyright GNU Public License v3 GWH-2b4
- */
 
 public class Dimensioning {
 
