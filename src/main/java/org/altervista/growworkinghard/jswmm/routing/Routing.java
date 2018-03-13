@@ -12,7 +12,7 @@ import java.time.Instant;
 public class Routing {
 
     @In
-    public String linkName = "C1";
+    public String linkName = null;
 
     @In
     public Instant initialTime;
@@ -57,8 +57,9 @@ public class Routing {
 
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
-            this.routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
-            this.routingSetup = dataStructure.getRoutingSetup();
+
+	    this.routingSetup = dataStructure.getRoutingSetup();
+            this.routingStepSize = routingSetup.getRoutingStepSize();
 
             Conduit conduit = dataStructure.getConduit().get(linkName);
             this.upstreamOutside = conduit.getUpstreamOutside();
@@ -68,7 +69,6 @@ public class Routing {
             this.linkLength = conduit.getLinkLength();
             this.linkRoughness = conduit.getLinkRoughness();
             this.crossSectionType = conduit.getCrossSectionType();
-    //    }
     }
 
     @Execute
@@ -79,6 +79,8 @@ public class Routing {
 
             routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength,
                     linkRoughness, crossSectionType);
+
+            routingSetup.evaluateDownstreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }

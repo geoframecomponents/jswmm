@@ -19,6 +19,8 @@ class ChowTable {
         this.adimensionalSectionFactor = adimensionalSectionFactor;
     }
 }
+=======
+>>>>>>> doubleRunoffTesting
 
 public class RoutingKinematicWaveSetup implements RoutingSetup {
 

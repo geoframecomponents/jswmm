@@ -8,7 +8,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectU
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractNode extends AbstractReceiver {
+public abstract class AbstractNode {
 
     ReadDataFromFile readDataFromFile;
     WriteDataToFile writeDataToFile;
@@ -22,11 +22,11 @@ public abstract class AbstractNode extends AbstractReceiver {
     LinkedHashMap<Instant, Double> runoffInflow;
     LinkedHashMap<Instant, Double> routingInflow;
 
+    LinkedHashMap<Instant, Double> nodeFlowRate;
     LinkedHashMap<Instant, Double> nodeDepth;
-
     public LinkedHashMap<Instant, Double> getRunoffInflow() {
         return runoffInflow;
     }
 
     public abstract void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
-}
+

@@ -11,7 +11,6 @@ public class RoutingMain {
 
     SWMMobject data;
     Routing routing;
-
     @Before
     public void initialize() throws IOException {
         data = new SWMMobject();

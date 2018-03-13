@@ -31,6 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+
+import static org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.SubcatchmentReceiverRunoff.ReceiverType.SUBCATCHMENT;
 public class SWMMobject {
 
     private TimeSetup timeSetup;
@@ -42,7 +44,7 @@ public class SWMMobject {
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private HashMap<String, Conduit> conduit = new HashMap<>();
 
-    public SWMMobject(String inpFileName) throws IOException {
+    public SWMMobject(String inpFileName) {
         setTime();
         setRunoff();
         setRouting();
@@ -52,7 +54,7 @@ public class SWMMobject {
         setLinks();
     }
 
-    public SWMMobject() throws IOException {
+    public SWMMobject() {
         setTime();
         setRunoff();
         setRouting();
@@ -98,8 +100,8 @@ public class SWMMobject {
         Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant reportEndDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
-        Instant sweepEnd = Instant.parse("2018-01-02T00:00:00Z");
+        Instant sweepStart = Instant.parse("2018-01-01T00:14:30Z");
+        Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;
 
         this.timeSetup = new GlobalTimeSetup(startDate, endDate, reportStartDate, reportEndDate,
@@ -115,12 +117,12 @@ public class SWMMobject {
     }
 
     private void setRunoff() {
-        Long runoffStepSize = 60L; //must be in seconds!!
+        Long runoffStepSize = 30L; //must be in seconds!!
 
         Double minimumStepSize = 1.0e-8;
         Double maximumStepSize = 1.0e+3;
-        Double absoluteRunoffTolerance = 1.0e-10;
-        Double relativeRunoffTolerance = 1.0e-10;
+        Double absoluteRunoffTolerance = 1.0e-5;
+        Double relativeRunoffTolerance = 1.0e-5;
 
         Instant initialTime = timeSetup.getStartDate();
         Instant totalTime = timeSetup.getEndDate();
@@ -146,10 +148,15 @@ public class SWMMobject {
         routingSetup = new RoutingKinematicWaveSetup(initialTime, totalTime, routingStepSize, toleranceMethod);
     }
 
-    private void setRaingages() throws IOException {
+    private void setRaingages() {
 
         //for (each raingage)
-        ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfall.txt");
+        ReadDataFromFile readDataFromFile = null;
+        try {
+            readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfall.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         //ProjectUnits raingageUnits = new CubicMetersperSecond();
         String raingageName = "RG1";
         String dataSourceName = "rainfall.txt";
@@ -161,6 +168,20 @@ public class SWMMobject {
         //Double snowpack = 0.0;
 
         raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
+
+        ReadDataFromFile readDataFromFile2 = null;
+        try {
+            readDataFromFile2 = new ReadSWMM5RainfallFile("./data/rainfall2.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //ProjectUnits raingageUnits = new CubicMetersperSecond();
+        String raingageName2 = "RG2";
+        String dataSourceName2 = "rainfall2.txt";
+        String stationName2 = "RG2";
+        Long rainfallStepSize2 = 60L;
+
+        raingageSetup.put(raingageName2, new GlobalRaingage(readDataFromFile2, dataSourceName2, stationName2, rainfallStepSize2));
     }
 
     private void setSubcatchments() {
@@ -174,8 +195,8 @@ public class SWMMobject {
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
-        String areaName = "S1";
-        Double subcatchmentArea = 1E4;
+        String areaName = "Sub1";
+        Double subcatchmentArea = 10000.0; //meters*meters
 
         Double imperviousPercentage = 1.0;
         Double imperviousWOstoragePercentage = 1.0;
@@ -192,8 +213,8 @@ public class SWMMobject {
         Double roughnessCoefficientPervious = 0.1;
         Double roughnessCoefficientImpervious = 0.01;
 
-        Double characteristicWidth = 100.0;
-        Double areaSlope = 0.01;
+        Double characteristicWidth = 500.0;
+        Double areaSlope = 0.05;
         Double curbLength = 0.0;
 
         String raingageName = "STA01";
@@ -206,6 +227,41 @@ public class SWMMobject {
 
         areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
                 characteristicWidth, areaSlope, subareas));
+
+        //
+
+        String areaName2 = "Sub2";
+        Double subcatchmentArea2 = 10000.0;
+
+        Double imperviousPercentage2 = 1.0;
+        Double imperviousWOstoragePercentage2 = 0.0;
+
+        Double depressionStorageImpervious2 = 0.0;
+        Double depressionStoragePervious2 = 0.0;
+
+        String perviousTo2 = "OUTLET";
+        Double percentageFromPervious2 = 0.0;
+
+        String imperviousTo2 = "OUTLET";
+        Double percentageFromImpervious2 = 0.0;
+
+        Double roughnessCoefficientPervious2 = 0.1;
+        Double roughnessCoefficientImpervious2 = 0.01;
+
+        Double characteristicWidth2 = 500.0;
+        Double areaSlope2 = 0.05;
+        Double curbLength2 = 0.0;
+
+        String raingageName2 = "STA01";
+        SubcatchmentReceiverRunoff receiverSubcatchment2 = null;
+
+        List<Subarea> subareas2 = divideAreas(imperviousPercentage2, subcatchmentArea2,
+                imperviousWOstoragePercentage2, depressionStoragePervious2, depressionStorageImpervious2,
+                roughnessCoefficientPervious2, roughnessCoefficientImpervious2,
+                perviousTo2, imperviousTo2, percentageFromPervious2, percentageFromImpervious2);
+
+        areas.put(areaName2, new Area(subcatchmentArea2, raingageSetup.get(areaName2), receiverSubcatchment2,
+                characteristicWidth2, areaSlope2, subareas2));
     }
 
     private void setNodes() {
@@ -221,15 +277,25 @@ public class SWMMobject {
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
         //ProjectUnits nodeUnits = new CubicMetersperSecond();
 
-        String nodeName = "J1";
-        Double nodeElevation = 100.0;
-        Double maximumDepthNode = 0.0;
+        String nodeName = "N1";
+        Double nodeElevation = 2.0;
+        Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
-        Double maximumDepthSurcharge = 0.0;
-        Double nodePondingArea = 0.0;
+        Double maximumDepthSurcharge = 1.0;
+        Double nodePondingArea = 200.0;
 
         junctions.put(nodeName, new Junction(nodeElevation, maximumDepthNode, initialDepthNode,
                 maximumDepthSurcharge, nodePondingArea));
+
+        String nodeName2 = "N2";
+        Double nodeElevation2 = 2.0;
+        Double maximumDepthNode2 = 3.0;
+        Double initialDepthNode2 = 0.0;
+        Double maximumDepthSurcharge2 = 1.0;
+        Double nodePondingArea2 = 0.0;
+
+        junctions.put(nodeName2, new Junction(nodeElevation2, maximumDepthNode2, initialDepthNode2,
+                maximumDepthSurcharge2, nodePondingArea2));
     }
 
     private void setOutfalls() {
@@ -239,8 +305,8 @@ public class SWMMobject {
         //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
         //ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
-        String nodeName = "O1";
-        Double nodeElevation = 90.0;
+        String nodeName = "Out1";
+        Double nodeElevation = 0.0;
         Double fixedStage = 0.0;
         LinkedHashMap<Instant, Double> tidalCurve = null;
         LinkedHashMap<Instant, Double> stageTimeseries = null;
@@ -258,9 +324,9 @@ public class SWMMobject {
 
     private void setConduit() {
 
-        String linkName = "C1";
-        String upstreamNodeName = "J1";
-        String downstreamNodeName = "O1";
+        String linkName = "L1";
+        String upstreamNodeName = "N1";
+        String downstreamNodeName = "Out1";
         Double linkLength = 100.0;
         Double linkRoughness = 0.01;
         Double upstreamOffset = 0.0;
@@ -344,291 +410,18 @@ public class SWMMobject {
 
     //TODO add at each subcatchment!
     private void setInitialValues() {
-        for(Subarea subarea : areas.get("S1").getSubareas()) {
+        for(Subarea subarea : areas.get("Sub1").getSubareas()) {
+            subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
+            subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
+            subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
+        }
+
+        for(Subarea subarea : areas.get("Sub2").getSubareas()) {
             subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
         }
     }
 }
-
-
-/*
-
-    long routingStepSize;
-
-    RoutingSetup routingSetup = new RoutingSteadySetup(0.1);
-
-    InfiltrationSetup infiltrationSetup;
-    SteadyStateSetup steadyStateSetup;
-
-
-
-    List<String> reportSubcatchment;
-    List<String> reportNodes; //TODO define!!
-    List<String> reportLinks; //TODO define!!
-    List<LIDcontrol> reportLID; //TODO define!!
-
-    public ReportSetup reportSetup = new ReportSetup(true, true, true, true,
-                                    reportSubcatchment, reportNodes, reportLinks, reportLID);
-
-    AbstractOptions.OffsetConvention offsetConvention = AbstractOptions.OffsetConvention.DEPTH;
-    boolean ignoreRainfall = false;
-    boolean ignoreSnowMelt = true;
-    boolean ignoreGroundwater = true;
-    boolean ignoreRDII = true;
-    boolean ignoreQuality = true;
-    boolean allowPonding = false;
-
-    Integer numberOfThreads = 1;
-    String temporaryDirectory = "";
-
-    public AbstractOptions options = new GlobalOptions(runoffSetup, routingSetup, infiltrationSetup, steadyStateSetup,
-            projectUnits, timeSetup, reportSetup, offsetConvention, ignoreRainfall, ignoreSnowMelt, ignoreGroundwater,
-            ignoreRDII, ignoreQuality, allowPonding, numberOfThreads, temporaryDirectory);
-
-    public List<RaingageSetup> raingages;
-
-    public HashMap<String, Area> areas;
-
-    public AbstractNode[] nodes;
-
-    public AbstractLink[] links;
-
-    FirstOrderIntegrator firstOrderIntegrator;
-
-    AbstractFilesData filesData = new AbstractFilesData();
-
-    //INPparser to select data
-    // [TITLE]
-    // [OPTIONS]
-    // [REPORT]
-    // [FILES]
-    HashMap<String, FilesData.RainfallFile> rainfallFileHashMap = new HashMap<>();
-    rainfallFileHashMap.put("", FilesData.RainfallFile.SAVE);
-    filesData.filesDataIO.setRainfallFile(rainfallFileHashMap);
-
-    HashMap<String, FilesData.RunoffFile> runoffFileHashMap = new HashMap<>();
-    runoffFileHashMap.put("", FilesData.RunoffFile.SAVE);
-    filesData.filesDataIO.setRunoffFile(runoffFileHashMap);
-
-    HashMap<String, FilesData.HotstartFile> hotstartFileSaveHashMap = new HashMap<>();
-    hotstartFileSaveHashMap.put("", FilesData.HotstartFile.SAVE);
-    filesData.filesDataIO.setHotstartFileSave(hotstartFileSaveHashMap);
-
-    HashMap<String, FilesData.HotstartFile> hotstartFileUseHashMap = new HashMap<>();
-    hotstartFileUseHashMap.put("", FilesData.HotstartFile.USE);
-    filesData.filesDataIO.setHotstartFileUse(hotstartFileUseHashMap);
-
-    HashMap<String, FilesData.InflowFile> inflowFileHashMap = new HashMap<>();
-    inflowFileHashMap.put("", FilesData.InflowFile.USE);
-    filesData.filesDataIO.setInflowFile(inflowFileHashMap);
-
-    HashMap<String, FilesData.OutflowFile> outflowFileHashMap = new HashMap<>();
-    outflowFileHashMap.put("", FilesData.OutflowFile.SAVE);
-    filesData.filesDataIO.setOutflowFile(outflowFileHashMap);
-
-    // [RAINGAGES]----
-    // [EVAPORATION]
-    // [TEMPERATURE]
-    // [ADJUSTMENTS]
-    // [SUBCATCHMENTS]----
-    // [SUBAREAS]----
-    // [INFILTRATION]
-    // [LID_CONTROLS]
-    // [LID_USAGE]
-    // [AQUIFERS]
-    // [GROUNDWATER]
-    // [GWF]
-    // [SNOWPACKS]
-    // [JUNCTIONS]----
-    // [OUTFALLS]----
-    // [DIVIDERS]
-    // [STORAGE]
-    // [CONDUITS]----
-    // [PUMPS]
-    // [ORIFICES]
-    // [WEIRS]
-    // [OUTLETS]
-    // [XSECTIONS]----
-    // [TRANSECTS]
-    // [LOSSES]
-    // [CONTROLS]
-    // [POLLUTANTS]
-    // [LANDUSES]
-    // [COVERAGES]
-    // [LOADINGS]
-    // [BUILDUP]
-    // [WASHOFF]
-    // [TREATMENT]
-    // [INFLOWS]
-    // [DWF]
-    // [RDII]
-    // [HYDROGRAPHS]
-    // [CURVES]
-    // [TIMESERIES]----
-    // [PATTERNS]
-
-
-    //for (each raingage)
-
-        ReadDataFromFile readDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        ProjectUnits raingageUnits = new CubicMetersperSecond();
-        String raingageName = "RG1";
-        String dataSourceName = "test1";
-        String stationName = "STA01";
-        Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
-        Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
-        Double snowpack = 0.0;
-        raingages.add(0, new GlobalRaingage(readDataFromFile, raingageUnits, raingageName, dataSourceName, stationName,
-                rainfallStartDate, rainfallEndDate, snowpack));
-
-        //////for (each subcatchment)//////
-
-        //ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        //AcquiferSetup acquiferSetup = new Acquifer();
-        //SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
-        //String subcatchmentName = "SUB1";
-        Double subcatchmentArea = 1000.0;
-
-        Double roughnessCoefficientPervious = 1.0;
-        Double roughnessCoefficientImpervious = 1.0;
-
-        LinkedHashMap<Instant, Double> depressionStoragePervious = null;
-        LinkedHashMap<Instant, Double> depressionStorageImpervious = null;
-
-        Double imperviousWstoragePercentage = 1.0;
-
-        String areaName = "A1";
-        //String relativeRaingageName = "STA01";
-        //ReceiverRunoff subcatchmentReceiverRunoff = new ReceiverRunoff(SUBCATCHMENT, "");
-
-        Double imperviousPercentage = 0.0;
-        Double characteristicWidth = 100.0;
-        Double subareaSlope = 0.2;
-        Double curbLength = 0.0;
-
-        SubareaReceiver.SubareaReceiverRunoff perviousTo = OUTLET;
-        Double percentageFromPervious = 10.0;
-
-        SubareaReceiver.SubareaReceiverRunoff imperviousTo = OUTLET;
-        Double percentageFromImpervious = 10.0;
-
-
-        Double imperviousWStorageArea = subcatchmentArea*imperviousPercentage*imperviousWstoragePercentage;
-        Double imperviousWOStorageArea = subcatchmentArea*imperviousPercentage - imperviousWStorageArea;
-
-        //readDataFromFile, acquiferSetup, subcatchmentSnowpack, subcatchmentUnits,
-        //subcatchmentName, subcatchmentArea, relativeRaingageName, subcatchmentReceiverRunoff, perviousSubareaReceiverRunoff,
-        //percentagePerviousReceiver, imperviousPercentage, characteristicWidth, subareaSlope, curbLength);
-
-        List<Subarea> tmpSubareas = null;
-        if(imperviousPercentage == 0.0) {
-            tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                    depressionStoragePervious, firstOrderIntegrator));
-        }
-        else if(imperviousPercentage == 1.0) {
-            if (1 - imperviousWstoragePercentage != 0) {
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-            }
-            tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                    roughnessCoefficientImpervious, firstOrderIntegrator));
-        }
-        else {
-            if (perviousTo == IMPERVIOUS) {
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                        depressionStoragePervious, firstOrderIntegrator));
-
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious,
-                        percentageFromPervious, tmpConnections, firstOrderIntegrator));
-            }
-            else if(perviousTo == OUTLET) {
-                tmpSubareas.add(new Pervious(subcatchmentArea, roughnessCoefficientPervious,
-                        depressionStoragePervious, firstOrderIntegrator));
-            }
-
-            if (imperviousTo == PERVIOUS) {
-
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-                tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-
-                tmpSubareas.add(new Pervious(subcatchmentArea, depressionStoragePervious, roughnessCoefficientPervious,
-                        percentageFromImpervious, tmpConnections, firstOrderIntegrator));
-            }
-            else if (imperviousTo == OUTLET) {
-                tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, firstOrderIntegrator));
-                tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, firstOrderIntegrator));
-            }
-        }
-        areas.put(areaName, new Area(tmpSubareas));
-
-        //for (each junction)
-        ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
-        ExternalInflow dryWeatherInflow = new DryWeatherInflow();
-        ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits nodeUnits = new CubicMetersperSecond();
-        String nodeName = "N1";
-        Double nodeElevation = 2.0;
-        Double maximumDepthNode = 3.0;
-        Double initialDepthNode = 0.0;
-        Double maximumDepthSurcharge = 1.0;
-        Double nodePondingArea = 200.0;
-
-        //nodes[0] = new Junction(junctionReadDataFromFile, writeDataToFile, dryWeatherInflow, RDII, nodeUnits, nodeName,
-        //       nodeElevation, maximumDepthNode, initialDepthNode, maximumDepthSurcharge, nodePondingArea);
-
-        //for (each outfall)
-        ReadDataFromFile outfallReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
-        ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
-        ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
-        String outfallName = "N1";
-        Double outfallElevation = 2.0;
-        Double fixedStage = 3.0;
-        LinkedHashMap<Instant, Double> tidalCurve = null;
-        LinkedHashMap<Instant, Double> stageTimeseries = null;
-        boolean gated = false;
-        String routeTo = "";
-
-        nodes[1] = new Outfall(outfallReadDataFromFile, outfallWriteDataToFile, outfallDryWeatherInflow, outfallRDII,
-                outfallNodeUnits, outfallName, outfallElevation, fixedStage, tidalCurve, stageTimeseries,
-                gated, routeTo);
-
-        //for (each link)
-        String linkName = "";
-        Double linkSlope = 0.1;
-        String upstreamNodeName = "";
-        String downstreamNodeName = "";
-        Double linkLength = 0.0;
-        Double linkRoughness = null;
-        Double upstreamOffset = 0.0;
-        Double downstreamOffset = 0.0;
-        Double initialFlowRate = 0.0;
-        Double maximumFlowRate = 0.0;
-
-        CrossSectionType crossSectionType = new Circular(2.0);
-        ProjectUnits linkUnits = new CubicMetersperSecond();
-
-        OutsideSetup upstreamOutside = new OutsideSetup();
-        OutsideSetup downstreamOutside = new OutsideSetup();
-
-        links[0] = new Conduit(crossSectionType, upstreamOutside, downstreamOutside, linkLength, linkRoughness, linkSlope);
-
     }
 }
-
-*/

@@ -33,7 +33,8 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public HashMap<Instant, Double> getDownstreamFlowRate() {
+    public Double evaluateDownstreamFlowRate(Double wetArea) {
         return null;
+        //TODO
     }
 }
