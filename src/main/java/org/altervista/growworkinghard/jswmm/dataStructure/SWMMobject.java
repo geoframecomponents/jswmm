@@ -107,6 +107,10 @@ public class SWMMobject {
         return conduit;
     }
 
+    public synchronized void setJunctionFlowRate(String nodeName, String areaName) {
+        junctions.get(nodeName).addRunoffFlowRate(areas.get(areaName).getTotalAreaFlowRate());
+    }
+
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant endDate = Instant.parse("2018-01-01T00:14:30Z");
