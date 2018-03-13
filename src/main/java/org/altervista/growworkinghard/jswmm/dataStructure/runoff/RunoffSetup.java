@@ -36,4 +36,12 @@ public interface RunoffSetup {
     public void setOde(Double rainfall, Double depthFactor);
 
     public String getAreaName();
+
+    public Double getMinimumStepSize();
+
+    public Double getMaximumStepSize();
+
+    public Double getAbsoluteRunoffTolerance();
+
+    public Double getRelativeRunoffTolerance();
 }
