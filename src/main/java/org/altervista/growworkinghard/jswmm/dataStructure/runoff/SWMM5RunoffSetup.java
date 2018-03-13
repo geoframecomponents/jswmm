@@ -18,6 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.runoff;
 import org.altervista.growworkinghard.jswmm.runoff.RunoffODE;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
+import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 
 import java.time.Instant;
 
@@ -31,15 +32,31 @@ public class SWMM5RunoffSetup implements RunoffSetup {
 
     private Long runoffStepSize;
 
-    private FirstOrderIntegrator firstOrderIntegrator;
+    private Double minimumStepSize;
+    private Double maximumStepSize;
+    private Double absoluteRunoffTolerance;
+    private Double relativeRunoffTolerance;
 
     private FirstOrderDifferentialEquations ode = new RunoffODE(0.0, 0.0);
 
-    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, FirstOrderIntegrator firstOrderIntegrator) {
+    public SWMM5RunoffSetup (RunoffSetup obj) {
+        this.initialTime = obj.getInitialTime();
+        this.totalTime = obj.getTotalTime();
+        this.runoffStepSize = obj.getRunoffStepSize();
+        this.minimumStepSize = obj.getMinimumStepSize();
+        this.maximumStepSize = obj.getMaximumStepSize();
+        this.absoluteRunoffTolerance = obj.getAbsoluteRunoffTolerance();
+        this.relativeRunoffTolerance = obj.getRelativeRunoffTolerance();
+    }
+
+    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, Double minimumStepSize, Double maximumStepSize, Double absoluteRunoffTolerance, Double relativeRunoffTolerance) {
         this.initialTime = initialTime;
         this.totalTime = totalTime;
         this.runoffStepSize = runoffStepSize;
-        this.firstOrderIntegrator = firstOrderIntegrator;
+        this.minimumStepSize = minimumStepSize;
+        this.maximumStepSize = maximumStepSize;
+        this.absoluteRunoffTolerance = absoluteRunoffTolerance;
+        this.relativeRunoffTolerance = relativeRunoffTolerance;
     }
 
     @Override
@@ -57,9 +74,31 @@ public class SWMM5RunoffSetup implements RunoffSetup {
         return runoffStepSize;
     }
 
+    public Double getMinimumStepSize() {
+        return minimumStepSize;
+    }
+
+    public Double getMaximumStepSize() {
+        return maximumStepSize;
+    }
+
+    public Double getAbsoluteRunoffTolerance() {
+        return absoluteRunoffTolerance;
+    }
+
+    public Double getRelativeRunoffTolerance() {
+        return relativeRunoffTolerance;
+    }
+
     @Override
     public FirstOrderIntegrator getFirstOrderIntegrator() {
-        return firstOrderIntegrator;
+        String ODEintegrator = "DP54";
+
+        if(ODEintegrator == "DP54") {
+            return new DormandPrince54Integrator(minimumStepSize, maximumStepSize,
+                    absoluteRunoffTolerance, relativeRunoffTolerance);
+        }
+        return null;
     }
 
     @Override

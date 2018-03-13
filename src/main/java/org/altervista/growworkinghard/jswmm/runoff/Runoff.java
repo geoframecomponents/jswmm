@@ -119,7 +119,7 @@ public class Runoff {
             throw new NullPointerException("");//TODO
 	}
 
-        Instant currentTime = initialTime;
+        Instant currentTime = Instant.parse(initialTime.toString());
         while (currentTime.isBefore(totalTime)) {
 
             //check snownelt - snowaccumulation TODO build a new component

@@ -82,7 +82,7 @@ public class SWMMobject {
     }
 
     public RunoffSetup getRunoffSetup() {
-        return runoffSetup;
+        return new SWMM5RunoffSetup(runoffSetup);
     }
 
     public RoutingSetup getRoutingSetup() { return routingSetup; }
@@ -143,14 +143,7 @@ public class SWMMobject {
         Instant initialTime = timeSetup.getStartDate();
         Instant totalTime = timeSetup.getEndDate();
 
-        String ODEintegrator = "DP54";
-
-        FirstOrderIntegrator firstOrderIntegrator = null;
-        if(ODEintegrator == "DP54") {
-            firstOrderIntegrator = new DormandPrince54Integrator(minimumStepSize, maximumStepSize,
-                    absoluteRunoffTolerance, relativeRunoffTolerance);
-        }
-        this.runoffSetup = new SWMM5RunoffSetup(initialTime, totalTime, runoffStepSize, firstOrderIntegrator);
+        this.runoffSetup = new SWMM5RunoffSetup(initialTime, totalTime, runoffStepSize, minimumStepSize, maximumStepSize, absoluteRunoffTolerance, relativeRunoffTolerance);
     }
 
     private void setRouting() {
