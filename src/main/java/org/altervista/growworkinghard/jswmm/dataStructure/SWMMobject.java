@@ -18,7 +18,6 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTim
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetup;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -95,7 +94,7 @@ public class SWMMobject {
 
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
+        Instant endDate = Instant.parse("2018-01-01T00:14:30Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant reportEndDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant sweepStart = Instant.parse("2018-01-01T00:14:30Z");
