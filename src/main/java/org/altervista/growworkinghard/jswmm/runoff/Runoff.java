@@ -76,7 +76,7 @@ public class Runoff {
      */
     private FirstOrderIntegrator firstOrderIntegrator;
 
-    private  Long runoffStepSize;
+    private Long runoffStepSize;
 
     /**
      * Data structure

@@ -23,7 +23,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
 
 public class AbstractOptions {
 
-    RunoffSetup runoffSetup;
+     RunoffSetup runoffSetup;
     RoutingSetup routingSetup;
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
