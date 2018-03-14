@@ -23,6 +23,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public class Routing {
 
@@ -63,17 +64,13 @@ public class Routing {
     @Out
     public SWMMobject dataStructure = null;
 
-
     @Initialize
     public void initialize() {
-    //    if(dataStructure != null && linkName != null) {
-
-        this.dataStructure = dataStructure;
-
+        if(dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
 
-	    this.routingSetup = dataStructure.getRoutingSetup();
+            this.routingSetup = dataStructure.getRoutingSetup();
             this.routingStepSize = routingSetup.getRoutingStepSize();
 
             Conduit conduit = dataStructure.getConduit().get(linkName);
@@ -84,6 +81,9 @@ public class Routing {
             this.linkLength = conduit.getLinkLength();
             this.linkRoughness = conduit.getLinkRoughness();
             this.crossSectionType = conduit.getCrossSectionType();
+        }
+        dataStructure.getConduit().get(linkName).upgradeLinkFlowRate(dataStructure.getJunctions().get(
+                upstreamOutside.getNodeName()).getNodeFlowRate());
     }
 
     @Execute
@@ -106,5 +106,4 @@ public class Routing {
     @Finalize
     void upgradeSWMMobject() {
     }
-
 }

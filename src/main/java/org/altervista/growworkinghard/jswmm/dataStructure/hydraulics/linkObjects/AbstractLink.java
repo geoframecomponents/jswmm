@@ -18,6 +18,9 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+
 public abstract class AbstractLink {
 
     ProjectUnits linkUnits;
@@ -34,4 +37,6 @@ public abstract class AbstractLink {
 
     Long routingStepSize;
     RoutingSetup routingMethod;
+
+    public abstract void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> nodeFlowRate);
 }

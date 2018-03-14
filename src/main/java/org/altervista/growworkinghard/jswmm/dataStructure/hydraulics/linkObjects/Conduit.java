@@ -17,6 +17,9 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
+import java.time.Instant;
+import java.util.LinkedHashMap;
+
 public class Conduit extends AbstractLink {
 
     CrossSectionType crossSectionType;
@@ -60,5 +63,10 @@ public class Conduit extends AbstractLink {
 
     public Double getLinkSlope() {
         return linkSlope;
+    }
+
+    @Override
+    public void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> nodeFlowRate) {
+            upstreamOutside.streamFlowRate = new LinkedHashMap<>(nodeFlowRate);
     }
 }
