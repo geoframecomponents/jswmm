@@ -19,8 +19,5 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 
 class Pump extends AbstractLink {
-    @Override
-    public void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> nodeFlowRate) {
-        throw new NullPointerException("Nothing implemented yet");
-    }
+
 }

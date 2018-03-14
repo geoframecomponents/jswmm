@@ -27,6 +27,8 @@ public interface RoutingSetup {
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  CrossSectionType crossSectionType);
 
+    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness);
+
     public Instant getInitialTime();
 
     public Instant getTotalTime();

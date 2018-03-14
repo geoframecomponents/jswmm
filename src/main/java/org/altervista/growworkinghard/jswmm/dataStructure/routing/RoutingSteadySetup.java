@@ -28,6 +28,11 @@ public class RoutingSteadySetup implements RoutingSetup {
     }
 
     @Override
+    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+        throw new NullPointerException("nothing implemented yet");
+    }
+
+    @Override
     public Instant getInitialTime() {
         return null;
     }

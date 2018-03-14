@@ -37,6 +37,4 @@ public abstract class AbstractLink {
 
     Long routingStepSize;
     RoutingSetup routingMethod;
-
-    public abstract void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> nodeFlowRate);
 }

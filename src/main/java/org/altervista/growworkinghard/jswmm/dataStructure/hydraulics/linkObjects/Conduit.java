@@ -64,9 +64,4 @@ public class Conduit extends AbstractLink {
     public Double getLinkSlope() {
         return linkSlope;
     }
-
-    @Override
-    public void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> nodeFlowRate) {
-            upstreamOutside.streamFlowRate = new LinkedHashMap<>(nodeFlowRate);
-    }
 }

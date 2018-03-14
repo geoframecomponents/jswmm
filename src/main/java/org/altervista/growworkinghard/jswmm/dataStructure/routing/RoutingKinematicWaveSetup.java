@@ -33,6 +33,14 @@ class ChowTable {
         this.adimensionalArea = adimensionalArea;
         this.adimensionalSectionFactor = adimensionalSectionFactor;
     }
+
+    public Double getAdimensionalArea() {
+        return adimensionalArea;
+    }
+
+    public Double getAdimensionalSectionFactor() {
+        return adimensionalSectionFactor;
+    }
 }
 
 public class RoutingKinematicWaveSetup implements RoutingSetup {
@@ -110,11 +118,10 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
         LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate();
-        LinkedHashMap<Instant, Double> downFlowRate = downstreamOutside.getStreamFlowRate();
+        LinkedHashMap<Instant, Double> downFlowRate = new LinkedHashMap<>(upFlowRate); //TODO temporary
 
         LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea();
-        LinkedHashMap<Instant, Double> downWetArea = downstreamOutside.getStreamWetArea();
-
+        LinkedHashMap<Instant, Double> downWetArea = new LinkedHashMap<>(upWetArea);
 
         beta = evaluateBeta(linkLength, linkRoughness);
 
@@ -146,6 +153,12 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     public Double evaluateStreamFlowRate(Double wetArea) {
         return areaToSectionFactor(wetArea) * beta;
+    }
+
+    @Override
+    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+        Double tmpSF = flowRate / evaluateBeta(linkLength, linkRoughness);
+        return sectionFactorToArea(tmpSF);
     }
 
     private Double evaluateNewWetArea(Double tryWetArea, CrossSectionType crossSectionType) {
@@ -187,11 +200,15 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
             Double upperSFValue = null;
 
             for (ChowTable element : relationsTable) {
-                while (element.adimensionalSectionFactor < sectionFactor) {
+                System.out.println(element.getAdimensionalSectionFactor());
+                if (element.getAdimensionalSectionFactor() < sectionFactor) {
                     lowerSFValue = element.adimensionalSectionFactor;
                     elementCounter++;
                 }
-                upperSFValue = element.adimensionalSectionFactor;
+                else {
+                    upperSFValue = element.adimensionalSectionFactor;
+                    break;
+                }
             }
             double[] x = {lowerSFValue, upperSFValue};
             double[] y = {elementCounter-1.0, (double)elementCounter};

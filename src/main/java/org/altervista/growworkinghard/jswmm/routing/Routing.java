@@ -82,8 +82,24 @@ public class Routing {
             this.linkRoughness = conduit.getLinkRoughness();
             this.crossSectionType = conduit.getCrossSectionType();
         }
-        dataStructure.getConduit().get(linkName).upgradeLinkFlowRate(dataStructure.getJunctions().get(
-                upstreamOutside.getNodeName()).getNodeFlowRate());
+
+        LinkedHashMap<Instant, Double> flowRate = dataStructure.getJunctions().
+                get(upstreamOutside.getNodeName()).getNodeFlowRate();
+        upgradeLinkFlowRate(flowRate);
+        upgradeLinkWetArea(flowRate);
+    }
+
+    private void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> flowRate) {
+        for (Instant key : flowRate.keySet()) {
+            upstreamOutside.setFlowRate(key, flowRate.get(key));
+        }
+    }
+
+    private void upgradeLinkWetArea(LinkedHashMap<Instant, Double> flowRate) {
+        for (Instant key : flowRate.keySet()) {
+            Double tmpWetArea = routingSetup.evaluateStreamWetArea(flowRate.get(key), linkLength, linkRoughness);
+            upstreamOutside.setWetArea(key, tmpWetArea);
+        }
     }
 
     @Execute

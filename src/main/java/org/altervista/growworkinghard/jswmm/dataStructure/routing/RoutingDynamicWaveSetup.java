@@ -34,6 +34,11 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     }
 
     @Override
+    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
     public Instant getInitialTime() {
         return null;
     }
