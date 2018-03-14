@@ -92,8 +92,13 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     private void fillTables() {
         for(int i = 0; i <= referenceTableLength; i++) {
             Double theta = i*Math.PI/180;
-            relationsTable.add(new ChowTable((theta-Math.sin(theta))/(2*Math.PI),
-                    Math.pow((theta-Math.sin(theta)), 5.0/3.0) / (2 * Math.PI * Math.pow(theta, 2.0/3.0))));
+            if (theta == 0.0) {
+                relationsTable.add(new ChowTable(0.0,0.0));
+            }
+            else {
+                relationsTable.add(new ChowTable((theta-Math.sin(theta))/(2*Math.PI),
+                        Math.pow((theta-Math.sin(theta)), 5.0/3.0) / (2 * Math.PI * Math.pow(theta, 2.0/3.0))));
+            }
         }
     }
 
@@ -173,24 +178,29 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     private Double sectionFactorToArea(Double sectionFactor) {
 
-        int elementCounter = 0;
-        Double lowerSFValue = relationsTable.get(elementCounter).adimensionalSectionFactor;
-        Double upperSFValue = null;
-
-        for (ChowTable element : relationsTable) {
-            while (element.adimensionalSectionFactor < sectionFactor) {
-                lowerSFValue = element.adimensionalSectionFactor;
-                elementCounter++;
-            }
-            upperSFValue = element.adimensionalSectionFactor;
+        if (sectionFactor == 0.0) {
+            return 0.0;
         }
-        double[] x = {lowerSFValue, upperSFValue};
-        double[] y = {elementCounter-1.0, (double)elementCounter};
+        else {
+            int elementCounter = 0;
+            Double lowerSFValue = relationsTable.get(elementCounter).adimensionalSectionFactor;
+            Double upperSFValue = null;
 
-        // return linear interpolation of (x,y) on sectionFactor
-        LinearInterpolator interpolator = new LinearInterpolator();
-        PolynomialSplineFunction psf = interpolator.interpolate(x, y);
-        return psf.value(sectionFactor);
+            for (ChowTable element : relationsTable) {
+                while (element.adimensionalSectionFactor < sectionFactor) {
+                    lowerSFValue = element.adimensionalSectionFactor;
+                    elementCounter++;
+                }
+                upperSFValue = element.adimensionalSectionFactor;
+            }
+            double[] x = {lowerSFValue, upperSFValue};
+            double[] y = {elementCounter-1.0, (double)elementCounter};
+
+            // return linear interpolation of (x,y) on sectionFactor
+            LinearInterpolator interpolator = new LinearInterpolator();
+            PolynomialSplineFunction psf = interpolator.interpolate(x, y);
+            return psf.value(sectionFactor);
+        }
     }
 
     private Double areaToSectionFactor(Double area) {
