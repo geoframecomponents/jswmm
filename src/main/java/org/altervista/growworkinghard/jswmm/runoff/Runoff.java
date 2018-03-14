@@ -128,7 +128,7 @@ public class Runoff {
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
         area.evaluateTotalFlowRate(); //TODO to be verified
-        dataStructure.setJunctionFlowRate(nodeName, areaName);
+        setNodeFlowRate(nodeName, areaName);
         //node.addRunoffFlowRate(area.getTotalAreaFlowRate());
         //System.out.println(area.getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
     }
@@ -136,13 +136,18 @@ public class Runoff {
     private void upgradeStepValues(Instant currentTime) {
         LinkedHashMap<Instant, Double> ad = new LinkedHashMap<>(adaptedRainfallData);
         for (Subarea subarea : subareas) {
-            System.out.println("Before " + areaName);
+            //System.out.println("Before " + areaName);
             subarea.setDepthFactor(slopeArea, characteristicWidth);
-            System.out.println("Depth factor done " + areaName);
+            //System.out.println("Depth factor done " + areaName);
             subarea.evaluateFlowRate(ad.get(currentTime), 0.0, currentTime, //TODO evaporation!!
                     runoffSetup, slopeArea, characteristicWidth);
-            System.out.println("Flow rate done " + areaName);
+            //System.out.println("Flow rate done " + areaName);
         }
+    }
+
+    private synchronized void setNodeFlowRate(String nodeName, String areaName) {
+        dataStructure.getJunctions().get(nodeName).addRunoffFlowRate(
+                dataStructure.getAreas().get(areaName).getTotalAreaFlowRate());
     }
 
     @Finalize
