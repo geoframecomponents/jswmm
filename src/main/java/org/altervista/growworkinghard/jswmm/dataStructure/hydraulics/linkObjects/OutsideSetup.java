@@ -47,11 +47,17 @@ public class OutsideSetup {
         return nodeName;
     }
 
-    	public synchronized void setWetArea(Instant time, Double value) {
+    public synchronized void setWetArea(Instant time, Double value) {
+        if (streamWetArea == null) {
+            streamWetArea = new LinkedHashMap<>();
+        }
         this.streamWetArea.put(time, value);
     }
 
     public synchronized void setFlowRate(Instant time, Double flowRate) {
+        if (streamFlowRate == null) {
+            streamFlowRate = new LinkedHashMap<>();
+        }
         this.streamFlowRate.put(time, flowRate);
     }
 }
