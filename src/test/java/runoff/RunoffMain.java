@@ -24,7 +24,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.time.Instant;
 
-public class Main {
+public class RunoffMain {
 
     SWMMobject data;
     PreRunoff preRunoff_1;
@@ -33,7 +33,7 @@ public class Main {
     Runoff runoff_2;
 
     @Before
-    public void initialize() throws IOException {
+    public void initialize() {
         data = new SWMMobject();
 
         preRunoff_1 = new PreRunoff();
@@ -53,7 +53,7 @@ public class Main {
     }
 
     @Test
-    public void execute() throws IOException {
+    public void execute() {
         runoff_1 = new Runoff();
         runoff_2 = new Runoff();
 
