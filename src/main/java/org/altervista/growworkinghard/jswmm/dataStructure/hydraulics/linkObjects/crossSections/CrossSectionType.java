@@ -17,6 +17,10 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 public interface CrossSectionType {
 
+    public Boolean getAlwaysIncrease();
+
+    public Double derivatedSectionFactor(Double theta);
+
     Double getDepthFull();
 
     Double getAreaFull();
@@ -24,4 +28,6 @@ public interface CrossSectionType {
     Double getHydraulicRadiusFull();
 
     Double getSectionFactorFull();
+
+    Double getAreaMax();
 }

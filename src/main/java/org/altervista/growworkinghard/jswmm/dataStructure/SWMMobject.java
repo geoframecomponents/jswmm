@@ -150,7 +150,8 @@ public class SWMMobject {
         Long routingStepSize = 30L;
         Double toleranceMethod = 0.0015;
 
-        routingSetup = new RoutingKinematicWaveSetup(initialTime, totalTime, routingStepSize, toleranceMethod);
+        //TODO need change to parallelize
+        routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
     }
 
     private void setRaingages() {

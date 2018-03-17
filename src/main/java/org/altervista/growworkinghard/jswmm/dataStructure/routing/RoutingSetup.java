@@ -23,17 +23,11 @@ import java.util.LinkedHashMap;
 
 public interface RoutingSetup {
 
-    public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
-                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                 CrossSectionType crossSectionType);
+    void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
+                          OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
+                          Double linkSlope, CrossSectionType crossSectionType);
 
-    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness);
-
-    public Instant getInitialTime();
-
-    public Instant getTotalTime();
+    //public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness);
 
     public Long getRoutingStepSize();
-
-    public LinkedHashMap<Instant, Double> getDownstreamFlowRate();
 }

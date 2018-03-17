@@ -18,33 +18,65 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 public class Circular implements CrossSectionType {
 
     Double diameter;
+    Boolean alwaysIncrease = false;
 
-    //Double depthFull;
-    //Double areaFull;
-    //Double hydraulicRadiousFull;
-    //Double sectionFactorFull;
+    private final Double depthFull;
+    private final Double areaFull;
+    private final Double areaMax;
+    private final Double hydraulicRadious;
+    private final Double sectionFactorFull;
 
     public Circular(Double diameter) {
         this.diameter = diameter;
+        this.depthFull = 0.938*diameter;
+        this.areaFull = 0.7854*Math.pow(getDepthFull(), 2);
+        this.areaMax = Math.PI * diameter * diameter / 4;
+        this.hydraulicRadious = 0.25*getDepthFull();
+        this.sectionFactorFull = getAreaFull()*Math.pow(getHydraulicRadiusFull(), 2.0/3.0);
     }
 
     @Override
     public Double getDepthFull() {
-        return 0.938*diameter;
+        return depthFull;
     }
 
     @Override
     public Double getAreaFull() {
-        return 0.7854*Math.pow(getDepthFull(), 2);
+        return areaFull;
     }
 
     @Override
     public Double getHydraulicRadiusFull() {
-        return 0.25*getDepthFull();
+        return hydraulicRadious;
     }
 
     @Override
     public Double getSectionFactorFull() {
-        return getAreaFull()*Math.pow(getHydraulicRadiusFull(), 2.0/3.0);
+        return sectionFactorFull;
+    }
+
+    @Override
+    public Double getAreaMax() {
+        return areaMax;
+    }
+
+    @Override
+    public Boolean getAlwaysIncrease() {
+        return alwaysIncrease;
+    }
+
+    public Double derivatedSectionFactor(Double theta) {
+        Double area = areaFull * (theta - Math.sin(theta)) / (2 * Math.PI);
+        Double wetPerimeter = theta * depthFull / 2;
+        return (5.0/3 - 2.0/3 * derivatedWetPerimeter(theta) * hydraulicRadious(area, wetPerimeter)) *
+                Math.pow(hydraulicRadious(area, wetPerimeter), 2.0/3);
+    }
+
+    private Double derivatedWetPerimeter(Double theta) {
+        return 4.0 / depthFull / (1 - Math.cos(theta));
+    }
+
+    private Double hydraulicRadious(Double area, Double wetPerimeter) {
+        return area / wetPerimeter;
     }
 }

@@ -29,32 +29,17 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     @Override
     public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                 CrossSectionType crossSectionType) {
-
-    }
-
-    @Override
-    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+                                 Double linkSlope, CrossSectionType crossSectionType) {
         throw new NullPointerException("Nothing implemented yet");
     }
 
-    @Override
-    public Instant getInitialTime() {
-        return null;
-    }
-
-    @Override
-    public Instant getTotalTime() {
-        return null;
-    }
+    //@Override
+    //public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+    //    throw new NullPointerException("Nothing implemented yet");
+    //}
 
     @Override
     public Long getRoutingStepSize() {
-        return null;
-    }
-
-    @Override
-    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
         return null;
     }
 }

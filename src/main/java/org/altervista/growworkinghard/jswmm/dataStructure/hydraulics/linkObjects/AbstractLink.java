@@ -36,5 +36,7 @@ public abstract class AbstractLink {
     LinkShape linkShape;
 
     Long routingStepSize;
-    RoutingSetup routingMethod;
+    RoutingSetup routingSetup;
+
+    public abstract void downstreamFlowRate(Instant currentTime);
 }

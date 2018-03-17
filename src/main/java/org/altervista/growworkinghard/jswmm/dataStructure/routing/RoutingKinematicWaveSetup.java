@@ -45,26 +45,7 @@ class ChowTable {
 
 public class RoutingKinematicWaveSetup implements RoutingSetup {
 
-    private Instant initialTime;
-    private Instant totalTime;
     private Long routingStepSize;
-
-    public Instant getInitialTime() {
-        return initialTime;
-    }
-
-    public Instant getTotalTime() {
-        return totalTime;
-    }
-
-    public Long getRoutingStepSize() {
-        return routingStepSize;
-    }
-
-    @Override
-    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
-        return null;
-    }
 
     private Integer referenceTableLength = 180;
     private List<ChowTable> relationsTable = new LinkedList<>();
@@ -75,12 +56,14 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     private Double beta;
     private Double constantOne;
     private Double constantTwo;
-    private Double tolerance; //TODO setup!!!
+    private Double tolerance;
+    private Double lowerBound;
+    private Double upperBound;
+    private Double functionMax;
+    private Double functionFull;
 
-    public RoutingKinematicWaveSetup(Instant initialTime, Instant totalTime, Long routingStepSize, Integer referenceTableLength,
-                              Double iota, Double phi, Double tolerance) {
-        this.initialTime = initialTime;
-        this.totalTime = totalTime;
+    public RoutingKinematicWaveSetup(Long routingStepSize, Integer referenceTableLength, Double iota,
+                                     Double phi, Double tolerance) {
         this.routingStepSize = routingStepSize;
         this.referenceTableLength = referenceTableLength;
         this.iota = iota;
@@ -89,9 +72,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         fillTables();
     }
 
-    public RoutingKinematicWaveSetup(Instant initialTime, Instant totalTime, Long routingStepSize, Double tolerance) {
-        this.initialTime = initialTime;
-        this.totalTime = totalTime;
+    public RoutingKinematicWaveSetup(Long routingStepSize, Double tolerance) {
         this.routingStepSize = routingStepSize;
         this.tolerance = tolerance;
         fillTables();
@@ -111,83 +92,155 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     }
 
     @Override
+    public Long getRoutingStepSize() {
+        return routingStepSize;
+    }
+
+    @Override
     public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
-                                OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                CrossSectionType crossSectionType) {
+                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
+                                 Double linkSlope, CrossSectionType crossSectionType) {
 
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
         LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate();
-        LinkedHashMap<Instant, Double> downFlowRate = new LinkedHashMap<>(upFlowRate); //TODO temporary
+        LinkedHashMap<Instant, Double> downFlowRate = new LinkedHashMap<>();
+        for (Instant time : upFlowRate.keySet()) {
+            downFlowRate.put(time, 0.0);
+        }
 
         LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea();
-        LinkedHashMap<Instant, Double> downWetArea = new LinkedHashMap<>(upWetArea);
+        LinkedHashMap<Instant, Double> downWetArea = new LinkedHashMap<>();
+        for (Instant time : upWetArea.keySet()) {
+            downWetArea.put(time, 0.0);
+        }
 
-        beta = evaluateBeta(linkLength, linkRoughness);
-
-        //A1(t) = readTable(Q1(t)/beta)
-        Double tempAdimensionalSF = ( upFlowRate.get(currentTime)/beta ) / crossSectionType.getSectionFactorFull();
-        Double tempAdimensionalArea = sectionFactorToArea(tempAdimensionalSF)*crossSectionType.getAreaFull();
-        upstreamOutside.setWetArea(currentTime, tempAdimensionalArea);
-
-        //upSF(t+dt)
-        Double upSectionFactor = upstreamOutside.getStreamFlowRate().get(nextTime) / beta;
-
-        //A1(t+dt) = readTable(upSF(t+dt))
-        tempAdimensionalSF = upSectionFactor / crossSectionType.getSectionFactorFull();
-        tempAdimensionalArea = sectionFactorToArea(tempAdimensionalSF)*crossSectionType.getAreaFull();
-        upstreamOutside.setWetArea(nextTime, tempAdimensionalArea);
+        beta = Math.sqrt(linkSlope) / linkRoughness;
 
         constantOne = linkLength / phi * iota / routingStepSize;
-        constantTwo = linkLength/(phi*routingStepSize) *
-                ((1- iota) * (upWetArea.get(nextTime) - upWetArea.get(currentTime)) - iota *
-                        downWetArea.get(currentTime)) + (1 - phi)/phi * (downFlowRate.get(currentTime) -
-                upFlowRate.get(currentTime)) - upFlowRate.get(nextTime);
+        constantTwo = linkLength / (phi * routingStepSize) * ((1 - iota) * (upWetArea.get(nextTime) - upWetArea.get(currentTime)) -
+                iota * downWetArea.get(currentTime)) + (1 - phi) / phi * (downFlowRate.get(currentTime) - upFlowRate.get(currentTime))-
+                upFlowRate.get(nextTime);
 
-        Double tryWetArea = downWetArea.get(currentTime);
-        Double newWetArea = evaluateNewWetArea(tryWetArea, crossSectionType);
+        Double Amax = crossSectionType.getAreaMax();
+        Double Afull = crossSectionType.getAreaFull();
 
-        downstreamOutside.setWetArea(nextTime, newWetArea);
-        downstreamOutside.setFlowRate(nextTime, evaluateStreamFlowRate(newWetArea));
-    }
+        functionMax = functionValue(Amax);
+        functionFull = functionValue(Afull);
 
-    public Double evaluateStreamFlowRate(Double wetArea) {
-        return areaToSectionFactor(wetArea) * beta;
-    }
+        Boolean validBounds = setBounds(Afull, Amax, crossSectionType.getAlwaysIncrease());
 
-    @Override
-    public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
-        Double tmpSF = flowRate / evaluateBeta(linkLength, linkRoughness);
-        return sectionFactorToArea(tmpSF);
-    }
-
-    private Double evaluateNewWetArea(Double tryWetArea, CrossSectionType crossSectionType) {
-
-        Double theta = evaluateTheta(tryWetArea, crossSectionType);
-        Double depth = evaluateDepth(theta, crossSectionType);
-
-        //dwSF2(t+dt) = readTable(A2(t))
-        Double tempAdimensionalArea = tryWetArea / crossSectionType.getAreaFull();
-        Double tempAdimensionalSF = areaToSectionFactor(tempAdimensionalArea);
-        Double downSectionFactor = tempAdimensionalSF * crossSectionType.getSectionFactorFull();
-
-        Integer i = (int)(depth/crossSectionType.getDepthFull()) * (referenceTableLength - 1);
-        Double[] sectionFactorTable = {relationsTable.get(i+1).adimensionalSectionFactor,
-                relationsTable.get(i+1).adimensionalSectionFactor};
-
-        Double downSectionFactorDerivate = (sectionFactorTable[0] - sectionFactorTable[1]) * (referenceTableLength - 1) *
-                (crossSectionType.getSectionFactorFull() / crossSectionType.getAreaFull());
-
-        Double numerator = beta * downSectionFactor + tryWetArea * constantOne + constantTwo;
-        Double denominator = beta * downSectionFactorDerivate + constantOne;
-
-        if( Math.abs(numerator/denominator) < tolerance ) {
-            return tryWetArea + numerator/denominator;
+        //A2(t+dt)
+        if (validBounds) {
+            //Newton-Raphson
+            downstreamOutside.setWetArea(nextTime,
+                    streamWetArea(downstreamOutside.getStreamWetArea().get(currentTime), crossSectionType));
         }
         else {
-            return evaluateNewWetArea(tryWetArea + numerator/denominator, crossSectionType);
+            if (functionMax > 0) {
+                downstreamOutside.setWetArea(nextTime, 0.0);
+            }
+            else {
+                downstreamOutside.setWetArea(nextTime, Afull);
+            }
+        }
+
+        //Q2(t+dt)
+        downstreamOutside.setFlowRate(nextTime, evaluateStreamFlowRate());
+    }
+
+    private Double streamWetArea(Double downstreamWetArea, CrossSectionType crossSectionType) {
+
+        if (lowerBound > downstreamWetArea || upperBound < downstreamWetArea) {
+            downstreamWetArea = (lowerBound + upperBound) / 2;
+        }
+
+        Double tmpFunctionValue = functionValue(downstreamWetArea);
+        Double tmpDerivateFunctionValue = derivatedFunction(crossSectionType,
+                evaluateTheta(downstreamWetArea, crossSectionType));
+
+        return iterativeWetArea(downstreamWetArea, tmpFunctionValue, tmpDerivateFunctionValue, crossSectionType);
+    }
+
+    Double iterativeWetArea(Double area, Double function, Double derivate, CrossSectionType crossSectionType) {
+
+        Double deltaArea = Math.abs(upperBound - lowerBound);
+
+        if ( ((area - upperBound) * derivate - function) * ((area - lowerBound) * derivate - function) >= 0 ||
+                Math.abs(2 * function) > Math.abs(deltaArea * derivate) ){
+
+            deltaArea = 0.5 * (upperBound - lowerBound);
+            area = lowerBound + deltaArea;
+        }
+        else {
+            deltaArea = function / derivate;
+            area -= deltaArea;
+        }
+
+        if (Math.abs(deltaArea) < tolerance) {
+            return area;
+        }
+        else {
+            Double newFunctionValue = functionValue(area);
+            Double newDerivatedFctValue = derivatedFunction(crossSectionType,
+                    evaluateTheta(area, crossSectionType));
+            if (newFunctionValue < 0) {
+                lowerBound = area;
+            }
+            else {
+                upperBound = area;
+            }
+            return iterativeWetArea(area, newFunctionValue, newDerivatedFctValue, crossSectionType);
         }
     }
+
+    private Double derivatedFunction(CrossSectionType crossSectionType, Double theta) {
+        return beta * crossSectionType.derivatedSectionFactor(theta) + constantOne;
+    }
+
+    private Boolean setBounds(Double Afull, Double Amax, Boolean alwaysIncrease) {
+
+        if (functionMax*functionFull < 0) {
+            if (functionMax > functionFull) {
+                lowerBound = Afull;
+                upperBound = Amax;
+            }
+            else {
+                lowerBound = Afull;
+                upperBound = Amax;
+            }
+            return true;
+        }
+        else {
+            if (alwaysIncrease) {
+                lowerBound = 0.0;
+                upperBound = Afull;
+            }
+            else  {
+                lowerBound = 0.0;
+                upperBound = Amax;
+            }
+            return false;
+        }
+    }
+
+    private Double functionValue(Double area) {
+        return beta * areaToSectionFactor(area) + constantOne * area + constantTwo;
+    }
+
+    private Double evaluateStreamFlowRate() {
+        return null;
+    }
+
+    //public Double evaluateStreamFlowRate(Double wetArea) {
+    // return areaToSectionFactor(wetArea) * beta;
+    // }
+
+    //@Override
+    //public Double streamWetArea(Double flowRate, Double linkLength, Double linkRoughness) {
+    //    Double tmpSF = flowRate / evaluateBeta(linkLength, linkRoughness);
+    //    return sectionFactorToArea(tmpSF);
+    //}
 
     private Double sectionFactorToArea(Double sectionFactor) {
 
@@ -200,7 +253,6 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
             Double upperSFValue = null;
 
             for (ChowTable element : relationsTable) {
-                System.out.println(element.getAdimensionalSectionFactor());
                 if (element.getAdimensionalSectionFactor() < sectionFactor) {
                     lowerSFValue = element.adimensionalSectionFactor;
                     elementCounter++;
@@ -211,7 +263,8 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
                 }
             }
             double[] x = {lowerSFValue, upperSFValue};
-            double[] y = {elementCounter-1.0, (double)elementCounter};
+            double[] y = {relationsTable.get(elementCounter-1).getAdimensionalArea(),
+                    relationsTable.get(elementCounter).getAdimensionalArea()};
 
             // return linear interpolation of (x,y) on sectionFactor
             LinearInterpolator interpolator = new LinearInterpolator();
@@ -222,45 +275,46 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     private Double areaToSectionFactor(Double area) {
 
-        int elementCounter = 0;
-        Double lowerSFValue = relationsTable.get(elementCounter).adimensionalArea;
-        Double upperSFValue = null;
-
-        for (ChowTable element : relationsTable) {
-            while (element.adimensionalArea < area) {
-                lowerSFValue = element.adimensionalArea;
-                elementCounter++;
-            }
-            upperSFValue = element.adimensionalArea;
+        if (area == 0.0) {
+            return 0.0;
         }
-        double[] x = {lowerSFValue, upperSFValue};
-        double[] y = {elementCounter-1.0, (double)elementCounter};
+        else {
+            int elementCounter = 0;
+            Double lowerArea = relationsTable.get(elementCounter).adimensionalArea;
+            Double upperArea = null;
 
-        // return linear interpolation of (x,y) on sectionFactor
-        LinearInterpolator interpolator = new LinearInterpolator();
-        PolynomialSplineFunction psf = interpolator.interpolate(x, y);
-        return psf.value(area);
-    }
+            for (ChowTable element : relationsTable) {
+                if (element.getAdimensionalArea() < area) {
+                    lowerArea = element.adimensionalArea;
+                    elementCounter++;
+                }
+                else {
+                    upperArea = element.adimensionalArea;
+                    break;
+                }
+            }
+            double[] x = {lowerArea, upperArea};
+            double[] y = {relationsTable.get(elementCounter-1).getAdimensionalSectionFactor(),
+                    relationsTable.get(elementCounter).getAdimensionalSectionFactor()};
 
-    private Double evaluateDepth(Double theta, CrossSectionType crossSectionType) {
-        return crossSectionType.getDepthFull() * (1 - Math.cos(theta/2)) / 2;
-    }
-
-    private Double evaluateBeta(Double linkSlope, Double linkRoughness) {
-        return Math.sqrt(linkSlope)/ linkRoughness;
+            // return linear interpolation of (x,y) on sectionFactor
+            LinearInterpolator interpolator = new LinearInterpolator();
+            PolynomialSplineFunction psf = interpolator.interpolate(x, y);
+            return psf.value(area);
+        }
     }
 
     private Double evaluateTheta(Double area, CrossSectionType crossSectionType) {
 
-        Double adimensionalArea = area/crossSectionType.getAreaFull();
+        Double adimensionalArea = area / crossSectionType.getAreaFull();
         Double tempTheta;
         Double deltaTheta;
 
+        tempTheta = 0.031715 - 12.79384*adimensionalArea + 8.28479*Math.sqrt(adimensionalArea);
         do {
-            tempTheta = 0.031715 - 12.79384*adimensionalArea + 8.28479*Math.sqrt(adimensionalArea);
             deltaTheta = 2 * Math.PI * adimensionalArea - (tempTheta - Math.sin(tempTheta)) / (1 - Math.cos(tempTheta));
             tempTheta += deltaTheta;
-        } while (deltaTheta > 0.0001);
+        } while (Math.abs(deltaTheta) > 0.0001);
 
         return tempTheta;
     }

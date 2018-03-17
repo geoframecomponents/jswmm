@@ -127,7 +127,7 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-        area.evaluateTotalFlowRate(); //TODO to be verified
+        area.evaluateTotalFlowRate();
         setNodeFlowRate(nodeName, areaName);
         //node.addRunoffFlowRate(area.getTotalAreaFlowRate());
         //System.out.println(area.getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));

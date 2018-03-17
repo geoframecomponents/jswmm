@@ -31,6 +31,9 @@ public class Routing {
     public String linkName = null;
 
     @In
+    public Conduit conduit;
+
+    @In
     public Instant initialTime;
 
     @In
@@ -73,34 +76,27 @@ public class Routing {
             this.routingSetup = dataStructure.getRoutingSetup();
             this.routingStepSize = routingSetup.getRoutingStepSize();
 
-            Conduit conduit = dataStructure.getConduit().get(linkName);
-            this.upstreamOutside = conduit.getUpstreamOutside();
-            this.downstreamOutside = conduit.getDownstreamOutside();
-            this.downstreamNodeName = downstreamOutside.getNodeName();
-
-            this.linkLength = conduit.getLinkLength();
-            this.linkRoughness = conduit.getLinkRoughness();
-            this.crossSectionType = conduit.getCrossSectionType();
+            this.conduit = dataStructure.getConduit().get(linkName);
         }
 
-        LinkedHashMap<Instant, Double> flowRate = dataStructure.getJunctions().
-                get(upstreamOutside.getNodeName()).getNodeFlowRate();
-        upgradeLinkFlowRate(flowRate);
-        upgradeLinkWetArea(flowRate);
+        //LinkedHashMap<Instant, Double> flowRate = dataStructure.getJunctions().
+        //        get(upstreamOutside.getNodeName()).getNodeFlowRate();
+        //upgradeLinkFlowRate(flowRate);
+        //upgradeLinkWetArea(flowRate);
     }
 
-    private void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-        for (Instant key : flowRate.keySet()) {
-            upstreamOutside.setFlowRate(key, flowRate.get(key));
-        }
-    }
+    //private void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> flowRate) {
+    //    for (Instant key : flowRate.keySet()) {
+    //        upstreamOutside.setFlowRate(key, flowRate.get(key));
+    //    }
+    //}
 
-    private void upgradeLinkWetArea(LinkedHashMap<Instant, Double> flowRate) {
-        for (Instant key : flowRate.keySet()) {
-            Double tmpWetArea = routingSetup.evaluateStreamWetArea(flowRate.get(key), linkLength, linkRoughness);
-            upstreamOutside.setWetArea(key, tmpWetArea);
-        }
-    }
+    //private void upgradeLinkWetArea(LinkedHashMap<Instant, Double> flowRate) {
+    //    for (Instant key : flowRate.keySet()) {
+    //        Double tmpWetArea = routingSetup.evaluateStreamWetArea(flowRate.get(key), linkLength, linkRoughness);
+    //        upstreamOutside.setWetArea(key, tmpWetArea);
+    //    }
+    //}
 
     @Execute
     public void run() {
@@ -108,8 +104,7 @@ public class Routing {
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
-            routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside, linkLength,
-                    linkRoughness, crossSectionType);
+            conduit.downstreamFlowRate(currentTime);
 
             //routingSetup.evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
 
