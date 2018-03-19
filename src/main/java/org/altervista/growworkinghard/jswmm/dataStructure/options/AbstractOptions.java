@@ -18,8 +18,8 @@ package org.altervista.growworkinghard.jswmm.dataStructure.options;
 import org.altervista.growworkinghard.jswmm.dataStructure.infiltration.InfiltrationSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 public class AbstractOptions {
 

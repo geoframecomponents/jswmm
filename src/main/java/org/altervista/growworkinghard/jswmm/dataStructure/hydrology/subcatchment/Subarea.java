@@ -15,7 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;

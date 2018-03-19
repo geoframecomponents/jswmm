@@ -19,18 +19,8 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 
 public class Divider extends AbstractNode {
-
     @Override
-    public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
-
-    }
-
-    public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
-
-    }
-
-    @Override
-    public LinkedHashMap<Instant, Double> getNodeFlowRate() {
-        return null;
+    public void addFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+        throw new NullPointerException("Nothing implemented yet");
     }
 }

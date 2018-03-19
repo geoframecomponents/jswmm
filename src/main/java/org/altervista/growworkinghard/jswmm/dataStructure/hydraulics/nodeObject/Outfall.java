@@ -40,15 +40,7 @@ public class Outfall extends AbstractNode {
     }
 
     @Override
-    public void addRoutingFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
-
-    }
-    public void addRunoffFlowRate(LinkedHashMap<Instant, Double> newAreaFlowRate) {
-
-    }
-
-    @Override
-    public LinkedHashMap<Instant, Double> getNodeFlowRate() {
-        return null;
+    public void addFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+        throw new NullPointerException("Nothing implemented yet");
     }
 }

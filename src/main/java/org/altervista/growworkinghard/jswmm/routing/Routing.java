@@ -18,57 +18,52 @@ package org.altervista.growworkinghard.jswmm.routing;
 import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
 
 public class Routing {
 
+    /**
+     * Time setup
+     */
+    private Instant initialTime;
+
+    private Instant totalTime;
+
+
+    /**
+     * Simulation node fields
+     */
     @In
     public String linkName = null;
 
     @In
+    public String downstreamNodeName = null;
+
+    /**
+     * Link characteristics
+     */
+    @In
     public Conduit conduit;
 
-    @In
-    public Instant initialTime;
+    /**
+     * Integration method setup
+     */
+    private Long routingStepSize;
 
-    @In
-    public Instant totalTime;
+    private RoutingSetup routingSetup;
 
-    @In
-    public Long routingStepSize;
-
-    @In
-    public OutsideSetup upstreamOutside;
-
-    @In
-    public OutsideSetup downstreamOutside;
-
-    @In
-    private String downstreamNodeName;
-
-    @In
-    public Double linkLength;
-
-    @In
-    public Double linkRoughness;
-
-    @In
-    public CrossSectionType crossSectionType;
-
-    @In
-    public RoutingSetup routingSetup;
-
+    /**
+     * Data structure
+     */
     @In
     @Out
     public SWMMobject dataStructure = null;
 
     @Initialize
     public void initialize() {
+
         if(dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
@@ -78,25 +73,11 @@ public class Routing {
 
             this.conduit = dataStructure.getConduit().get(linkName);
         }
+        else {
+            throw new NullPointerException("Nothing implemented yet");
+        }
 
-        //LinkedHashMap<Instant, Double> flowRate = dataStructure.getJunctions().
-        //        get(upstreamOutside.getNodeName()).getNodeFlowRate();
-        //upgradeLinkFlowRate(flowRate);
-        //upgradeLinkWetArea(flowRate);
     }
-
-    //private void upgradeLinkFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-    //    for (Instant key : flowRate.keySet()) {
-    //        upstreamOutside.setFlowRate(key, flowRate.get(key));
-    //    }
-    //}
-
-    //private void upgradeLinkWetArea(LinkedHashMap<Instant, Double> flowRate) {
-    //    for (Instant key : flowRate.keySet()) {
-    //        Double tmpWetArea = routingSetup.evaluateStreamWetArea(flowRate.get(key), linkLength, linkRoughness);
-    //        upstreamOutside.setWetArea(key, tmpWetArea);
-    //    }
-    //}
 
     @Execute
     public void run() {
@@ -104,17 +85,14 @@ public class Routing {
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
-            conduit.downstreamFlowRate(currentTime);
-
-            //routingSetup.evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(currentTime));
+            conduit.evaluateFlowRate(currentTime);
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
-
-        dataStructure.getJunctions().get(downstreamNodeName).addRoutingFlowRate(downstreamOutside.getStreamFlowRate());
     }
 
     @Finalize
     void upgradeSWMMobject() {
+        dataStructure.addNodeFlowRate(downstreamNodeName, conduit.getDownstreamFlowRate());
     }
 }

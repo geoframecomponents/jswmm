@@ -23,7 +23,6 @@ public class OutsideSetup {
     String nodeName;
 
     Double nodeOffset;
-    //Double initialStreamFlowRate;
     Double maximumStreamFlowRate;
 
     LinkedHashMap<Instant, Double> streamWetArea;
@@ -43,18 +42,14 @@ public class OutsideSetup {
         return streamFlowRate;
     }
 
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public synchronized void setWetArea(Instant time, Double value) {
+    public void setWetArea(Instant time, Double value) {
         if (streamWetArea == null) {
             streamWetArea = new LinkedHashMap<>();
         }
         this.streamWetArea.put(time, value);
     }
 
-    public synchronized void setFlowRate(Instant time, Double flowRate) {
+    public void setFlowRate(Instant time, Double flowRate) {
         if (streamFlowRate == null) {
             streamFlowRate = new LinkedHashMap<>();
         }

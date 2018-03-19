@@ -31,19 +31,17 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMet
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingKinematicWaveSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.runoff.RunoffSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.runoff.SWMM5RunoffSetup;
-import org.apache.commons.math3.ode.FirstOrderIntegrator;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.SWMM5RunoffSetup;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class SWMMobject {
 
@@ -55,6 +53,7 @@ public class SWMMobject {
     private HashMap<String, Junction> junctions = new HashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private HashMap<String, Conduit> conduit = new HashMap<>();
+    private LinkedHashMap<Instant, Double> downstreamFlowRate;
 
     public SWMMobject(String inpFileName) {
         setTime();
@@ -427,5 +426,42 @@ public class SWMMobject {
             subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
         }
+    }
+
+    public List<Double> readFileList(String fileName) {
+        String line;
+
+        List<Double> testingValues = new ArrayList<>();
+
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                testingValues.add(Double.parseDouble(line));
+            }
+
+            bufferedReader.close();
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                    "Unable to open file '" +
+                            fileName + "'");
+        }
+        catch(IOException ex) {
+            System.out.println(
+                    "Error reading file '"
+                            + fileName + "'");
+        }
+
+        return testingValues;
+    }
+
+    public synchronized void addNodeFlowRate(String nodeName, LinkedHashMap<Instant, Double> flowRate) {
+        junctions.get(nodeName).addFlowRate(flowRate);
+    }
+
+    public synchronized void dispacher() {
+
     }
 }

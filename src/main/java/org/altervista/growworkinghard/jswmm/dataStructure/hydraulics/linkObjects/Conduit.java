@@ -16,17 +16,12 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
-import org.altervista.growworkinghard.jswmm.dataStructure.routing.RoutingSetup;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
 
 public class Conduit extends AbstractLink {
 
     CrossSectionType crossSectionType;
-
-    OutsideSetup upstreamOutside;
-    OutsideSetup downstreamOutside;
 
     Double linkLength;
     Double linkRoughness;
@@ -43,7 +38,7 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void downstreamFlowRate(Instant currentTime) {
+    public void evaluateFlowRate(Instant currentTime) {
         routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness, linkSlope, crossSectionType);
     }
