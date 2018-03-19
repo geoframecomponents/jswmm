@@ -84,7 +84,7 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
 
     /**
-     * Adapt runoff stepsize to total time
+     * Adapt runoffDS stepsize to total time
      */
     //private Double adaptRunoffStepSize(Long runoffStepSize, Long totalTime) {
     //    Long tempFactor = totalTime/runoffStepSize;
