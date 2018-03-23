@@ -26,7 +26,7 @@ public interface RoutingSetup {
                           OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                           Double linkSlope, CrossSectionType crossSectionType);
 
-    //public Double evaluateStreamWetArea(Double flowRate, Double linkLength, Double linkRoughness);
+    //public Double evaluateStreamWetArea(Double runoffFlowRate, Double linkLength, Double linkRoughness);
 
     public Long getRoutingStepSize();
 }

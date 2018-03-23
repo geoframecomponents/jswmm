@@ -21,6 +21,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public class Routing {
 
@@ -61,6 +62,9 @@ public class Routing {
     @Out
     public SWMMobject dataStructure = null;
 
+    @OutNode
+    public LinkedHashMap<Instant, Double> routingFlowRate;
+
     @Initialize
     public void initialize() {
 
@@ -93,6 +97,6 @@ public class Routing {
 
     @Finalize
     void upgradeSWMMobject() {
-        dataStructure.addNodeFlowRate(downstreamNodeName, conduit.getDownstreamFlowRate());
+        routingFlowRate = conduit.getDownstreamFlowRate();
     }
 }

@@ -36,9 +36,7 @@ public abstract class AbstractLink {
         return downstreamFlowRate;
     }
 
-    public void setFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-        this.downstreamFlowRate = flowRate;
-    }
+    public abstract void addUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate);
 
     public enum LinkShape {
         CIRCURAL,

@@ -77,6 +77,9 @@ public class Runoff {
     @Out
     public SWMMobject dataStructure;
 
+    @OutNode
+    public LinkedHashMap<Instant, Double> runoffFlowRate;
+
     @Initialize
     public void initialize() {
         if (dataStructure != null && areaName != null) {
@@ -110,7 +113,6 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-        area.evaluateTotalFlowRate();
     }
 
     private void upgradeStepValues(Instant currentTime) {
@@ -127,7 +129,7 @@ public class Runoff {
 
     @Finalize
     public void upgradeNodeFlowRate() {
-        dataStructure.addNodeFlowRate(nodeName, area.getTotalAreaFlowRate());
+        runoffFlowRate = area.evaluateTotalFlowRate();
     }
 
     public void test(String fileChecks) {

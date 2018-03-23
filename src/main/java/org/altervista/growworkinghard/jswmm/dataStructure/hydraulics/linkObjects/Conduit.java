@@ -18,6 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public class Conduit extends AbstractLink {
 
@@ -35,6 +36,19 @@ public class Conduit extends AbstractLink {
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
         this.linkSlope = linkSlope;
+    }
+
+    @Override
+    public void addUpstreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+        if (upstreamOutside.streamFlowRate == null) {
+            //System.out.println(newFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
+            upstreamOutside.streamFlowRate = new LinkedHashMap<>(newFlowRate);
+            System.out.println("new object");
+        }
+        else {
+            newFlowRate.forEach((k, v) -> upstreamOutside.streamFlowRate.merge(k, v, Double::sum));
+            System.out.println("merge");
+        }
     }
 
     @Override

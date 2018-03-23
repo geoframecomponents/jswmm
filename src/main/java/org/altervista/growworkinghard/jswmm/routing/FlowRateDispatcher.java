@@ -30,13 +30,21 @@ public class FlowRateDispatcher {
     SWMMobject dataStructure;
 
     @InNode
-    public String upstreamNodeName = null;
+    public LinkedHashMap<Instant, Double> flowRate;
+
+    @In
+    public String upstreamNodeName;
 
     @In
     public String linkName = null;
 
+    public FlowRateDispatcher(String upstreamNodeName, String linkName) {
+        this.upstreamNodeName = upstreamNodeName;
+        this.linkName = linkName; 
+    }
+
     public void run() {
-        LinkedHashMap<Instant, Double> flowRate = dataStructure.getJunctions().get(upstreamNodeName).getFlowRate();
-        dataStructure.getConduit().get(linkName).setFlowRate(flowRate);
+        dataStructure.addNodeFlowRate(upstreamNodeName, flowRate);
+        dataStructure.dispacher(linkName, flowRate);
     }
 }
