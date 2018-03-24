@@ -34,7 +34,7 @@ public class Junction extends AbstractNode {
         this.pondingArea = pondingArea;
     }
 
-    public void addFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    public void setFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
         if (nodeFlowRate == null) {
             //System.out.println(newFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
             nodeFlowRate = new LinkedHashMap<>(newFlowRate);

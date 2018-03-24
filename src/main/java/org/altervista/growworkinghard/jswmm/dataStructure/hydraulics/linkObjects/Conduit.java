@@ -39,7 +39,7 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void addUpstreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    public void setUpstreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
         if (upstreamOutside.streamFlowRate == null) {
             //System.out.println(newFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
             upstreamOutside.streamFlowRate = new LinkedHashMap<>(newFlowRate);

@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 
 public class Storage extends AbstractNode {
     @Override
-    public void addFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    public void setFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
 }

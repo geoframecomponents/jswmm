@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 class Pump extends AbstractLink {
 
     @Override
-    public void addUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate) {
+    public void setUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
 

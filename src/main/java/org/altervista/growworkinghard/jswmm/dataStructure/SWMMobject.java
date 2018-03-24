@@ -457,11 +457,11 @@ public class SWMMobject {
         return testingValues;
     }
 
-    public void addNodeFlowRate(String nodeName, LinkedHashMap<Instant, Double> flowRate) {
-        junctions.get(nodeName).addFlowRate(flowRate);
+    public void setNodeFlowRate(String nodeName, LinkedHashMap<Instant, Double> flowRate) {
+        junctions.get(nodeName).setFlowRate(flowRate);
     }
 
-    public void dispacher(String linkName, LinkedHashMap<Instant, Double> flowRate) {
-        conduit.get(linkName).addUpstreamFlowRate(flowRate);
+    public void setLinkFlowRate(String linkName, LinkedHashMap<Instant, Double> flowRate) {
+        conduit.get(linkName).setUpstreamFlowRate(flowRate);
     }
 }
