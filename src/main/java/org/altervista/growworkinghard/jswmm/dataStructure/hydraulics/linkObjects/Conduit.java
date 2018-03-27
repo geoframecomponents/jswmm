@@ -16,6 +16,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -28,8 +29,9 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    public Conduit(CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
-                   Double linkLength, Double linkRoughness, Double linkSlope) {
+    public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
+                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope) {
+        this.routingSetup = routingSetup;
         this.crossSectionType = crossSectionType;
         this.upstreamOutside = upstreamOutside;
         this.downstreamOutside = downstreamOutside;
@@ -52,8 +54,18 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
+    public void setInitialUpFlowRate(Instant time, Double flowRate) {
+        upstreamOutside.setFlowRate(time, flowRate);
+    }
+
+    @Override
+    public void setInitialUpWetArea(Instant time, double flowRate) {
+        upstreamOutside.setWetArea(time, flowRate);
+    }
+
+    @Override
     public void evaluateFlowRate(Instant currentTime) {
-        routingSetup.evaluateFlowRate(currentTime, routingStepSize, upstreamOutside, downstreamOutside,
+        routingSetup.evaluateFlowRate(currentTime, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness, linkSlope, crossSectionType);
     }
 }

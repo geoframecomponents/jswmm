@@ -25,7 +25,7 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     Instant routingStepSize;
 
     @Override
-    public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
+    public void evaluateFlowRate(Instant currentTime, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
         throw new NullPointerException("Nothing implemented yet");

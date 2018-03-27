@@ -347,7 +347,7 @@ public class SWMMobject {
         OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate);
         OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate);
 
-        conduit.put(linkName, new Conduit(crossSectionType, upstreamOutside, downstreamOutside, linkLength,
+        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside, linkLength,
                 linkRoughness, linkSlope));
     }
 
@@ -426,6 +426,15 @@ public class SWMMobject {
             subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
         }
+
+        Instant time = timeSetup.getStartDate();
+        while (time.isBefore(timeSetup.getEndDate())) {
+            conduit.get("L1").setInitialUpFlowRate(time, 0.0);
+            conduit.get("L1").setInitialUpWetArea(time, 0.0);
+            time = time.plusSeconds(routingSetup.getRoutingStepSize());
+        }
+        conduit.get("L1").setInitialUpFlowRate(time, 0.0);
+        conduit.get("L1").setInitialUpWetArea(time, 0.0);
     }
 
     public List<Double> readFileList(String fileName) {

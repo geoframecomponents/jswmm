@@ -26,6 +26,16 @@ class Pump extends AbstractLink {
     }
 
     @Override
+    public void setInitialUpFlowRate(Instant time, Double flowRate) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
+    public void setInitialUpWetArea(Instant startDate, double flowRate) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
     public void evaluateFlowRate(Instant currentTime) {
         throw new NullPointerException("Nothing implemented yet");
     }

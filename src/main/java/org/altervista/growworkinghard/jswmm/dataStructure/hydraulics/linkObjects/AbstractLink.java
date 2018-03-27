@@ -27,6 +27,8 @@ public abstract class AbstractLink {
 
     String linkName;
 
+    RoutingSetup routingSetup;
+
     OutsideSetup upstreamOutside;
     OutsideSetup downstreamOutside;
 
@@ -38,14 +40,15 @@ public abstract class AbstractLink {
 
     public abstract void setUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate);
 
+    public abstract void setInitialUpFlowRate(Instant time, Double flowRate);
+
+    public abstract void setInitialUpWetArea(Instant startDate, double flowRate);
+
     public enum LinkShape {
         CIRCURAL,
         DUMMY
     }
     LinkShape linkShape;
-
-    Long routingStepSize;
-    RoutingSetup routingSetup;
 
     public abstract void evaluateFlowRate(Instant currentTime);
 }

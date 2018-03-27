@@ -80,7 +80,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     private void fillTables() {
         for(int i = 0; i <= referenceTableLength; i++) {
-            Double theta = i*Math.PI/180;
+            Double theta = 2*i*Math.PI/180;
             if (theta == 0.0) {
                 relationsTable.add(new ChowTable(0.0,0.0));
             }
@@ -97,7 +97,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
+    public void evaluateFlowRate(Instant currentTime, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
 

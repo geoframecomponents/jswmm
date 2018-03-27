@@ -22,7 +22,7 @@ import java.time.Instant;
 
 public interface RoutingSetup {
 
-    void evaluateFlowRate(Instant currentTime, Long routingStepSize, OutsideSetup upstreamOutside,
+    void evaluateFlowRate(Instant currentTime, OutsideSetup upstreamOutside,
                           OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                           Double linkSlope, CrossSectionType crossSectionType);
 

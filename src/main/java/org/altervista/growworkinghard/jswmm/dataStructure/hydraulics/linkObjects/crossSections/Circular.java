@@ -29,8 +29,8 @@ public class Circular implements CrossSectionType {
     public Circular(Double diameter) {
         this.diameter = diameter;
         this.depthFull = 0.938*diameter;
-        this.areaFull = 0.7854*Math.pow(getDepthFull(), 2);
-        this.areaMax = Math.PI * diameter * diameter / 4;
+        this.areaFull = Math.PI * diameter * diameter / 4;
+        this.areaMax = 0.7854*Math.pow(getDepthFull(), 2);
         this.hydraulicRadious = 0.25*getDepthFull();
         this.sectionFactorFull = getAreaFull()*Math.pow(getHydraulicRadiusFull(), 2.0/3.0);
     }
