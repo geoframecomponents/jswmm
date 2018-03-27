@@ -22,6 +22,10 @@ import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class Routing {
 
@@ -98,5 +102,19 @@ public class Routing {
     @Finalize
     void upgradeSWMMobject() {
         routingFlowRate = conduit.getDownstreamFlowRate();
+    }
+
+    public void test(String fileChecks) {
+        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
+        List<Double> defined = dataStructure.readFileList(fileChecks);
+
+        int i = 0;
+        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
+            //TODO check a method to do it better - not always is ordered
+            assertEquals(data.getValue(), defined.get(i), 0.85);
+            //System.out.println(data.getValue());
+            //System.out.println(defined.get(i));
+            i = i + 1;
+        }
     }
 }
