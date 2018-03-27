@@ -12,7 +12,6 @@ repositories {
 dependencies {
     compile files('lib/HydroGeoEntities.jar')
     compile files('lib/GEOframeUtils.jar')
-    compile files('lib/GEOframeUtils.jar')
     compile files('lib/HydroGeoEntities.jar')
     compile files('lib/oms-all.jar')
     compile 'org.apache.commons:commons-math3:3.6.1'
