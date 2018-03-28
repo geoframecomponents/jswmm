@@ -87,7 +87,7 @@ public class Runoff {
             //TODO evaporation!!
             this.runoffSetup = dataStructure.getRunoffSetup();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
-            this.area = dataStructure.getAreas().get(areaName);
+            this.area = dataStructure.getAreas(areaName);
 
             this.initialTime = timeSetup.getStartDate();
             this.totalTime = timeSetup.getEndDate();

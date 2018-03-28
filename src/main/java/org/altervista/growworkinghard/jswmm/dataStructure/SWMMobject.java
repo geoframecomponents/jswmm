@@ -42,6 +42,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SWMMobject {
 
@@ -50,9 +51,9 @@ public class SWMMobject {
     private RoutingSetup routingSetup;
     private HashMap<String, RaingageSetup> raingageSetup = new HashMap<>();
     private HashMap<String, Area> areas = new HashMap<>();
-    private HashMap<String, Junction> junctions = new HashMap<>();
+    private Map<String, Junction> junctions = new ConcurrentHashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
-    private HashMap<String, Conduit> conduit = new HashMap<>();
+    private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
     private LinkedHashMap<Instant, Double> downstreamFlowRate;
 
     public SWMMobject(String inpFileName) {
@@ -86,24 +87,16 @@ public class SWMMobject {
 
     public RoutingSetup getRoutingSetup() { return routingSetup; }
 
-    public HashMap<String, RaingageSetup> getRaingages() {
-        return raingageSetup;
+    public RaingageSetup getRaingage(String areaName) {
+        return raingageSetup.get(areaName);
     }
 
-    public HashMap<String, Area> getAreas() {
-        return areas;
+    public Area getAreas(String areaName) {
+        return areas.get(areaName);
     }
 
-    public HashMap<String, Junction> getJunctions() {
-        return junctions;
-    }
-
-    public HashMap<String, Outfall> getOutfalls() {
-        return outfalls;
-    }
-
-    public HashMap<String, Conduit> getConduit() {
-        return conduit;
+    public Conduit getConduit(String conduitName) {
+        return conduit.get(conduitName);
     }
 
     private void setTime() {

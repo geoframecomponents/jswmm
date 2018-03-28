@@ -45,22 +45,17 @@ class ChowTable {
 
 public class RoutingKinematicWaveSetup implements RoutingSetup {
 
-    private Long routingStepSize;
+    private final Long routingStepSize;
 
-    private Integer referenceTableLength = 180;
-    private List<ChowTable> relationsTable = new LinkedList<>();
+    private final Integer referenceTableLength;
+    private final List<ChowTable> relationsTable = new LinkedList<>();
 
-    private Double iota = 0.6;
-    private Double phi = 0.6;
+    private final Double iota;
+    private final Double phi;
 
-    private Double beta;
-    private Double constantOne;
-    private Double constantTwo;
-    private Double tolerance;
+    private final Double tolerance;
     private Double lowerBound;
     private Double upperBound;
-    private Double functionMax;
-    private Double functionFull;
 
     public RoutingKinematicWaveSetup(Long routingStepSize, Integer referenceTableLength, Double iota,
                                      Double phi, Double tolerance) {
@@ -74,7 +69,10 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
     public RoutingKinematicWaveSetup(Long routingStepSize, Double tolerance) {
         this.routingStepSize = routingStepSize;
+        this.referenceTableLength = 180;
         this.tolerance = tolerance;
+        this.iota = 0.6;
+        this.phi = 0.6;
         fillTables();
     }
 
@@ -115,29 +113,29 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
             downWetArea.put(time, 0.0);
         }
 
-        beta = Math.sqrt(linkSlope) / linkRoughness;
+        final Double beta = Math.sqrt(linkSlope) / linkRoughness;
 
         //A1(t+dt)
         upWetArea.put(nextTime, sectionFactorToArea( upFlowRate.get(nextTime)/beta ));
 
-        constantOne = linkLength / phi * iota / routingStepSize;
-        constantTwo = linkLength / (phi * routingStepSize) * ((1 - iota) * (upWetArea.get(nextTime) - upWetArea.get(currentTime)) -
+        final Double constantOne = linkLength / phi * iota / routingStepSize;
+        final Double constantTwo = linkLength / (phi * routingStepSize) * ((1 - iota) * (upWetArea.get(nextTime) - upWetArea.get(currentTime)) -
                 iota * downWetArea.get(currentTime)) + (1 - phi) / phi * (downFlowRate.get(currentTime) - upFlowRate.get(currentTime))-
                 upFlowRate.get(nextTime);
 
         Double Amax = crossSectionType.getAreaMax();
         Double Afull = crossSectionType.getAreaFull();
 
-        functionMax = functionValue(Amax);
-        functionFull = functionValue(Afull);
+        final Double functionMax = functionValue(Amax, beta, constantOne, constantTwo);
+        final Double functionFull = functionValue(Afull, beta, constantOne, constantTwo);
 
-        Boolean validBounds = setBounds(Afull, Amax, crossSectionType.getAlwaysIncrease());
+        Boolean validBounds = setBounds(Afull, Amax, crossSectionType.getAlwaysIncrease(), functionMax, functionFull);
 
         //A2(t+dt)
         if (validBounds) {
             //Newton-Raphson
             downstreamOutside.setWetArea(nextTime,
-                    streamWetArea(downstreamOutside.getStreamWetArea().get(currentTime), crossSectionType));
+                    streamWetArea(downstreamOutside.getStreamWetArea().get(currentTime), crossSectionType, beta, constantOne, constantTwo));
         }
         else {
             if (functionMax > 0) {
@@ -150,23 +148,23 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
         //Q2(t+dt)
         downstreamOutside.setFlowRate(nextTime,
-                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(nextTime)));
+                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(nextTime), beta));
     }
 
-    private Double streamWetArea(Double downstreamWetArea, CrossSectionType crossSectionType) {
+    private Double streamWetArea(Double downstreamWetArea, CrossSectionType crossSectionType, Double beta, Double constantOne, Double constantTwo) {
 
         if (lowerBound > downstreamWetArea || upperBound < downstreamWetArea) {
             downstreamWetArea = (lowerBound + upperBound) / 2;
         }
 
-        Double tmpFunctionValue = functionValue(downstreamWetArea);
+        Double tmpFunctionValue = functionValue(downstreamWetArea, beta, constantOne, constantTwo);
         Double tmpDerivateFunctionValue = derivatedFunction(crossSectionType,
-                evaluateTheta(downstreamWetArea, crossSectionType));
+                evaluateTheta(downstreamWetArea, crossSectionType), beta, constantOne);
 
-        return iterativeWetArea(downstreamWetArea, tmpFunctionValue, tmpDerivateFunctionValue, crossSectionType);
+        return iterativeWetArea(downstreamWetArea, tmpFunctionValue, tmpDerivateFunctionValue, crossSectionType, beta, constantOne, constantTwo);
     }
 
-    Double iterativeWetArea(Double area, Double function, Double derivate, CrossSectionType crossSectionType) {
+    private Double iterativeWetArea(Double area, Double function, Double derivate, CrossSectionType crossSectionType, Double beta, Double constantOne, Double constantTwo) {
 
         Double deltaArea = Math.abs(upperBound - lowerBound);
 
@@ -185,24 +183,24 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
             return area;
         }
         else {
-            Double newFunctionValue = functionValue(area);
+            Double newFunctionValue = functionValue(area, beta, constantOne, constantTwo);
             Double newDerivatedFctValue = derivatedFunction(crossSectionType,
-                    evaluateTheta(area, crossSectionType));
+                    evaluateTheta(area, crossSectionType), beta, constantOne);
             if (newFunctionValue < 0) {
                 lowerBound = area;
             }
             else {
                 upperBound = area;
             }
-            return iterativeWetArea(area, newFunctionValue, newDerivatedFctValue, crossSectionType);
+            return iterativeWetArea(area, newFunctionValue, newDerivatedFctValue, crossSectionType, beta, constantOne, constantTwo);
         }
     }
 
-    private Double derivatedFunction(CrossSectionType crossSectionType, Double theta) {
+    private Double derivatedFunction(CrossSectionType crossSectionType, Double theta, Double beta, Double constantOne) {
         return beta * crossSectionType.derivatedSectionFactor(theta) + constantOne;
     }
 
-    private Boolean setBounds(Double Afull, Double Amax, Boolean alwaysIncrease) {
+    private Boolean setBounds(Double Afull, Double Amax, Boolean alwaysIncrease, Double functionMax, Double functionFull) {
 
         if (functionMax*functionFull < 0) {
             if (functionMax > functionFull) {
@@ -228,11 +226,11 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         }
     }
 
-    private Double functionValue(Double area) {
+    private Double functionValue(Double area, Double beta, Double constantOne, Double constantTwo) {
         return beta * areaToSectionFactor(area) + constantOne * area + constantTwo;
     }
 
-    private Double evaluateStreamFlowRate(Double wetArea) {
+    private Double evaluateStreamFlowRate(Double wetArea, Double beta) {
         return areaToSectionFactor(wetArea) * beta;
     }
 

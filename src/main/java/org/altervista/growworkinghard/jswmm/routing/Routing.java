@@ -79,7 +79,7 @@ public class Routing {
             this.routingSetup = dataStructure.getRoutingSetup();
             this.routingStepSize = routingSetup.getRoutingStepSize();
 
-            this.conduit = dataStructure.getConduit().get(linkName);
+            this.conduit = dataStructure.getConduit(linkName);
         }
         else {
             throw new NullPointerException("Nothing implemented yet");

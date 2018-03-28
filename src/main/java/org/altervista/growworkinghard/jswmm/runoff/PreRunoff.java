@@ -19,7 +19,6 @@ import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -63,7 +62,7 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
             //this.dataStructure = dataStructure;
 
-            RaingageSetup raingage = dataStructure.getRaingages().get(areaName);
+            RaingageSetup raingage = dataStructure.getRaingage(areaName);
 
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
             this.rainfallStepSize = raingage.getRainfallStepSize();
