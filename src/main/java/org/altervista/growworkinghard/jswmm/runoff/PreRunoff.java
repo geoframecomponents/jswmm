@@ -46,6 +46,9 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
     @In
     public Integer numberOfCurves;
 
+    @In
+    public Long stormwaterInterval;
+
     @InNode
     @Out
     public SWMMobject dataStructure;
@@ -177,16 +180,13 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
 
     private void generateRainfall() {
         Integer counter = 1;
-        Long rainfallTimeInterval = ( totalTime.getEpochSecond() - initialTime.getEpochSecond() ) / numberOfCurves;
-        for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallTimeInterval) {
-            adaptedRainfallData.put(counter, constantRainfallData(Instant.ofEpochSecond(currentTime)));
-            counter++;
+        Long rainfallTimeInterval;
+        if (stormwaterInterval != null) {
+            rainfallTimeInterval = ( totalTime.getEpochSecond() - initialTime.getEpochSecond() ) / numberOfCurves;
         }
-    }
-
-    private void generateRainfall(Long stormwaterInterval) {
-        Integer counter = 1;
-        Long rainfallTimeInterval = stormwaterInterval / numberOfCurves;
+        else {
+            rainfallTimeInterval = stormwaterInterval / numberOfCurves;
+        }
         for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallTimeInterval) {
             adaptedRainfallData.put(counter, constantRainfallData(Instant.ofEpochSecond(currentTime)));
             counter++;
