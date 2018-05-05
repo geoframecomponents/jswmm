@@ -18,7 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 
 public class ImperviousWithStorage extends Subarea {
@@ -41,9 +41,10 @@ public class ImperviousWithStorage extends Subarea {
         this.percentageRouted = percentageRouted;
         this.subareaConnections = connections;
 
-        this.totalDepth = new LinkedHashMap<>();
-        this.runoffDepth = new LinkedHashMap<>();
-        this.flowRate = new LinkedHashMap<>();
+        this.totalDepth = new HashMap<>();
+        this.runoffDepth = new HashMap<>();
+        this.flowRate = new HashMap<>();
+        this.excessRainfall = new HashMap<>();
     }
 
     @Override
@@ -61,44 +62,45 @@ public class ImperviousWithStorage extends Subarea {
     }
 
     @Override
-    Double getWeightedFlowRate(Instant currentTime) {
-        return flowRate.get(currentTime) * subareaArea * percentageRouted;
+    Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
+        return flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
     }
 
     @Override
-    void evaluateNextStep(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
-                          Double subareaSlope, Double characteristicWidth) {
+    void evaluateNextStep(Integer identifier, Instant currentTime, RunoffSetup runoffSetup, Double rainfall,
+                          Double evaporation, Double subareaSlope, Double characteristicWidth) {
 
         Long runoffStepSize = runoffSetup.getRunoffStepSize();
 
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
-        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(currentTime);
+        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(identifier).get(currentTime);
 
         if(evaporation != 0.0) {
-            evaporation = Math.max(evaporation, totalDepth.get(currentTime)/runoffStepSize);
+            evaporation = Math.max(evaporation, totalDepth.get(identifier).get(currentTime)/runoffStepSize);
         }
 
-        excessRainfall = rainfall - evaporation;
+        setExcessRainfall(identifier, rainfall - evaporation);
 
         if(evaporation * runoffStepSize >= moistureVolume) {
-            totalDepth.put(nextTime, totalDepth.get(currentTime) + 0.0);
-            runoffDepth.put(nextTime, runoffDepth.get(currentTime) + 0.0);
-            flowRate.put(nextTime, flowRate.get(currentTime) + 0.0);
+            setTotalDepth(identifier, nextTime, totalDepth.get(identifier).get(currentTime) + 0.0);
+            setRunoffDepth(identifier, nextTime, runoffDepth.get(identifier).get(currentTime) + 0.0);
+            setFlowRate(identifier, nextTime, flowRate.get(identifier).get(currentTime) + 0.0);
         }
         else {
-            if(excessRainfall * runoffStepSize <= depressionStorage - totalDepth.get(currentTime)) {
-                totalDepth.put(nextTime, totalDepth.get(currentTime) + excessRainfall * runoffStepSize);
-                runoffDepth.put(nextTime, runoffDepth.get(currentTime) + 0.0);
-                flowRate.put(nextTime, flowRate.get(currentTime) + 0.0);
+            if(getExcessRainfall(identifier) * runoffStepSize <= depressionStorage - totalDepth.get(identifier).get(currentTime)) {
+                setTotalDepth(identifier, nextTime, totalDepth.get(identifier).get(currentTime) + getExcessRainfall(identifier) * runoffStepSize);
+                setRunoffDepth(identifier, nextTime, runoffDepth.get(identifier).get(currentTime) + 0.0);
+                setFlowRate(identifier, nextTime,flowRate.get(identifier).get(currentTime) + 0.0);
             }
             else {
-                runoffODEsolver(currentTime, nextTime, excessRainfall, runoffSetup);
-                flowRate.put( nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth, runoffDepth.get(nextTime)) );
+                runoffODEsolver(identifier, currentTime, nextTime, getExcessRainfall(identifier), runoffSetup);
+                setFlowRate( identifier, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth, runoffDepth.get(identifier).get(nextTime)) );
             }
         }
     }
 
+    @Override
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
         return Math.pow(subareaSlope, 0.5) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) / (totalImperviousArea * roughnessCoefficient);

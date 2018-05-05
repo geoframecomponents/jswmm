@@ -35,7 +35,7 @@ public class Area extends AbstractSubcatchment {
     //Double curbLength;
 
     List<Subarea> subareas;
-    LinkedHashMap<Instant, Double> totalAreaFlowRate = new LinkedHashMap<>();
+    LinkedHashMap<Instant, Double> totalAreaFlowRate;
 
     public Area(Double subcatchmentArea, RaingageSetup raingageSetup, Double characteristicWidth, Double areaSlope,
                 List<Subarea> subareas) {
@@ -44,11 +44,12 @@ public class Area extends AbstractSubcatchment {
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
         this.subareas = subareas;
+        this.totalAreaFlowRate = new LinkedHashMap<>();
     }
 
-    public LinkedHashMap<Instant, Double> evaluateTotalFlowRate() {
+    public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer identifier) {
         for(Subarea subarea : subareas) {
-            subarea.flowRate.forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
+            subarea.flowRate.get(identifier).forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
         }
         return getTotalAreaFlowRate();
     }

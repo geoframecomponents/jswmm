@@ -74,7 +74,7 @@ public class SWMMobject {
         setSubcatchments();
         setNodes();
         setLinks();
-        setInitialValues();
+        setInitialValues(1);
     }
 
     public TimeSetup getTimeSetup() {
@@ -407,17 +407,17 @@ public class SWMMobject {
     }
 
     //TODO add at each subcatchment!
-    private void setInitialValues() {
+    private void setInitialValues(Integer id) {
         for(Subarea subarea : areas.get("Sub1").getSubareas()) {
-            subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
-            subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
-            subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
+            subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
+            subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
+            subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
         }
 
         for(Subarea subarea : areas.get("Sub2").getSubareas()) {
-            subarea.setFlowRate(timeSetup.getStartDate(), 0.0);
-            subarea.setRunoffDepth(timeSetup.getStartDate(), 0.0);
-            subarea.setTotalDepth(timeSetup.getStartDate(), 0.0);
+            subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
+            subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
+            subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
         }
 
         Instant time = timeSetup.getStartDate();

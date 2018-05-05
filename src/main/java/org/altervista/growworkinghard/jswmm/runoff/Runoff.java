@@ -23,6 +23,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 public class Runoff {
 
     @In
-    public LinkedHashMap<Instant, Double> adaptedRainfallData;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData;
 
     private LinkedHashMap<Instant, Double> evaporationData = null;
 
@@ -78,7 +79,7 @@ public class Runoff {
     public SWMMobject dataStructure;
 
     @OutNode
-    public LinkedHashMap<Instant, Double> runoffFlowRate;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> runoffFlowRate;
 
     @Initialize
     public void initialize() {
@@ -105,23 +106,27 @@ public class Runoff {
     @Execute
     public void run() {
 
-        Instant currentTime = Instant.parse(initialTime.toString());
-        while (currentTime.isBefore(totalTime)) {
+        for (Integer identifier : adaptedRainfallData.keySet()) {
+            Instant currentTime = Instant.parse(initialTime.toString());
+            while (currentTime.isBefore(totalTime)) {
 
-            //check snownelt - snowaccumulation TODO build a new component
-            upgradeStepValues(currentTime);
+                //check snownelt - snowaccumulation TODO build a new component
+                upgradeStepValues(identifier, currentTime);
 
-            currentTime = currentTime.plusSeconds(runoffStepSize);
+                currentTime = currentTime.plusSeconds(runoffStepSize);
+            }
         }
     }
 
-    private void upgradeStepValues(Instant currentTime) {
-        LinkedHashMap<Instant, Double> ad = new LinkedHashMap<>(adaptedRainfallData);
+    private void upgradeStepValues(Integer identifier, Instant currentTime) {
+
+        LinkedHashMap<Instant, Double> ad = adaptedRainfallData.get(identifier);
+
         for (Subarea subarea : subareas) {
             //System.out.println("Before " + areaName);
             subarea.setDepthFactor(slopeArea, characteristicWidth);
             //System.out.println("Depth factor done " + areaName);
-            subarea.evaluateFlowRate(ad.get(currentTime), 0.0, currentTime, //TODO evaporation!!
+            subarea.evaluateFlowRate(identifier, ad.get(currentTime), 0.0, currentTime, //TODO evaporation!!
                     runoffSetup, slopeArea, characteristicWidth);
             //System.out.println("Flow rate done " + areaName);
         }
@@ -129,7 +134,9 @@ public class Runoff {
 
     @Finalize
     public void upgradeNodeFlowRate() {
-        runoffFlowRate = area.evaluateTotalFlowRate();
+        for (Integer identifier : adaptedRainfallData.keySet()) {
+            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier));
+        }
     }
 
     public void test(String fileChecks) {

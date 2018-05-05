@@ -18,6 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -31,50 +32,65 @@ public abstract class Subarea {
 
     List<Subarea> subareaConnections;
 
-    LinkedHashMap<Instant, Double> totalDepth;
-    LinkedHashMap<Instant, Double> runoffDepth;
-    LinkedHashMap<Instant, Double> flowRate;
-    Double excessRainfall;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> totalDepth;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> runoffDepth;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;
+    HashMap<Integer, Double> excessRainfall;
 
-    public void setTotalDepth(Instant time, Double depthValue) {
-        this.totalDepth.put(time, depthValue);
+    public void setTotalDepth(Integer id, Instant time, Double depthValue) {
+        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
+        temp.put(time, depthValue);
+        this.totalDepth.put(id, temp);
     }
 
-    public void setRunoffDepth(Instant time, Double depthValue) {
-        this.runoffDepth.put(time, depthValue);
+    public void setRunoffDepth(Integer id, Instant time, Double depthValue) {
+        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
+        temp.put(time, depthValue);
+        this.runoffDepth.put(id, temp);
     }
 
-    public void setFlowRate(Instant time, Double flowValue) {
-        this.flowRate.put(time, flowValue);
+    public void setFlowRate(Integer id, Instant time, Double flowValue) {
+        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
+        temp.put(time, flowValue);
+        this.flowRate.put(id, temp);
+    }
+
+    public void setExcessRainfall(Integer id, Double value) {
+        this.excessRainfall.put(id, value);
+    }
+
+    public Double getExcessRainfall(Integer id) {
+        return this.excessRainfall.get(id);
     }
 
     public abstract void setDepthFactor(Double subareaSlope, Double characteristicWidth);
 
-    abstract Double getWeightedFlowRate(Instant currentTime);
+    abstract Double getWeightedFlowRate(Integer identifier, Instant currentTime);
 
-    public void evaluateFlowRate(Double rainfall, Double evaporation, Instant currentTime,
+    public void evaluateFlowRate(Integer identifier, Double rainfall, Double evaporation, Instant currentTime,
                                  RunoffSetup runoffSetup, Double subareaSlope, Double characteristicWidth) {
 
         Double tempPrecipitation = rainfall;
         if (subareaConnections != null) {
             tempPrecipitation = null;
             for (Subarea connections : subareaConnections) {
-                connections.evaluateFlowRate(rainfall, evaporation, currentTime,
+                connections.evaluateFlowRate(identifier, rainfall, evaporation, currentTime,
                         runoffSetup, subareaSlope, characteristicWidth);
-                tempPrecipitation += connections.getWeightedFlowRate(currentTime);
+                tempPrecipitation += connections.getWeightedFlowRate(identifier, currentTime);
                 //infiltration
             }
             tempPrecipitation /= subareaArea;
         }
-        evaluateNextStep(currentTime, runoffSetup, tempPrecipitation, evaporation, subareaSlope, characteristicWidth);
+        evaluateNextStep(identifier, currentTime, runoffSetup, tempPrecipitation, evaporation,
+                subareaSlope, characteristicWidth);
     }
 
-    abstract void evaluateNextStep(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
+    abstract void evaluateNextStep(Integer identifier, Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
                                    Double subareaArea, Double characteristicWidth);
 
-    void runoffODEsolver(Instant currentTime, Instant nextTime, Double rainfall, RunoffSetup runoffSetup) {
+    void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, RunoffSetup runoffSetup) {
         double[] inputValues = new double[1];
-        inputValues[0] = runoffDepth.get(currentTime);
+        inputValues[0] = runoffDepth.get(id).get(currentTime);
         double[] outputValues = new double[1];
 
         Double initialTime = (double) currentTime.getEpochSecond();
@@ -83,9 +99,8 @@ public abstract class Subarea {
         runoffSetup.setOde(rainfall, depthFactor);
         runoffSetup.getFirstOrderIntegrator().integrate(runoffSetup.getOde(), initialTime, inputValues, finalTime, outputValues);
 
-        runoffDepth.put(nextTime, outputValues[0]);
-        totalDepth.put(nextTime, totalDepth.get(currentTime) + (outputValues[0]-inputValues[0]));
+        setRunoffDepth(id, nextTime, outputValues[0]);
+        setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + (outputValues[0]-inputValues[0]));
     }
 
-    abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);
-}
+    abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);}

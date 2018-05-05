@@ -54,7 +54,7 @@ public class PreRunoff extends LinkedHashMap<Instant, Double> {
     public SWMMobject dataStructure;
 
     @Out
-    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData = new HashMap<>();
 
     @Out
     public LinkedHashMap<Instant, Double> adaptedInfiltrationData;

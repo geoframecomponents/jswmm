@@ -18,7 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 
 public class Pervious extends Subarea {
@@ -38,9 +38,10 @@ public class Pervious extends Subarea {
         this.percentageRouted = percentageRouted;
         this.subareaConnections = connections;
 
-        this.totalDepth = new LinkedHashMap<>();
-        this.runoffDepth = new LinkedHashMap<>();
-        this.flowRate = new LinkedHashMap<>();
+        this.totalDepth = new HashMap<>();
+        this.runoffDepth = new HashMap<>();
+        this.flowRate = new HashMap<>();
+        this.excessRainfall = new HashMap<>();
     }
 
     @Override
@@ -58,42 +59,42 @@ public class Pervious extends Subarea {
     }
 
     @Override
-    Double getWeightedFlowRate(Instant currentTime) {
-        return flowRate.get(currentTime) * subareaArea * percentageRouted;
+    Double getWeightedFlowRate(Integer id, Instant currentTime) {
+        return flowRate.get(id).get(currentTime) * subareaArea * percentageRouted;
     }
 
     @Override
-    void evaluateNextStep(Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
+    void evaluateNextStep(Integer id, Instant currentTime, RunoffSetup runoffSetup, Double rainfall, Double evaporation,
                           Double subareaSlope, Double characteristicWidth) {
 
         Long runoffStepSize = runoffSetup.getRunoffStepSize();
 
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
-        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(currentTime);
+        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(id).get(currentTime);
 
         if(evaporation != 0.0) {
-            evaporation = Math.max(evaporation, totalDepth.get(currentTime)/runoffStepSize);
+            evaporation = Math.max(evaporation, totalDepth.get(id).get(currentTime)/runoffStepSize);
         }
         //infiltration
         //excessRainfall = rainfall - evaporation - infiltration;
 
-        excessRainfall = rainfall - evaporation;
+        setExcessRainfall(id, rainfall - evaporation);
 
         if(evaporation * runoffStepSize >= moistureVolume) {
-            totalDepth.put(nextTime, totalDepth.get(currentTime) + 0.0);
-            runoffDepth.put(nextTime, runoffDepth.get(currentTime) + 0.0);
-            flowRate.put(nextTime, flowRate.get(currentTime) + 0.0);
+            setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + 0.0);
+            setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + 0.0);
+            setFlowRate(id, nextTime, flowRate.get(id).get(currentTime) + 0.0);
         }
         else {
-            if(excessRainfall * runoffStepSize <= depressionStorage - totalDepth.get(currentTime)) {
-                totalDepth.put(nextTime, totalDepth.get(currentTime) + excessRainfall * runoffStepSize);
-                runoffDepth.put(nextTime, runoffDepth.get(currentTime) + 0.0);
-                flowRate.put(nextTime, flowRate.get(currentTime) + 0.0);
+            if(excessRainfall.get(id) * runoffStepSize <= depressionStorage - totalDepth.get(id).get(currentTime)) {
+                setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + getExcessRainfall(id) * runoffStepSize);
+                setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + 0.0);
+                setFlowRate(id, nextTime, flowRate.get(id).get(currentTime) + 0.0);
             }
             else {
-                runoffODEsolver(currentTime, nextTime, excessRainfall, runoffSetup);
-                flowRate.put( nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth, runoffDepth.get(nextTime)) );
+                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+                setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth, runoffDepth.get(id).get(nextTime)) );
             }
         }
     }
