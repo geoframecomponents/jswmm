@@ -16,6 +16,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Junction extends AbstractNode {
@@ -34,15 +35,22 @@ public class Junction extends AbstractNode {
         this.pondingArea = pondingArea;
     }
 
-    public void setFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    @Override
+    public void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
         if (nodeFlowRate == null) {
-            //System.out.println(newFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
-            nodeFlowRate = new LinkedHashMap<>(newFlowRate);
-            System.out.println("new object");
+            nodeFlowRate = new HashMap<>();
         }
-        else {
-            newFlowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
-            System.out.println("merge");
+        for (Integer id : newFlowRate.keySet()) {
+            for (Instant time : newFlowRate.get(id).keySet()) {
+                Double tempValue = 0.0;
+                if (nodeFlowRate.containsKey(id)) {
+                    tempValue = nodeFlowRate.get(id).get(time);
+                }
+                Double tempNewValue = newFlowRate.get(id).get(time);
+                LinkedHashMap<Instant, Double> sumValues = new LinkedHashMap<>();
+                sumValues.put(time, tempValue + tempNewValue);
+                nodeFlowRate.put(id, sumValues);
+            }
         }
     }
 }

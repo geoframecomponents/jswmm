@@ -16,6 +16,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class OutsideSetup {
@@ -25,8 +26,8 @@ public class OutsideSetup {
     Double nodeOffset;
     Double maximumStreamFlowRate;
 
-    LinkedHashMap<Instant, Double> streamWetArea;
-    LinkedHashMap<Instant, Double> streamFlowRate;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
+    HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
 
     public OutsideSetup(String nodeName, Double nodeOffset, Double maximumFlowRate) {
         this.nodeName = nodeName;
@@ -34,25 +35,23 @@ public class OutsideSetup {
         this.maximumStreamFlowRate = maximumFlowRate;
     }
 
-    public LinkedHashMap<Instant, Double> getStreamWetArea() {
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getStreamWetArea() {
         return streamWetArea;
     }
 
-    public LinkedHashMap<Instant, Double> getStreamFlowRate() {
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getStreamFlowRate() {
         return streamFlowRate;
     }
 
-    public void setWetArea(Instant time, Double value) {
-        if (streamWetArea == null) {
-            streamWetArea = new LinkedHashMap<>();
-        }
-        this.streamWetArea.put(time, value);
+    public void setWetArea(Integer id, Instant time, Double value) {
+        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
+        temp.put(time, value);
+        this.streamWetArea.put(id, temp);
     }
 
-    public void setFlowRate(Instant time, Double flowRate) {
-        if (streamFlowRate == null) {
-            streamFlowRate = new LinkedHashMap<>();
-        }
-        this.streamFlowRate.put(time, flowRate);
+    public void setFlowRate(Integer id, Instant time, Double flowRate) {
+        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
+        temp.put(time, flowRate);
+        this.streamFlowRate.put(id, temp);
     }
 }

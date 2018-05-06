@@ -15,10 +15,12 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
+import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Conduit extends AbstractLink {
@@ -41,31 +43,50 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void setUpstreamFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    public OutsideSetup getUpstreamOutside() {
+        return upstreamOutside;
+    }
+
+    @Override
+    public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
         if (upstreamOutside.streamFlowRate == null) {
-            //System.out.println(newFlowRate.get(Instant.parse("2018-01-01T00:02:00Z")));
-            upstreamOutside.streamFlowRate = new LinkedHashMap<>(newFlowRate);
-            System.out.println("new object");
+            upstreamOutside.streamFlowRate = new HashMap<>();
         }
-        else {
-            newFlowRate.forEach((k, v) -> upstreamOutside.streamFlowRate.merge(k, v, Double::sum));
-            System.out.println("merge");
+        for (Integer id : newFlowRate.keySet()) {
+            for (Instant time : newFlowRate.get(id).keySet()) {
+                Double tempValue = 0.0;
+                if (upstreamOutside.streamFlowRate.containsKey(id)) {
+                    tempValue = upstreamOutside.streamFlowRate.get(id).get(time);
+                }
+                Double tempNewValue = newFlowRate.get(id).get(time);
+                LinkedHashMap<Instant, Double> sumValues = new LinkedHashMap<>();
+                sumValues.put(time, tempValue + tempNewValue);
+                upstreamOutside.streamFlowRate.put(id, sumValues);
+            }
         }
     }
 
     @Override
-    public void setInitialUpFlowRate(Instant time, Double flowRate) {
-        upstreamOutside.setFlowRate(time, flowRate);
+    public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
+        upstreamOutside.setFlowRate(id, time, flowRate);
     }
 
     @Override
-    public void setInitialUpWetArea(Instant time, double flowRate) {
-        upstreamOutside.setWetArea(time, flowRate);
+    public void setInitialUpWetArea(Integer id, Instant time, double flowRate) {
+        upstreamOutside.setWetArea(id, time, flowRate);
     }
 
     @Override
-    public void evaluateFlowRate(Instant currentTime) {
-        routingSetup.evaluateFlowRate(currentTime, upstreamOutside, downstreamOutside,
+    public void evaluateFlowRate(Integer id, Instant currentTime) {
+        routingSetup.evaluateFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness, linkSlope, crossSectionType);
+    }
+
+    @Override
+    public void evaluateMaxDischarge(Instant currentTime) {
+        for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
+            this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime); //part to add
+
+        }
     }
 }

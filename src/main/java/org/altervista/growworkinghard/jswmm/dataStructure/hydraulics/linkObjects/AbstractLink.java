@@ -19,6 +19,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectU
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public abstract class AbstractLink {
@@ -38,11 +39,13 @@ public abstract class AbstractLink {
         return downstreamFlowRate;
     }
 
-    public abstract void setUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate);
+    public abstract OutsideSetup getUpstreamOutside();
 
-    public abstract void setInitialUpFlowRate(Instant time, Double flowRate);
+    public abstract void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate);
 
-    public abstract void setInitialUpWetArea(Instant startDate, double flowRate);
+    public abstract void setInitialUpFlowRate(Integer id, Instant time, Double flowRate);
+
+    public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
 
     public enum LinkShape {
         CIRCURAL,
@@ -50,5 +53,7 @@ public abstract class AbstractLink {
     }
     LinkShape linkShape;
 
-    public abstract void evaluateFlowRate(Instant currentTime);
+    public abstract void evaluateFlowRate(Integer id, Instant currentTime);
+
+    public abstract void evaluateMaxDischarge(Instant currentTime);
 }

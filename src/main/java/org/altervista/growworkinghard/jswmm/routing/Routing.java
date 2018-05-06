@@ -93,12 +93,12 @@ public class Routing {
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
+            conduit.evaluateMaxDischarge(currentTime);
             conduit.evaluateFlowRate(currentTime);
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
     }
-
     @Finalize
     void upgradeSWMMobject() {
         routingFlowRate = conduit.getDownstreamFlowRate();

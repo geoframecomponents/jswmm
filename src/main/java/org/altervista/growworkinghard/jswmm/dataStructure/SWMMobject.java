@@ -422,12 +422,12 @@ public class SWMMobject {
 
         Instant time = timeSetup.getStartDate();
         while (time.isBefore(timeSetup.getEndDate())) {
-            conduit.get("L1").setInitialUpFlowRate(time, 0.0);
-            conduit.get("L1").setInitialUpWetArea(time, 0.0);
+            conduit.get("L1").setInitialUpFlowRate(id, time, 0.0);
+            conduit.get("L1").setInitialUpWetArea(id, time, 0.0);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());
         }
-        conduit.get("L1").setInitialUpFlowRate(time, 0.0);
-        conduit.get("L1").setInitialUpWetArea(time, 0.0);
+        conduit.get("L1").setInitialUpFlowRate(id, time, 0.0);
+        conduit.get("L1").setInitialUpWetArea(id, time, 0.0);
     }
 
     public List<Double> readFileList(String fileName) {
@@ -459,11 +459,11 @@ public class SWMMobject {
         return testingValues;
     }
 
-    public void setNodeFlowRate(String nodeName, LinkedHashMap<Instant, Double> flowRate) {
-        junctions.get(nodeName).setFlowRate(flowRate);
+    public void setNodeFlowRate(String nodeName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
+        junctions.get(nodeName).sumFlowRate(flowRate);
     }
 
-    public void setLinkFlowRate(String linkName, LinkedHashMap<Instant, Double> flowRate) {
-        conduit.get(linkName).setUpstreamFlowRate(flowRate);
+    public void setLinkFlowRate(String linkName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
+        conduit.get(linkName).sumUpstreamFlowRate(flowRate);
     }
 }

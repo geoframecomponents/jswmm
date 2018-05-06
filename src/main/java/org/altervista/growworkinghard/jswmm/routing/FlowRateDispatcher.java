@@ -22,6 +22,7 @@ import oms3.annotations.Out;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class FlowRateDispatcher {
@@ -31,42 +32,40 @@ public class FlowRateDispatcher {
     SWMMobject dataStructure;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate1;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate1;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate2;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate2;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate3;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate3;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate4;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate4;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate5;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate5;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate6;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate6;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate7;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate7;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate8;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate8;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate9;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate9;
 
     @InNode
-    public LinkedHashMap<Instant, Double> flowRate10;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate10;
 
     @In
-    public String upstreamNodeName;
+    public String upstreamNodeName = null;
 
     @In
     public String linkName = null;
-
-    private LinkedHashMap<Instant, Double> nodeFlowRate;
 
     public FlowRateDispatcher(String upstreamNodeName, String linkName) {
         this.upstreamNodeName = upstreamNodeName;
@@ -76,45 +75,44 @@ public class FlowRateDispatcher {
     @Execute
     public void run() {
         if (flowRate1 != null) {
-            sumFlowRate(flowRate1);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate1);
+            dataStructure.setLinkFlowRate(linkName, flowRate1);
         }
         if (flowRate2 != null) {
-            sumFlowRate(flowRate2);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate2);
+            dataStructure.setLinkFlowRate(linkName, flowRate2);
         }
         if (flowRate3 != null) {
-            sumFlowRate(flowRate3);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate3);
+            dataStructure.setLinkFlowRate(linkName, flowRate3);
         }
         if (flowRate4 != null) {
-            sumFlowRate(flowRate4);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate4);
+            dataStructure.setLinkFlowRate(linkName, flowRate4);
         }
         if (flowRate5 != null) {
-            sumFlowRate(flowRate5);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate5);
+            dataStructure.setLinkFlowRate(linkName, flowRate5);
         }
         if (flowRate6 != null) {
-            sumFlowRate(flowRate6);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate6);
+            dataStructure.setLinkFlowRate(linkName, flowRate6);
         }
         if (flowRate7 != null) {
-            sumFlowRate(flowRate7);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate7);
+            dataStructure.setLinkFlowRate(linkName, flowRate7);
         }
         if (flowRate8 != null) {
-            sumFlowRate(flowRate8);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate8);
+            dataStructure.setLinkFlowRate(linkName, flowRate8);
         }
         if (flowRate9 != null) {
-            sumFlowRate(flowRate9);
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate9);
+            dataStructure.setLinkFlowRate(linkName, flowRate9);
         }
         if (flowRate10 != null) {
-            sumFlowRate(flowRate10);
-        }
-        dataStructure.setNodeFlowRate(upstreamNodeName, nodeFlowRate);
-        dataStructure.setLinkFlowRate(linkName, nodeFlowRate);
-    }
-
-    private void sumFlowRate(LinkedHashMap<Instant, Double> flowRate) {
-        if (nodeFlowRate == null) {
-            nodeFlowRate = new LinkedHashMap<>(flowRate);
-        }
-        else {
-            flowRate.forEach((k, v) -> nodeFlowRate.merge(k, v, Double::sum));
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate10);
+            dataStructure.setLinkFlowRate(linkName, flowRate10);
         }
     }
 }

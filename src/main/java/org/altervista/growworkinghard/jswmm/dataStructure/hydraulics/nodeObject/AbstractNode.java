@@ -21,6 +21,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public abstract class AbstractNode {
@@ -35,13 +36,13 @@ public abstract class AbstractNode {
     String nodeName;
     Double nodeElevation;
 
-    LinkedHashMap<Instant, Double> nodeFlowRate;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate;
     LinkedHashMap<Instant, Double> nodeDepth;
 
-    public abstract void setFlowRate(LinkedHashMap<Instant, Double> newFlowRate);
+    public abstract void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate);
 
-    public LinkedHashMap<Instant, Double> getFlowRate() {
-        return nodeFlowRate;
+    public LinkedHashMap<Instant, Double> getFlowRate(Integer id) {
+        return nodeFlowRate.get(id);
     }
 }
 

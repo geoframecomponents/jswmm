@@ -95,19 +95,19 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public void evaluateFlowRate(Instant currentTime, OutsideSetup upstreamOutside,
+    public void evaluateFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
 
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
-        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate();
+        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate(id);
         LinkedHashMap<Instant, Double> downFlowRate = new LinkedHashMap<>();
         for (Instant time : upFlowRate.keySet()) {
             downFlowRate.put(time, 0.0);
         }
 
-        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea();
+        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea(id);
         LinkedHashMap<Instant, Double> downWetArea = new LinkedHashMap<>();
         for (Instant time : upWetArea.keySet()) {
             downWetArea.put(time, 0.0);
@@ -134,21 +134,21 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         //A2(t+dt)
         if (validBounds) {
             //Newton-Raphson
-            downstreamOutside.setWetArea(nextTime,
-                    streamWetArea(downstreamOutside.getStreamWetArea().get(currentTime), crossSectionType, beta, constantOne, constantTwo));
+            downstreamOutside.setWetArea(id, nextTime,
+                    streamWetArea(downstreamOutside.getStreamWetArea(id).get(currentTime), crossSectionType, beta, constantOne, constantTwo));
         }
         else {
             if (functionMax > 0) {
-                downstreamOutside.setWetArea(nextTime, 0.0);
+                downstreamOutside.setWetArea(id, nextTime, 0.0);
             }
             else {
-                downstreamOutside.setWetArea(nextTime, Afull);
+                downstreamOutside.setWetArea(id, nextTime, Afull);
             }
         }
 
         //Q2(t+dt)
-        downstreamOutside.setFlowRate(nextTime,
-                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(nextTime), beta));
+        downstreamOutside.setFlowRate(id, nextTime,
+                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea(id).get(nextTime), beta));
     }
 
     private Double streamWetArea(Double downstreamWetArea, CrossSectionType crossSectionType, Double beta, Double constantOne, Double constantTwo) {
