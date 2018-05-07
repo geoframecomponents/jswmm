@@ -84,9 +84,15 @@ public class Conduit extends AbstractLink {
 
     @Override
     public void evaluateMaxDischarge(Instant currentTime) {
+        Double maxCurrentValue = 0.0;
         for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
-            this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime); //part to add
+            if ( this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime) >= maxCurrentValue ) {
+                maxCurrentValue = this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime);
+            }
 
+            LinkedHashMap<Instant, Double> tempHM = new LinkedHashMap<>();
+            tempHM.put(currentTime, maxCurrentValue);
+            this.getUpstreamOutside().getStreamFlowRate().put(id, tempHM);
         }
     }
 }
