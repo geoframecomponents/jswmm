@@ -53,7 +53,7 @@ public abstract class AbstractLink {
     }
     LinkShape linkShape;
 
-    public abstract void evaluateFlowRate(Integer id, Instant currentTime);
+    public abstract void evaluateFlowRate(Instant currentTime);
 
     public abstract void evaluateMaxDischarge(Instant currentTime);
 }

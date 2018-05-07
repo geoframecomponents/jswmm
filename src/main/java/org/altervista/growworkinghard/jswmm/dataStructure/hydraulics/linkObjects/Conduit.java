@@ -77,9 +77,11 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void evaluateFlowRate(Integer id, Instant currentTime) {
-        routingSetup.evaluateFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
-                linkLength, linkRoughness, linkSlope, crossSectionType);
+    public void evaluateFlowRate(Instant currentTime) {
+        for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
+            routingSetup.evaluateFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
+                    linkLength, linkRoughness, linkSlope, crossSectionType);
+        }
     }
 
     @Override

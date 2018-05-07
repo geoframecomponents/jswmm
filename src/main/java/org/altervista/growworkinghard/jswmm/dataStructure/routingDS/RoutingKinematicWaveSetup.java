@@ -101,13 +101,13 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
         Instant nextTime = currentTime.plusSeconds(routingStepSize);
 
-        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate(id);
+        LinkedHashMap<Instant, Double> upFlowRate = upstreamOutside.getStreamFlowRate().get(id);
         LinkedHashMap<Instant, Double> downFlowRate = new LinkedHashMap<>();
         for (Instant time : upFlowRate.keySet()) {
             downFlowRate.put(time, 0.0);
         }
 
-        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea(id);
+        LinkedHashMap<Instant, Double> upWetArea = upstreamOutside.getStreamWetArea().get(id);
         LinkedHashMap<Instant, Double> downWetArea = new LinkedHashMap<>();
         for (Instant time : upWetArea.keySet()) {
             downWetArea.put(time, 0.0);
@@ -135,7 +135,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
         if (validBounds) {
             //Newton-Raphson
             downstreamOutside.setWetArea(id, nextTime,
-                    streamWetArea(downstreamOutside.getStreamWetArea(id).get(currentTime), crossSectionType, beta, constantOne, constantTwo));
+                    streamWetArea(downstreamOutside.getStreamWetArea().get(id).get(currentTime), crossSectionType, beta, constantOne, constantTwo));
         }
         else {
             if (functionMax > 0) {
@@ -148,7 +148,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 
         //Q2(t+dt)
         downstreamOutside.setFlowRate(id, nextTime,
-                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea(id).get(nextTime), beta));
+                evaluateStreamFlowRate(downstreamOutside.getStreamWetArea().get(id).get(nextTime), beta));
     }
 
     private Double streamWetArea(Double downstreamWetArea, CrossSectionType crossSectionType, Double beta, Double constantOne, Double constantTwo) {
