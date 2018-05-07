@@ -16,6 +16,7 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Outfall extends AbstractNode {
@@ -40,7 +41,7 @@ public class Outfall extends AbstractNode {
     }
 
     @Override
-    public void setFlowRate(LinkedHashMap<Instant, Double> newFlowRate) {
+    public void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
 }

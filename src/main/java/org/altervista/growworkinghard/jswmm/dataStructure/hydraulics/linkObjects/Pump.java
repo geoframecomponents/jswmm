@@ -16,27 +16,38 @@
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 class Pump extends AbstractLink {
 
     @Override
-    public void setUpstreamFlowRate(LinkedHashMap<Instant, Double> flowRate) {
+    public OutsideSetup getUpstreamOutside() {
         throw new NullPointerException("Nothing implemented yet");
     }
 
     @Override
-    public void setInitialUpFlowRate(Instant time, Double flowRate) {
+    public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
 
     @Override
-    public void setInitialUpWetArea(Instant startDate, double flowRate) {
+    public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
+    public void setInitialUpWetArea(Integer id, Instant startDate, double flowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
 
     @Override
     public void evaluateFlowRate(Instant currentTime) {
         throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
+    public void evaluateMaxDischarge(Instant currentTime) {
+
     }
 }

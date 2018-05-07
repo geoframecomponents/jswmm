@@ -22,7 +22,7 @@ import java.time.Instant;
 
 public class RoutingSteadySetup implements RoutingSetup {
     @Override
-    public void evaluateFlowRate(Instant currentTime, OutsideSetup upstreamOutside,
+    public void evaluateFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
         throw new NullPointerException("nothing implemented yet");
