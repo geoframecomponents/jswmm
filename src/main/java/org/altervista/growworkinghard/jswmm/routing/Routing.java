@@ -99,7 +99,9 @@ public class Routing {
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
-        //
+        //dimensioning method!!
+
+        //evaluate the discharge at the end of pipe
         currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 

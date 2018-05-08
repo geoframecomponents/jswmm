@@ -17,8 +17,10 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchmen
 
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
+import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -76,5 +78,16 @@ public class Area extends AbstractSubcatchment {
 
     public Double getAreaSlope() {
         return areaSlope;
+    }
+
+    public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData,
+                                       RunoffSetup runoffSetup, Instant currentTime) {
+        for (Integer identifier : adaptedRainfallData.keySet()) {
+            for (Subarea subarea : subareas) {
+                subarea.setDepthFactor(areaSlope, characteristicWidth);
+                subarea.evaluateFlowRate(identifier, adaptedRainfallData.get(identifier).get(currentTime), 0.0,
+                        currentTime, runoffSetup, areaSlope, characteristicWidth); //TODO evaporation!!
+            }
+        }
     }
 }

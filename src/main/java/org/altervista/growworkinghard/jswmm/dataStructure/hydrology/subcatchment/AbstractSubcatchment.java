@@ -21,6 +21,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectU
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public abstract class AbstractSubcatchment {
@@ -35,9 +36,5 @@ public abstract class AbstractSubcatchment {
     String subcatchmentName;
     Double subcatchmentArea;
 
-    LinkedHashMap<Instant, Double> runoffInflow;
-
-    public LinkedHashMap<Instant, Double> getRunoffInflow() {
-        return runoffInflow;
-    }
+    HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData;
 }

@@ -22,7 +22,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.Rai
 import java.time.Instant;
 import java.util.*;
 
-public class PreRunoff extends LinkedHashMap<Instant, Double> {
+public class PreRunoff {
 
     @In
     public String areaName = null;

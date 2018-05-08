@@ -92,11 +92,6 @@ public class Runoff {
 
             this.initialTime = timeSetup.getStartDate();
             this.totalTime = timeSetup.getEndDate();
-            this.runoffStepSize = runoffSetup.getRunoffStepSize();
-
-            this.subareas = area.getSubareas();
-            this.slopeArea = area.getAreaSlope();
-            this.characteristicWidth = area.getCharacteristicWidth();
         }
         else {
             throw new NullPointerException("Nothing implemented yet");
@@ -105,30 +100,13 @@ public class Runoff {
 
     @Execute
     public void run() {
+        Instant currentTime = Instant.parse(initialTime.toString());
+        while (currentTime.isBefore(totalTime)) {
 
-        for (Integer identifier : adaptedRainfallData.keySet()) {
-            Instant currentTime = Instant.parse(initialTime.toString());
-            while (currentTime.isBefore(totalTime)) {
+            //check snownelt - snowaccumulation TODO build a new component
+            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSetup, currentTime);
 
-                //check snownelt - snowaccumulation TODO build a new component
-                upgradeStepValues(identifier, currentTime);
-
-                currentTime = currentTime.plusSeconds(runoffStepSize);
-            }
-        }
-    }
-
-    private void upgradeStepValues(Integer identifier, Instant currentTime) {
-
-        LinkedHashMap<Instant, Double> ad = adaptedRainfallData.get(identifier);
-
-        for (Subarea subarea : subareas) {
-            //System.out.println("Before " + areaName);
-            subarea.setDepthFactor(slopeArea, characteristicWidth);
-            //System.out.println("Depth factor done " + areaName);
-            subarea.evaluateFlowRate(identifier, ad.get(currentTime), 0.0, currentTime, //TODO evaporation!!
-                    runoffSetup, slopeArea, characteristicWidth);
-            //System.out.println("Flow rate done " + areaName);
+            currentTime = currentTime.plusSeconds(runoffStepSize);
         }
     }
 
