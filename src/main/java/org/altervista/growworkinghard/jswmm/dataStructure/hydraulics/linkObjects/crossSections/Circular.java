@@ -77,6 +77,10 @@ public class Circular implements CrossSectionType {
                 Math.pow(getHydraulicRadious(area, wetPerimeter), 2.0 / 3);
     }
 
+    private Double getHydraulicRadious(Double area, Double wetPerimeter) {
+        return area / wetPerimeter;
+    }
+
     private Double derivatedWetPerimeter(Double theta) {
         return 4.0 / depthFull / (1 - Math.cos(theta));
     }

@@ -99,6 +99,7 @@ public class Conduit extends AbstractLink {
 
     @Override
     public void evaluateMaxCurve(Instant currentTime) {
+        Double maxDischarge = 0.0;
         for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
             if ( this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime) >= maxDischarge) {
                 maxDischarge = this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime);
