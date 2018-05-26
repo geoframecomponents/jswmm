@@ -15,7 +15,8 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
-import oms3.annotations.In;
+import it.blogspot.geoframe.utils.GEOconstants;
+import it.blogspot.geoframe.utils.GEOgeometry;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
@@ -31,6 +32,8 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
+    private Double maxDischarge;
+
     public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
                    OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope) {
         this.routingSetup = routingSetup;
@@ -40,11 +43,21 @@ public class Conduit extends AbstractLink {
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
         this.linkSlope = linkSlope;
+        this.maxDischarge = 0.0;
+    }
+
+    public Double getMaxDischarge() {
+        return maxDischarge;
     }
 
     @Override
     public OutsideSetup getUpstreamOutside() {
         return upstreamOutside;
+    }
+
+    @Override
+    public OutsideSetup getDownstreamOutside() {
+        return downstreamOutside;
     }
 
     @Override
@@ -85,16 +98,46 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void evaluateMaxDischarge(Instant currentTime) {
-        Double maxCurrentValue = 0.0;
+    public void evaluateMaxCurve(Instant currentTime) {
         for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
-            if ( this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime) >= maxCurrentValue ) {
-                maxCurrentValue = this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime);
+            if ( this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime) >= maxDischarge) {
+                maxDischarge = this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime);
             }
 
             LinkedHashMap<Instant, Double> tempHM = new LinkedHashMap<>();
-            tempHM.put(currentTime, maxCurrentValue);
+            tempHM.put(currentTime, maxDischarge);
             this.getUpstreamOutside().getStreamFlowRate().put(id, tempHM);
         }
+    }
+
+    @Override
+    public void evaluateDimension() {
+        Double naturalSlope = computeNaturalSlope();
+
+        computeDiameter(slope);
+
+        Double diameter = diameterToCommercial();
+
+        Double minSlope = computeMinSlope(diameter);
+        if (slope < minSlope) {
+            return evaluateDiameter(minSlope);
+        }
+        else {
+            return diameter;
+        }
+    }
+
+    private Double computeNaturalSlope() {
+        return GEOgeometry.computeSlope(getUpstreamOutside().getNodeCoordinates().x,
+                getUpstreamOutside().getNodeCoordinates().y, getUpstreamOutside().getTerrainElevation(),
+                getDownstreamOutside().getNodeCoordinates().x,
+                getDownstreamOutside().getNodeCoordinates().y, getDownstreamOutside().getTerrainElevation());
+    }
+
+    private double computeMinSlope(Double diameter) {
+        double hydraulicRadius = crossSectionType.computeHydraulicRadious(diameter, crossSectionType.);
+
+        return GEOconstants.SHEARSTRESS
+                / (GEOconstants.WSPECIFICWEIGHT * hydraulicRadius);
     }
 }

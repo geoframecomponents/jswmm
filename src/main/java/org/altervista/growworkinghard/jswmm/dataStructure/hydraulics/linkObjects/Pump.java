@@ -47,7 +47,7 @@ class Pump extends AbstractLink {
     }
 
     @Override
-    public void evaluateMaxDischarge(Instant currentTime) {
+    public void evaluateMaxCurve(Instant currentTime) {
 
     }
 }

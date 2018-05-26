@@ -18,21 +18,26 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import org.geotools.graph.util.geom.Coordinate2D;
 
 public class OutsideSetup {
 
     String nodeName;
+    private Coordinate2D nodeCoordinates;
+    private Double terrainElevation;
+    private Double baseElevation;
 
     Double nodeOffset;
-    Double maximumStreamFlowRate;
+    private Double fillCoeff;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
 
-    public OutsideSetup(String nodeName, Double nodeOffset, Double maximumFlowRate) {
+    public OutsideSetup(String nodeName, Double nodeOffset, Double fillCoeff, Double x, Double y) {
         this.nodeName = nodeName;
         this.nodeOffset = nodeOffset;
-        this.maximumStreamFlowRate = maximumFlowRate;
+        this.fillCoeff = fillCoeff;
+        this.nodeCoordinates = new Coordinate2D(x, y);
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getStreamWetArea() {
@@ -53,5 +58,21 @@ public class OutsideSetup {
         LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
         temp.put(time, flowRate);
         this.streamFlowRate.put(id, temp);
+    }
+
+    public Double getFillCoeff() {
+        return fillCoeff;
+    }
+
+    public Coordinate2D getNodeCoordinates() {
+        return nodeCoordinates;
+    }
+
+    public Double getTerrainElevation() {
+        return terrainElevation;
+    }
+
+    public Double getBaseElevation() {
+        return baseElevation;
     }
 }

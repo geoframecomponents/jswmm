@@ -20,23 +20,18 @@ import it.blogspot.geoframe.utils.GEOgeometry;
 
 public class Dimensioning {
 
-	private static double gaucklerStricklerCoefficient;
-	private static double fillCoefficient;
-	private static double fillAngle;
-	private static double discharge;
+	public Double gaucklerStricklerCoefficient;
+	public Double fillCoefficient;
+	public Double discharge;
+
+	/*private static double fillAngle;
 	private double diameter;
 	private double minSlope;
 	private double pipeSlope;
 	private double elevationEndPoint;
+	*/
 
-	private Pipe pipe;
-
-	/**
-	 * Default constructor.
-	 */
-
-	public Dimensioning() {
-	}
+	public Pipe pipe;
 
 	/**
 	 * Setter of the class fields.
@@ -58,43 +53,6 @@ public class Dimensioning {
 	}
 
 
-	/**
-	 * Setter of the pipe class fields.
-	 */
-
-	private void setFields() {
-		gaucklerStricklerCoefficient = pipe.getGaucklerStricklerCoefficient();
-		fillCoefficient = pipe.getFillCoefficient();
-		discharge = pipe.getDischarge();
-	}
-
-	/**
-	 * Setter for the first attempt values.
-	 */
-
-	private void setFirstAttemptValues() {
-		fillAngle = computeFillAngle();
-		//elevationEndPoint = pipe.getEndPoint().getTerrainElevation()
-		//		- GEOconstants.MINIMUMEXCAVATION;
-		Double terrainElevation = 1000.0;
-		elevationEndPoint = terrainElevation - GEOconstants.MINIMUMEXCAVATION;
-		pipeSlope = computePipeSlope();
-		diameter = computeFixedDiameter();
-		minSlope = computeMinSlope();
-	}
-
-	/**
-	 * Computation of <strong>fillAngle</strong>.
-	 * 
-	 *        Computation of <strong>fillAngle</strong> from \f[
-	 *        G=\frac{1-cos(\theta/2)}{2} \f] where \f$ G \f$ is the fill
-	 *        coefficient, \f$ \theta \f$ is the fill angle related to the fill
-	 *        coefficient.
-	 */
-
-	private double computeFillAngle() {
-		return 2 * Math.acos(1 - 2 * fillCoefficient);
-	}
 
 	/**
 	 * Computation of minimum slope.
@@ -106,64 +64,14 @@ public class Dimensioning {
 	 * 
 	 * @todo Build a method to use commercial pipe dimensions.
 	 */
-
-	private double computeMinSlope() {
+	private double computeMinSlope(Double diameter) {
 		double hydraulicRadius = computeHydraulicRadius(diameter);
 
 		return GEOconstants.SHEARSTRESS
 				/ (GEOconstants.WSPECIFICWEIGHT * hydraulicRadius);
 	}
 
-	/**
-	 * Computation of diameter due to auto-cleaning.
-	 * 
-	 *        The diameter is related to minimum slope and is evaluated by the
-	 *        relation \f[ D = {\left[ \frac{4^{^{13}/_6} Q}{\theta
-	 *        {(1-\frac{sin(\theta)}{\theta})}^{^7/_6} K_s \sqrt{^\tau/_\gamma}}
-	 *        \right]}^{^6/_{13}} \f]
-	 */
 
-	private double computeFixedDiameter() {
-		final double pow1 = 13.0 / 6;
-		double numerator = Math.pow(4, pow1);
-		final double pow2 = 7.0 / 6;
-		double denominator = fillAngle
-				* Math.pow(1 - Math.sin(fillAngle) / fillAngle, pow2)
-				* gaucklerStricklerCoefficient
-				* Math.pow(GEOconstants.SHEARSTRESS
-						/ GEOconstants.WSPECIFICWEIGHT, 0.5);
-		final double pow3 = 6.0 / 13;
-
-		return Math.pow(numerator / denominator, pow3);
-	}
-
-	/**
-	 * Computation of the hydraulic radius.
-	 * 
-	 *        Computation of the hydraulic radius from \f[ R_h =
-	 *        D\frac{1-sin(\theta)/\theta)}{4} \f] where the \f$ \theta \f$ is
-	 *        the fill angle.
-	 * 
-	 * @param[in] diameter Diameter of the pipe.
-	 */
-
-	private double computeHydraulicRadius(double diameter) {
-		return diameter / 4 * (1 - Math.sin(fillAngle) / fillAngle);
-	}
-
-	/**
-	 * Computation of <strong>pipeSlope</strong>
-	 * 
-	 *        Evaluation of the slope of the pipe with the end elevation point
-	 *        set by class field <strong>elevationEndPoint</strong>.
-	 */
-
-	private double computePipeSlope() {
-		return GEOgeometry.computeSlope(pipe.getStartPoint().getX(), pipe
-				.getStartPoint().getY(), pipe.getStartPoint().getElevation(),
-				pipe.getEndPoint().getX(), pipe.getEndPoint().getY(),
-				elevationEndPoint);
-	}
 
 	/**
 	 * Evaluation of diameter related to fixed slope.
@@ -194,24 +102,6 @@ public class Dimensioning {
 	}
 
 	/**
-	 * Evaluation of elevation of end point due to a defined slope.
-	 *
-	 *        Computation of the elevation of the end point through the Pitagora
-	 *        formula and use of <strong>GEOgeometry</strong> tool.
-	 *
-	 * @param[in] slope The slope of the pipe for that is necessary to evaluate
-	 *        the end point elevation.
-	 */
-
-	private double computeElevationEndPoint(double slope) {
-		return pipe.getStartPoint().getElevation()
-				- slope
-				* GEOgeometry.horizontalProjection(pipe.getStartPoint().getX(),
-						pipe.getStartPoint().getY(), pipe.getEndPoint().getX(),
-						pipe.getEndPoint().getY());
-	}
-
-	/**
 	 * Evaluation of velocity.
 	 *
 	 *        Computation of the velocity of the water in the channel through
@@ -227,22 +117,31 @@ public class Dimensioning {
 		return numerator / denominator;
 	}
 
-	/**
-	 * Main function of the class.
-	 *
-	 *        Call <strong>setPipe</strong> to setting all the fields and
-	 *        implement the minimum slope check. Then it return the
-	 *        <strong>pipe</strong> object with new value of diameter, end point
-	 *        elevation and velocity.
-	 * 
-	 * @param[in] pipe Object passed to the class necessary to fill all the
-	 *        fields.
-	 * @param[out] pipe Object passed to the class necessary to return all the
-	 *        evaluated fields of the entity.
-	 */
+    /**
+     * Main function of the class.
+     * <p>
+     * Call <strong>setPipe</strong> to setting all the fields and
+     * implement the minimum slope check. Then it return the
+     * <strong>pipe</strong> object with new value of diameter, end point
+     * elevation and velocity.
+     *
+     * @param[in] pipe Object passed to the class necessary to fill all the
+     * fields.
+     * @param[out] pipe Object passed to the class necessary to return all the
+     * evaluated fields of the entity.
+     */
 
-	public Pipe run(final Pipe pipe) {
-		setPipe(pipe);
+    public void evaluateDimension(Double discharge) {
+
+        Double naturalSlope = computeNaturalSlope();
+        evaluateDiameter(slope, maxAttemps);
+        evaluateDelta(slope);
+        setUp1 = terrain(j) - terrain(i) + delta + up2;
+
+
+
+
+		/*setPipe(pipe);
 
 		if (pipeSlope > minSlope) {
 			diameter = computeDiameter(pipeSlope);
@@ -259,6 +158,20 @@ public class Dimensioning {
 					fillCoefficient, computeVelocity());
 		}
 
-		return this.pipe;
+		return this.pipe;*/
+    }
+
+
+    private Double evaluateDiameter(Double slope) {
+	    computeDiameter(slope);
+		Double diameter = diameterToCommercial();
+		Double minSlope = computeMinSlope(diameter);
+		if (slope < minSlope) {
+			return evaluateDiameter(minSlope);
+		}
+		else {
+			return diameter;
+		}
 	}
+
 }

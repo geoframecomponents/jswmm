@@ -30,4 +30,6 @@ public interface CrossSectionType {
     Double getSectionFactorFull();
 
     Double getAreaMax();
+
+    Double computeHydraulicRadious(Double diameter, Double fillAngle);
 }

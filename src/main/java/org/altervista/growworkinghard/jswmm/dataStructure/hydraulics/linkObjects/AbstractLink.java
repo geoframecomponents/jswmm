@@ -41,6 +41,8 @@ public abstract class AbstractLink {
 
     public abstract OutsideSetup getUpstreamOutside();
 
+    public abstract OutsideSetup getDownstreamOutside();
+
     public abstract void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate);
 
     public abstract void setInitialUpFlowRate(Integer id, Instant time, Double flowRate);
@@ -55,5 +57,7 @@ public abstract class AbstractLink {
 
     public abstract void evaluateFlowRate(Instant currentTime);
 
-    public abstract void evaluateMaxDischarge(Instant currentTime);
+    public abstract void evaluateMaxCurve(Instant currentTime);
+
+    public abstract void evaluateDimension();
 }
