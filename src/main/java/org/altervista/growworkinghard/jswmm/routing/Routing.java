@@ -21,6 +21,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +67,9 @@ public class Routing {
     @Out
     public SWMMobject dataStructure = null;
 
+    @InNode
+    public HashMap<Integer, List<Integer>> subtrees;
+
     @OutNode
     public LinkedHashMap<Instant, Double> routingFlowRate;
 
@@ -104,7 +108,8 @@ public class Routing {
         }
 
         //dimensioning method!!
-        conduit.evaluateDimension(maxDischarge);
+        Double dimension = conduit.evaluateDimension(maxDischarge);
+        conduit.buildLink(dimension, subtrees);
 
         //route the maximum discharge to next bucket
         currentTime = initialTime;

@@ -21,6 +21,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public abstract class AbstractLink {
 
@@ -48,6 +49,8 @@ public abstract class AbstractLink {
     public abstract void setInitialUpFlowRate(Integer id, Instant time, Double flowRate);
 
     public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
+
+    public abstract void buildLink(Double dimension, HashMap<Integer, List<Integer>> subtrees);
 
     public enum LinkShape {
         CIRCURAL,

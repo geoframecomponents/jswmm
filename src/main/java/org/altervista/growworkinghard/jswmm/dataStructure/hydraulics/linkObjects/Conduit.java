@@ -24,6 +24,7 @@ import org.geotools.graph.util.geom.Coordinate2D;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class Conduit extends AbstractLink {
 
@@ -84,6 +85,13 @@ public class Conduit extends AbstractLink {
     @Override
     public void setInitialUpWetArea(Integer id, Instant time, double flowRate) {
         upstreamOutside.setWetArea(id, time, flowRate);
+    }
+
+    @Override
+    public void buildLink(Double dimension, HashMap<Integer, List<Integer>> subtrees) {
+        //allineamento peli liberi
+        //setup offset e up
+        
     }
 
     @Override
