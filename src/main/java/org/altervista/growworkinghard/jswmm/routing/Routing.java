@@ -92,15 +92,19 @@ public class Routing {
 
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
+        Double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
 
-            conduit.evaluateMaxCurve(currentTime);
+            Double currentDischarge = conduit.evaluateMaxDischarge(currentTime);
+            if (maxDischarge < currentDischarge) {
+                maxDischarge = currentDischarge;
+            }
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
         //dimensioning method!!
-        conduit.evaluateDimension();
+        conduit.evaluateDimension(maxDischarge);
 
         //route the maximum discharge to next bucket
         currentTime = initialTime;

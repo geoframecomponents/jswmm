@@ -85,7 +85,7 @@ public class Circular implements CrossSectionType {
         return 4.0 / depthFull / (1 - Math.cos(theta));
     }
 
-    public double computeFillAngle(Double fillCoefficient) {
+    public Double computeFillAngle(Double fillCoefficient) {
         return 2 * Math.acos( 1 - 2 * fillCoefficient );
     }
 }

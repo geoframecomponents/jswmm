@@ -323,6 +323,8 @@ public class SWMMobject {
     private void setConduit() {
 
         String linkName = "L1";
+        Double x = 0.0;
+        Double y = 0.0;
         String upstreamNodeName = "N1";
         String downstreamNodeName = "Out1";
         Double linkLength = 100.0;
@@ -337,8 +339,8 @@ public class SWMMobject {
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate);
-        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate);
+        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate, x, y);
+        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate, x, y);
 
         conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside, linkLength,
                 linkRoughness, linkSlope));

@@ -19,6 +19,7 @@ import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
+import org.geotools.graph.util.geom.Coordinate2D;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -32,8 +33,6 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    private Double maxDischarge;
-
     public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
                    OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope) {
         this.routingSetup = routingSetup;
@@ -43,11 +42,6 @@ public class Conduit extends AbstractLink {
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
         this.linkSlope = linkSlope;
-        this.maxDischarge = 0.0;
-    }
-
-    public Double getMaxDischarge() {
-        return maxDischarge;
     }
 
     @Override
@@ -62,19 +56,22 @@ public class Conduit extends AbstractLink {
 
     @Override
     public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
-        if (upstreamOutside.streamFlowRate == null) {
-            upstreamOutside.streamFlowRate = new HashMap<>();
+
+        HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstream = getUpstreamOutside().getStreamFlowRate();
+
+        if ( flowUpstream == null) {
+            flowUpstream = new HashMap<>();
         }
         for (Integer id : newFlowRate.keySet()) {
             for (Instant time : newFlowRate.get(id).keySet()) {
                 Double tempValue = 0.0;
-                if (upstreamOutside.streamFlowRate.containsKey(id)) {
-                    tempValue = upstreamOutside.streamFlowRate.get(id).get(time);
+                if (flowUpstream.containsKey(id)) {
+                    tempValue = flowUpstream.get(id).get(time);
                 }
                 Double tempNewValue = newFlowRate.get(id).get(time);
                 LinkedHashMap<Instant, Double> sumValues = new LinkedHashMap<>();
                 sumValues.put(time, tempValue + tempNewValue);
-                upstreamOutside.streamFlowRate.put(id, sumValues);
+                flowUpstream.put(id, sumValues);
             }
         }
     }
@@ -98,30 +95,33 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void evaluateMaxCurve(Instant currentTime) {
-        Double maxDischarge = 0.0;
-        for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
-            if ( this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime) >= maxDischarge) {
-                maxDischarge = this.getUpstreamOutside().getStreamFlowRate().get(id).get(currentTime);
-            }
+    public Double evaluateMaxDischarge(Instant currentTime) {
 
-            LinkedHashMap<Instant, Double> tempHM = new LinkedHashMap<>();
-            tempHM.put(currentTime, maxDischarge);
-            this.getUpstreamOutside().getStreamFlowRate().put(id, tempHM);
+        HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
+
+        Double maxDischarge = 0.0;
+        for (Integer id : flowUpstreamNode.keySet()) {
+            if ( flowUpstreamNode.get(id).get(currentTime) >= maxDischarge) {
+                maxDischarge = flowUpstreamNode.get(id).get(currentTime);
+            }
         }
+        return maxDischarge;
     }
 
     @Override
-    public void evaluateDimension() {
+    public Double evaluateDimension(Double discharge) {
+
         Double naturalSlope = computeNaturalSlope();
+        Double diameter = getDimension(discharge, naturalSlope);
 
-        computeDiameter(slope);
-
-        Double diameter = diameterToCommercial();
+        //diameter = diameterToCommercial(diameter);
 
         Double minSlope = computeMinSlope(diameter);
-        if (slope < minSlope) {
-            return evaluateDiameter(minSlope);
+        //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
+        if (naturalSlope < minSlope) {
+            diameter = getDimension(discharge, minSlope);
+            //diameter = diameterToCommercial(diameter);
+            return diameter;
         }
         else {
             return diameter;
@@ -129,16 +129,34 @@ public class Conduit extends AbstractLink {
     }
 
     private Double computeNaturalSlope() {
-        return GEOgeometry.computeSlope(getUpstreamOutside().getNodeCoordinates().x,
-                getUpstreamOutside().getNodeCoordinates().y, getUpstreamOutside().getTerrainElevation(),
-                getDownstreamOutside().getNodeCoordinates().x,
-                getDownstreamOutside().getNodeCoordinates().y, getDownstreamOutside().getTerrainElevation());
+        Coordinate2D upstream = getUpstreamOutside().getNodeCoordinates();
+        return GEOgeometry.computeSlope(upstream.x, upstream.y, getUpstreamOutside().getTerrainElevation(),
+                upstream.x, upstream.y, getDownstreamOutside().getTerrainElevation());
     }
 
     private double computeMinSlope(Double diameter) {
-        double hydraulicRadius = crossSectionType.computeHydraulicRadious(diameter, crossSectionType.);
+
+        Double fillCoeff = getUpstreamOutside().getFillCoeff();
+        Double fillAngle = crossSectionType.computeFillAngle(fillCoeff);
+        Double hydraulicRadius = crossSectionType.computeHydraulicRadious(diameter, fillAngle);
 
         return GEOconstants.SHEARSTRESS
                 / (GEOconstants.WSPECIFICWEIGHT * hydraulicRadius);
+    }
+
+    private Double getDimension(Double discharge, Double slope) {
+        
+        Double fillCoeff = getUpstreamOutside().getFillCoeff();
+        Double fillAngle = crossSectionType.computeFillAngle(fillCoeff);
+
+        final double pow1 = 3.0 / 8;
+        double numerator = Math.pow((discharge * fillAngle)
+                / (linkRoughness * Math.pow(slope, 0.5)), pow1);
+        final double pow2 = 5.0 / 8;
+        double denominator = Math
+                .pow(1 - Math.sin(fillAngle) / fillAngle, pow2);
+        final double pow3 = -9.0 / 8;
+
+        return numerator / denominator * Math.pow(10, pow3);
     }
 }

@@ -57,7 +57,7 @@ public abstract class AbstractLink {
 
     public abstract void evaluateFlowRate(Instant currentTime);
 
-    public abstract void evaluateMaxCurve(Instant currentTime);
+    public abstract Double evaluateMaxDischarge(Instant currentTime);
 
-    public abstract void evaluateDimension();
+    public abstract Double evaluateDimension(Double discharge);
 }

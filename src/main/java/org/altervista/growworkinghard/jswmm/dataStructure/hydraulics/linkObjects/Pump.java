@@ -27,6 +27,11 @@ class Pump extends AbstractLink {
     }
 
     @Override
+    public OutsideSetup getDownstreamOutside() {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
     public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
@@ -47,7 +52,12 @@ class Pump extends AbstractLink {
     }
 
     @Override
-    public void evaluateMaxCurve(Instant currentTime) {
+    public Double evaluateMaxDischarge(Instant currentTime) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
 
+    @Override
+    public Double evaluateDimension(Double discharge) {
+        throw new NullPointerException("Nothing implemented yet");
     }
 }
