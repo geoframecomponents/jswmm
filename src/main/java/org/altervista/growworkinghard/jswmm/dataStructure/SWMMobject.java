@@ -15,6 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
+import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadSWMM5RainfallFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
@@ -467,5 +468,33 @@ public class SWMMobject {
 
     public void setLinkFlowRate(String linkName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
         conduit.get(linkName).sumUpstreamFlowRate(flowRate);
+    }
+
+    public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
+        String node = null;
+        double downstreamDepthOut = getConduit(outLink).getDownstreamOutside().getWaterDepth();
+        double maxDepth = downstreamDepthOut;
+
+        for (Integer subtreeId : subtrees.keySet()) {
+            double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterDepth();
+            if (downstreamDepth > maxDepth) {
+                maxDepth = downstreamDepth;
+            }
+        }
+
+        List<Integer> outLinks = null;
+        outLinks.add(Integer.decode(outLink));
+        upgradeStream(outLinks, downstreamDepthOut - maxDepth);
+
+        for (List<Integer> subtreeList : subtrees.values()) {
+            double downstreamDepth = getConduit(String.valueOf(subtreeList.get(1))).getDownstreamOutside().getWaterDepth();
+            upgradeStream(subtreeList, downstreamDepth - maxDepth);
+        }
+    }
+
+    private void upgradeStream(List<Integer> subtreeList, double delta) {
+        for (Integer node : subtreeList) {
+
+        }
     }
 }

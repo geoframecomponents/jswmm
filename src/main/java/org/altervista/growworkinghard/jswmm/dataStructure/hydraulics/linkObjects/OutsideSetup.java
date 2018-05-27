@@ -26,9 +26,10 @@ public class OutsideSetup {
     private Coordinate2D nodeCoordinates;
     private Double terrainElevation;
     private Double baseElevation;
-
-    Double nodeOffset;
+    private Double nodeOffset;
+    private double height;
     private Double fillCoeff;
+    private double waterDepth;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
@@ -74,5 +75,22 @@ public class OutsideSetup {
 
     public Double getBaseElevation() {
         return baseElevation;
+    }
+
+    public double setHeight(double height) {
+        this.height = height;
+        return height;
+    }
+
+    public void setBaseElevation(double height) {
+        this.baseElevation = terrainElevation - height ;
+    }
+
+    public double getWaterDepth() {
+        return waterDepth;
+    }
+
+    public String getNodeName() {
+        return nodeName;
     }
 }

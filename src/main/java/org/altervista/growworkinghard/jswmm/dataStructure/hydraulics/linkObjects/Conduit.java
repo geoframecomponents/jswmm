@@ -26,7 +26,6 @@ import org.geotools.graph.util.geom.Coordinate2D;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public class Conduit extends AbstractLink {
 
@@ -90,13 +89,6 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void buildLink(double[] dimensions, HashMap<Integer, List<Integer>> subtrees) {
-        //allineamento peli liberi
-        //setup offset e up
-        
-    }
-
-    @Override
     public void evaluateFlowRate(Instant currentTime) {
         for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
             routingSetup.evaluateFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
@@ -119,18 +111,22 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public double[] evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
+    public double evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
         Double naturalSlope = computeNaturalSlope();
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
         Double diameter = getDimension(discharge, naturalSlope);
         diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
-        double[] diameters = pipeCompany.getCommercialDiameter(diameter);
-        double innerDiameter = diameters[0];
-        double outerDiameter = diameters[1];
 
-        Double minSlope = computeMinSlope(innerDiameter);
+        double[] diameters = pipeCompany.getCommercialDiameter(diameter);
+        double thicknessPipe = diameters[1] - diameters[0];
+
+        double fillAngleMax = evaluateFillAngle(diameters[0], naturalSlope, discharge);
+        double maxQDepth = diameters[0] / 2 * Math.cos(Math.PI - fillAngleMax);
+
+        Double minSlope = computeMinSlope(diameters[0]);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
+
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION !!!!!!
@@ -139,7 +135,18 @@ public class Conduit extends AbstractLink {
         crossSectionType.setDimensions(diameters[0], diameters[1]);
         // calcola grado di riempimento
         // set delle caratteristiche del tubo`
-        return diameters;
+        double height = getUpstreamOutside().setHeight(GEOconstants.MINIMUMEXCAVATION + diameters[1]);
+        getUpstreamOutside().setBaseElevation( height );
+        double escavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
+        checkMaxEscavation(escavation);
+
+        return GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
+    }
+
+    private void checkMaxEscavation(double escavation) {
+        if (escavation > GEOconstants.MAXEXCAVATION) {//TODO put MAXEXCAVATION in GEOconstants
+            //TODO warning
+        }
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {

@@ -51,8 +51,6 @@ public abstract class AbstractLink {
 
     public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
 
-    public abstract void buildLink(double[] dimensions, HashMap<Integer, List<Integer>> subtrees);
-
     public enum LinkShape {
         CIRCURAL,
         DUMMY
@@ -63,5 +61,5 @@ public abstract class AbstractLink {
 
     public abstract Double evaluateMaxDischarge(Instant currentTime);
 
-    public abstract double[] evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
+    public abstract double evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
 }

@@ -20,11 +20,11 @@ public class Circular implements CrossSectionType {
     private double[] diameters;
     Boolean alwaysIncrease = false;
 
-    private final Double depthFull;
-    private final Double areaFull;
-    private final Double areaMax;
-    private final Double hydraulicRadiousFull;
-    private final Double sectionFactorFull;
+    private Double depthFull;
+    private Double areaFull;
+    private Double areaMax;
+    private Double hydraulicRadiousFull;
+    private Double sectionFactorFull;
 
     public Circular(double innerDiameter, double outerDiameter) {
         this.diameters = new double[]{innerDiameter, outerDiameter};
@@ -36,12 +36,24 @@ public class Circular implements CrossSectionType {
     }
 
     public Circular(double innerDiameter) {
-        this.diameters = new double[]{innerDiameter, innerDiameter};
-        this.depthFull = 0.938 * innerDiameter;
-        this.areaFull = Math.PI * innerDiameter * innerDiameter / 4;
-        this.areaMax = 0.7854 * Math.pow(getDepthFull(), 2);
-        this.hydraulicRadiousFull = 0.25 * getDepthFull();
-        this.sectionFactorFull = getAreaFull() * Math.pow(getHydraulicRadiusFull(), 2.0 / 3.0);
+        this(innerDiameter, innerDiameter);
+    }
+
+    @Override
+    public void setDimensions(double innerDiameter, double outerDiameter) {
+        if (this.diameters == null) {
+            this.diameters = new double[]{innerDiameter, outerDiameter};
+        }
+        else{
+            this.diameters[0] = innerDiameter;
+            this.diameters[1] = outerDiameter;
+        }
+    }
+
+    @Override
+    public Double getDepthPipe(double innerDiameter) {
+
+        return ;
     }
 
     @Override
@@ -96,16 +108,5 @@ public class Circular implements CrossSectionType {
 
     public Double computeFillAngle(Double fillCoefficient) {
         return 2 * Math.acos( 1 - 2 * fillCoefficient );
-    }
-
-    @Override
-    public void setDimensions(double innerDiameter, double outerDiameter) {
-        if (this.diameters == null) {
-            this.diameters = new double[]{innerDiameter, outerDiameter};
-        }
-        else{
-            this.diameters[0] = innerDiameter;
-            this.diameters[1] = outerDiameter;
-        }
     }
 }
