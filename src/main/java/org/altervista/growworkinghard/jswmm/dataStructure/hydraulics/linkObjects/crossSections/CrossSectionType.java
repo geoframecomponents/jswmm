@@ -34,4 +34,6 @@ public interface CrossSectionType {
     Double computeHydraulicRadious(Double diameter, Double fillAngle);
 
     Double computeFillAngle(Double fillCoeff);
+
+    void setDimensions(double innerDiameter, double outerDiameter);
 }

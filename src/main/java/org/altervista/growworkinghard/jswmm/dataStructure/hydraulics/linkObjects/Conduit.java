@@ -136,6 +136,7 @@ public class Conduit extends AbstractLink {
             diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION !!!!!!
             diameters = pipeCompany.getCommercialDiameter(diameter);
         }
+        crossSectionType.setDimensions(diameters[0], diameters[1]);
         // calcola grado di riempimento
         // set delle caratteristiche del tubo`
         return diameters;
