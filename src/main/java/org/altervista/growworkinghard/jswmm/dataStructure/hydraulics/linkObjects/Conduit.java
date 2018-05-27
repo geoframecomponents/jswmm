@@ -17,6 +17,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 import org.geotools.graph.util.geom.Coordinate2D;
@@ -88,7 +89,7 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void buildLink(Double dimension, HashMap<Integer, List<Integer>> subtrees) {
+    public void buildLink(double[] dimensions, HashMap<Integer, List<Integer>> subtrees) {
         //allineamento peli liberi
         //setup offset e up
         
@@ -117,22 +118,26 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public Double evaluateDimension(Double discharge) {
+    public double[] evaluateDimension(Double discharge, String pipeCompany) {
 
         Double naturalSlope = computeNaturalSlope();
         Double diameter = getDimension(discharge, naturalSlope);
 
-        //diameter = diameterToCommercial(diameter);
+        CommercialPipeSize company = CommercialPipeSize.commercialPipe(pipeCompany);
 
-        Double minSlope = computeMinSlope(diameter);
+        double[] diameters = company.getCommercialDiameter(diameter);
+        double innerDiameter = diameters[0];
+        double outerDiameter = diameters[1];
+
+        Double minSlope = computeMinSlope(innerDiameter);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
-            //diameter = diameterToCommercial(diameter);
-            return diameter;
+            diameters = company.getCommercialDiameter(diameter);
+            return diameters;
         }
         else {
-            return diameter;
+            return diameters;
         }
     }
 

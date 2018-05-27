@@ -53,6 +53,9 @@ public class Routing {
     @In
     public Conduit conduit;
 
+    @In
+    public String pipeCompany;
+
     /**
      * Integration method setup
      */
@@ -68,7 +71,7 @@ public class Routing {
     public SWMMobject dataStructure = null;
 
     @InNode
-    public HashMap<Integer, List<Integer>> subtrees;
+    public HashMap<Integer, List<Integer>> net3subtrees;
 
     @OutNode
     public LinkedHashMap<Instant, Double> routingFlowRate;
@@ -108,8 +111,8 @@ public class Routing {
         }
 
         //dimensioning method!!
-        Double dimension = conduit.evaluateDimension(maxDischarge);
-        conduit.buildLink(dimension, subtrees);
+        double[] dimensions = conduit.evaluateDimension(maxDischarge, pipeCompany);
+        conduit.buildLink(dimensions, net3subtrees);
 
         //route the maximum discharge to next bucket
         currentTime = initialTime;
