@@ -117,7 +117,6 @@ public class Conduit extends AbstractLink {
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
         Double diameter = getDimension(discharge, naturalSlope);
         diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
-
         double[] diameters = pipeCompany.getCommercialDiameter(diameter);
         double thicknessPipe = diameters[1] - diameters[0];
 
@@ -129,7 +128,6 @@ public class Conduit extends AbstractLink {
 
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
-            diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION !!!!!!
             diameters = pipeCompany.getCommercialDiameter(diameter);
         }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
@@ -154,7 +152,7 @@ public class Conduit extends AbstractLink {
         double EIGHTOVERTHREE = 2.666667;
         double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
         double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
-        double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize is in cm
+        double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize m2cm
 
         double exponent = 2/3;
         double fillAngle = fillAngleBisection(initFillAngle, known, exponent);
