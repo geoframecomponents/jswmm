@@ -15,6 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
@@ -62,5 +63,5 @@ public abstract class AbstractLink {
 
     public abstract Double evaluateMaxDischarge(Instant currentTime);
 
-    public abstract double[] evaluateDimension(Double discharge, String pipeCompany);
+    public abstract double[] evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
 }

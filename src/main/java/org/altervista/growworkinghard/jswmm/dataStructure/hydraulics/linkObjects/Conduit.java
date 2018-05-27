@@ -17,6 +17,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
+import it.blogspot.geoframe.utils.GEOunitsTransform;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
@@ -118,14 +119,13 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public double[] evaluateDimension(Double discharge, String pipeCompany) {
+    public double[] evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
         Double naturalSlope = computeNaturalSlope();
+        // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
         Double diameter = getDimension(discharge, naturalSlope);
-
-        CommercialPipeSize company = CommercialPipeSize.commercialPipe(pipeCompany);
-
-        double[] diameters = company.getCommercialDiameter(diameter);
+        diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
+        double[] diameters = pipeCompany.getCommercialDiameter(diameter);
         double innerDiameter = diameters[0];
         double outerDiameter = diameters[1];
 
@@ -133,12 +133,95 @@ public class Conduit extends AbstractLink {
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
-            diameters = company.getCommercialDiameter(diameter);
-            return diameters;
+            diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION !!!!!!
+            diameters = pipeCompany.getCommercialDiameter(diameter);
         }
-        else {
-            return diameters;
+        // calcola grado di riempimento
+        // set delle caratteristiche del tubo`
+        return diameters;
+    }
+
+    private double evaluateFillAngle(double innerSize, double slope, double discharge) {
+        double TWO_THIRTEENOVERTHREE = 20.158737;
+        double EIGHTOVERTHREE = 2.666667;
+        double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
+        double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
+        double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize is in cm
+
+        double exponent = 2/3;
+        double fillAngle = fillAngleBisection(initFillAngle, known, exponent);
+
+        if (fillAngle > initFillAngle)
+            throw new IllegalArgumentException("New angle must be smaller than old angle");
+
+        return  fillAngle;
+    }
+
+    private double fillAngleBisection(double fillAngle, double known, double exponent) {
+        double delta = fillAngle / 10;
+        double supFillAngle = gsm(known, fillAngle, exponent);
+
+        double fillAngle_i = 0;
+        double infFillAngle;
+        for (int i = 1; i <= 10; i++) {
+            fillAngle_i = fillAngle - (i * delta);
+            infFillAngle = gsm(known, fillAngle_i, exponent);
+
+            if (supFillAngle * infFillAngle < 0) break; // 0 of function is between supFillAngle, infFillAngle
+
         }
+        // add check on bracketing not succeeding
+        if (fillAngle_i == 0) {
+            String msg = "fillAngle_i cannot be 0";
+            throw new NullPointerException(msg);
+        }
+
+        double accuracy = 0.005;
+        return bisection(fillAngle_i, fillAngle_i + delta, known, accuracy, exponent);
+    }
+
+    private double bisection(double fillAngle, double fillAnglePlusDelta, double known, double accuracy, double exponent) {
+
+        double function = gsm(known, fillAngle, exponent);
+        double function_mid = gsm(known, fillAnglePlusDelta, exponent);
+
+        if (function * function_mid >= 0) {
+            String msg = "Both functions are positive. Non bisection possible";
+            throw new IllegalArgumentException(msg);
+        }
+
+        double deltaAngle;
+        double rtb;
+        if (function < 0) {
+            deltaAngle = fillAnglePlusDelta - fillAngle;
+            rtb = fillAngle;
+        } else {
+            deltaAngle = fillAngle - fillAnglePlusDelta;
+            rtb = fillAnglePlusDelta;
+        }
+
+        int MAXLOOP = 40;
+        for (int i = 0; i < MAXLOOP; i++) {
+            double fillAngleMid = rtb + (deltaAngle *= 0.5);
+            function_mid = gsm(known, fillAngleMid, exponent);
+
+            if (function_mid <= 0) {
+                rtb = fillAngleMid;
+            }
+
+            if (Math.abs(deltaAngle) < accuracy || function_mid == 0) {
+                return rtb;
+            }
+        }
+        throw new UnsupportedOperationException("Too many bisections");
+    }
+
+    private double gsm(double known, double fillAngle, double exponent) {
+        if (fillAngle <= 0) {
+            // throw warning for min filling
+            fillAngle = 0.01; //minimum filling for channels
+        }
+        return (known - (fillAngle - Math.sin(fillAngle)) * Math.pow((1 - Math.sin(fillAngle)/fillAngle), exponent));
     }
 
     private Double computeNaturalSlope() {
