@@ -113,7 +113,7 @@ public class Routing {
         }
 
         //dimensioning method!!
-        double maxDownstreamDepth = conduit.evaluateDimension(maxDischarge, pipeCompany);
+        conduit.evaluateDimension(maxDischarge, pipeCompany);
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket

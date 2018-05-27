@@ -61,5 +61,5 @@ public abstract class AbstractLink {
 
     public abstract Double evaluateMaxDischarge(Instant currentTime);
 
-    public abstract double evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
+    public abstract void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
 }

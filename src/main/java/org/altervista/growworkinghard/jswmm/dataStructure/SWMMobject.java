@@ -471,7 +471,7 @@ public class SWMMobject {
     }
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
-        String node = null;
+
         double downstreamDepthOut = getConduit(outLink).getDownstreamOutside().getWaterDepth();
         double maxDepth = downstreamDepthOut;
 

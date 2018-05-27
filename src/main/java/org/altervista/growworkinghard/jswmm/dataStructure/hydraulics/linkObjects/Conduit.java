@@ -111,38 +111,39 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public double evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
+    public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
-        Double naturalSlope = computeNaturalSlope();
+        double naturalSlope = computeNaturalSlope();
+
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
-        Double diameter = getDimension(discharge, naturalSlope);
+
+        double diameter = getDimension(discharge, naturalSlope);
         diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
-        double[] diameters = pipeCompany.getCommercialDiameter(diameter);
+        double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
         double fillAngleMax = evaluateFillAngle(diameters[0], naturalSlope, discharge);
-        double maxQDepth = diameters[0] / 2 * Math.cos(Math.PI - fillAngleMax);
+        double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
 
         Double minSlope = computeMinSlope(diameters[0]);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
-
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
-            diameters = pipeCompany.getCommercialDiameter(diameter);
+            diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
+            diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
-        // calcola grado di riempimento
-        // set delle caratteristiche del tubo`
-        double height = getUpstreamOutside().setHeight(GEOconstants.MINIMUMEXCAVATION + diameters[1]);
-        getUpstreamOutside().setBaseElevation( height );
-        double escavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
-        checkMaxEscavation(escavation);
 
-        return GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
+        double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
+        double height = getUpstreamOutside().setHeight(excavation);
+        getUpstreamOutside().setBaseElevation( height );
+        checkMaxEscavation(excavation);
+
+        getUpstreamOutside().setWaterDepth(GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth ));
     }
 
     private void checkMaxEscavation(double escavation) {
-        if (escavation > GEOconstants.MAXIMUMEXCAVATION) {//TODO put MAXEXCAVATION in GEOconstants
+        if (escavation > GEOconstants.MAXIMUMEXCAVATION) {
             //TODO warning
         }
     }

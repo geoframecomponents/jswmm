@@ -93,4 +93,8 @@ public class OutsideSetup {
     public String getNodeName() {
         return nodeName;
     }
+
+    public void setWaterDepth(double waterDepth) {
+        this.waterDepth = waterDepth;
+    }
 }
