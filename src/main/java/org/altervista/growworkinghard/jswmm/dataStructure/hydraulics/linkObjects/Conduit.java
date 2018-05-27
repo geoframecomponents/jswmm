@@ -142,7 +142,7 @@ public class Conduit extends AbstractLink {
     }
 
     private void checkMaxEscavation(double escavation) {
-        if (escavation > GEOconstants.MAXEXCAVATION) {//TODO put MAXEXCAVATION in GEOconstants
+        if (escavation > GEOconstants.MAXIMUMEXCAVATION) {//TODO put MAXEXCAVATION in GEOconstants
             //TODO warning
         }
     }
