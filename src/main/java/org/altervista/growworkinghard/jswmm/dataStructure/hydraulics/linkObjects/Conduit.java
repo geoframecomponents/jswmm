@@ -17,7 +17,6 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
-import it.blogspot.geoframe.utils.GEOunitsTransform;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
@@ -118,7 +117,6 @@ public class Conduit extends AbstractLink {
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
         double diameter = getDimension(discharge, naturalSlope);
-        diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
@@ -129,7 +127,6 @@ public class Conduit extends AbstractLink {
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
-            diameter = GEOunitsTransform.meters2centimeters(diameter); // ATTENTION!!!!!!
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
@@ -137,15 +134,9 @@ public class Conduit extends AbstractLink {
         double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
         double height = getUpstreamOutside().setHeight(excavation);
         getUpstreamOutside().setBaseElevation( height );
-        checkMaxEscavation(excavation);
+        getUpstreamOutside().checkMaxExcavation(excavation);
 
         getUpstreamOutside().setWaterDepth(GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth ));
-    }
-
-    private void checkMaxEscavation(double escavation) {
-        if (escavation > GEOconstants.MAXIMUMEXCAVATION) {
-            //TODO warning
-        }
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {

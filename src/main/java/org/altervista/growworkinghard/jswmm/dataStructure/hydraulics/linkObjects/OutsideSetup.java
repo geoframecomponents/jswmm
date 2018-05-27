@@ -18,25 +18,28 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import it.blogspot.geoframe.utils.GEOconstants;
 import org.geotools.graph.util.geom.Coordinate2D;
 
 public class OutsideSetup {
 
     String nodeName;
     private Coordinate2D nodeCoordinates;
-    private Double terrainElevation;
-    private Double baseElevation;
-    private Double nodeOffset;
+    private double terrainElevation;
+    private double baseElevation;
+    private double downOffset;
+    private double upOffset;
     private double height;
-    private Double fillCoeff;
+    private double fillCoeff;
     private double waterDepth;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
 
-    public OutsideSetup(String nodeName, Double nodeOffset, Double fillCoeff, Double x, Double y) {
+    public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff, Double x, Double y) {
         this.nodeName = nodeName;
-        this.nodeOffset = nodeOffset;
+        this.downOffset = downOffset;
         this.fillCoeff = fillCoeff;
         this.nodeCoordinates = new Coordinate2D(x, y);
     }
@@ -96,5 +99,18 @@ public class OutsideSetup {
 
     public void setWaterDepth(double waterDepth) {
         this.waterDepth = waterDepth;
+    }
+
+    public void upgradeOffset(double delta) {
+        this.upOffset += delta;
+        this.height += delta;
+        this.baseElevation += delta;
+        checkMaxExcavation(height);//TODO
+    }
+
+    private void checkMaxExcavation(double escavation) {
+        if (escavation > GEOconstants.MAXIMUMEXCAVATION) {
+            //TODO eccezione
+        }
     }
 }
