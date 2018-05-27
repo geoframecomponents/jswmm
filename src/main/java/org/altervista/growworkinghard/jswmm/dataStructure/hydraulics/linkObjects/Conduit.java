@@ -134,9 +134,11 @@ public class Conduit extends AbstractLink {
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = company.getCommercialDiameter(diameter);
+            crossSectionType.setDimensions(diameters[0], diameters[1]);
             return diameters;
         }
         else {
+            crossSectionType.setDimensions(diameters[0], diameters[1]);
             return diameters;
         }
     }
