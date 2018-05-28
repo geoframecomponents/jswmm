@@ -51,12 +51,6 @@ public class Circular implements CrossSectionType {
     }
 
     @Override
-    public Double getDepthPipe(double innerDiameter) {
-
-        return ;
-    }
-
-    @Override
     public Double getDepthFull() {
         return depthFull;
     }

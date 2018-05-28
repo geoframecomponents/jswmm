@@ -15,6 +15,8 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,7 +59,7 @@ class Pump extends AbstractLink {
     }
 
     @Override
-    public Double evaluateDimension(Double discharge) {
+    public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
         throw new NullPointerException("Nothing implemented yet");
     }
 }

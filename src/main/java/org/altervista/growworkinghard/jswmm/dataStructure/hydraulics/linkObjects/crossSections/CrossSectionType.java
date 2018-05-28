@@ -36,6 +36,4 @@ public interface CrossSectionType {
     Double computeFillAngle(Double fillCoeff);
 
     void setDimensions(double innerDiameter, double outerDiameter);
-
-    Double getDepthPipe(double innerDiameter);
 }
