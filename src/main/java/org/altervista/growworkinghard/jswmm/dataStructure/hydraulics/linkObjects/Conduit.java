@@ -141,8 +141,8 @@ public class Conduit extends AbstractLink {
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
-        double TWO_THIRTEENOVERTHREE = 20.158737;
-        double EIGHTOVERTHREE = 2.666667;
+        final double TWO_THIRTEENOVERTHREE = Math.pow(2, 13/3);
+        final double EIGHTOVERTHREE = 8/3;
         double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
         double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
         double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize m2cm
@@ -158,15 +158,15 @@ public class Conduit extends AbstractLink {
 
     private double fillAngleBisection(double fillAngle, double known, double exponent) {
         double delta = fillAngle / 10;
-        double supFillAngle = gsm(known, fillAngle, exponent);
+        double upperBound = gsm(known, fillAngle, exponent);
 
         double fillAngle_i = 0;
-        double infFillAngle;
+        double lowerBound;
         for (int i = 1; i <= 10; i++) {
             fillAngle_i = fillAngle - (i * delta);
-            infFillAngle = gsm(known, fillAngle_i, exponent);
+            lowerBound = gsm(known, fillAngle_i, exponent);
 
-            if (supFillAngle * infFillAngle < 0) break; // 0 of function is between supFillAngle, infFillAngle
+            if (upperBound * lowerBound < 0) break; // root of function is between upperBound, lowerBound
 
         }
         // add check on bracketing not succeeding
@@ -217,7 +217,7 @@ public class Conduit extends AbstractLink {
 
     private double gsm(double known, double fillAngle, double exponent) {
         if (fillAngle <= 0) {
-            // throw warning for min filling
+            System.out.println("Negative fill angle: " + fillAngle + ". Minimum assigned.");
             fillAngle = 0.01; //minimum filling for channels
         }
         return (known - (fillAngle - Math.sin(fillAngle)) * Math.pow((1 - Math.sin(fillAngle)/fillAngle), exponent));
