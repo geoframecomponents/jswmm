@@ -35,14 +35,13 @@ public class Conduit extends AbstractLink {
     Double linkSlope;
 
     public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
-                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope) {
+                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness) {
         this.routingSetup = routingSetup;
         this.crossSectionType = crossSectionType;
         this.upstreamOutside = upstreamOutside;
         this.downstreamOutside = downstreamOutside;
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
-        this.linkSlope = linkSlope;
     }
 
     @Override
@@ -128,6 +127,10 @@ public class Conduit extends AbstractLink {
         if (naturalSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
+            linkSlope = minSlope;
+        }
+        else {
+            linkSlope = naturalSlope;
         }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
 

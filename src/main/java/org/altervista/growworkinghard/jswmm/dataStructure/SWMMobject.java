@@ -101,10 +101,10 @@ public class SWMMobject {
 
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T00:14:30Z");
+        Instant endDate = Instant.parse("2018-01-01T02:00:00Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant sweepStart = Instant.parse("2018-01-01T00:14:30Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T00:02:00Z");
+        Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
         Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;
 
@@ -121,7 +121,7 @@ public class SWMMobject {
     }
 
     private void setRunoff() {
-        Long runoffStepSize = 30L; //must be in seconds!!
+        Long runoffStepSize = 300L; //must be in seconds!!
 
         Double minimumStepSize = 1.0e-8;
         Double maximumStepSize = 1.0e+3;
@@ -151,13 +151,13 @@ public class SWMMobject {
         //for (each raingage)
         ReadDataFromFile readDataFromFile = null;
         try {
-            readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfall.txt");
+            readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfallNetwork.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
         //ProjectUnits raingageUnits = new CubicMetersperSecond();
         String raingageName = "RG1";
-        String dataSourceName = "rainfall.txt";
+        String dataSourceName = "rainfallNetwork.txt";
         String stationName = "RG1";
         Long rainfallStepSize = 60L;
         //TODO FORMATDATA
@@ -166,20 +166,6 @@ public class SWMMobject {
         //Double snowpack = 0.0;
 
         raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
-
-        ReadDataFromFile readDataFromFile2 = null;
-        try {
-            readDataFromFile2 = new ReadSWMM5RainfallFile("./data/rainfall2.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //ProjectUnits raingageUnits = new CubicMetersperSecond();
-        String raingageName2 = "RG2";
-        String dataSourceName2 = "rainfall2.txt";
-        String stationName2 = "RG2";
-        Long rainfallStepSize2 = 60L;
-
-        raingageSetup.put(raingageName2, new GlobalRaingage(readDataFromFile2, dataSourceName2, stationName2, rainfallStepSize2));
     }
 
     private void setSubcatchments() {
@@ -193,14 +179,21 @@ public class SWMMobject {
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
-        String areaName = "Sub1";
+
+        String areaName1 = "1";
+        String areaName2 = "2";
+        String areaName3 = "3";
+        String areaName4 = "4";
+        String areaName5 = "5";
+        String areaName6 = "6";
+
         Double subcatchmentArea = 10000.0; //meters*meters
 
-        Double imperviousPercentage = 1.0;
-        Double imperviousWOstoragePercentage = 1.0;
+        Double imperviousPercentage = 0.25;
+        Double imperviousWOstoragePercentage = 0.25;
 
-        Double depressionStorageImpervious = 0.0;
-        Double depressionStoragePervious = 0.0;
+        Double depressionStorageImpervious = 0.00005;
+        Double depressionStoragePervious = 0.00005;
 
         String perviousTo = "OUTLET";
         Double percentageFromPervious = 0.0;
@@ -211,11 +204,11 @@ public class SWMMobject {
         Double roughnessCoefficientPervious = 0.1;
         Double roughnessCoefficientImpervious = 0.01;
 
-        Double characteristicWidth = 500.0;
-        Double areaSlope = 0.05;
+        Double characteristicWidth = 100.0;
+        Double areaSlope = 0.005;
         Double curbLength = 0.0;
 
-        String raingageName = "STA01";
+        String raingageName = "RG1";
         ReceiverRunoff receiverSubcatchment = null;
 
         List<Subarea> subareas = divideAreas(imperviousPercentage, subcatchmentArea,
@@ -223,43 +216,18 @@ public class SWMMobject {
                 roughnessCoefficientPervious, roughnessCoefficientImpervious,
                 perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
 
-        areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
+        areas.put(areaName1, new Area(subcatchmentArea, raingageSetup.get(areaName1),
                 characteristicWidth, areaSlope, subareas));
-
-        //
-
-        String areaName2 = "Sub2";
-        Double subcatchmentArea2 = 10000.0;
-
-        Double imperviousPercentage2 = 1.0;
-        Double imperviousWOstoragePercentage2 = 0.0;
-
-        Double depressionStorageImpervious2 = 0.0;
-        Double depressionStoragePervious2 = 0.0;
-
-        String perviousTo2 = "OUTLET";
-        Double percentageFromPervious2 = 0.0;
-
-        String imperviousTo2 = "OUTLET";
-        Double percentageFromImpervious2 = 0.0;
-
-        Double roughnessCoefficientPervious2 = 0.1;
-        Double roughnessCoefficientImpervious2 = 0.01;
-
-        Double characteristicWidth2 = 500.0;
-        Double areaSlope2 = 0.05;
-        Double curbLength2 = 0.0;
-
-        String raingageName2 = "STA01";
-        ReceiverRunoff receiverSubcatchment2 = null;
-
-        List<Subarea> subareas2 = divideAreas(imperviousPercentage2, subcatchmentArea2,
-                imperviousWOstoragePercentage2, depressionStoragePervious2, depressionStorageImpervious2,
-                roughnessCoefficientPervious2, roughnessCoefficientImpervious2,
-                perviousTo2, imperviousTo2, percentageFromPervious2, percentageFromImpervious2);
-
-        areas.put(areaName2, new Area(subcatchmentArea2, raingageSetup.get(areaName2),
-                characteristicWidth2, areaSlope2, subareas2));
+        areas.put(areaName2, new Area(subcatchmentArea, raingageSetup.get(areaName2),
+                characteristicWidth, areaSlope, subareas));
+        areas.put(areaName3, new Area(subcatchmentArea, raingageSetup.get(areaName3),
+                characteristicWidth, areaSlope, subareas));
+        areas.put(areaName4, new Area(subcatchmentArea, raingageSetup.get(areaName4),
+                characteristicWidth, areaSlope, subareas));
+        areas.put(areaName5, new Area(subcatchmentArea, raingageSetup.get(areaName5),
+                characteristicWidth, areaSlope, subareas));
+        areas.put(areaName6, new Area(subcatchmentArea, raingageSetup.get(areaName6),
+                characteristicWidth, areaSlope, subareas));
     }
 
     private void setNodes() {
@@ -275,25 +243,37 @@ public class SWMMobject {
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
         //ProjectUnits nodeUnits = new CubicMetersperSecond();
 
-        String nodeName = "N1";
-        Double nodeElevation = 2.0;
+        String nodeName1 = "N1";
+        String nodeName2 = "N2";
+        String nodeName3 = "N3";
+        String nodeName4 = "N4";
+        String nodeName5 = "N5";
+        String nodeName6 = "N6";
+
+        Double nodeElevation1 = 5.0;
+        Double nodeElevation2 = 4.80;
+        Double nodeElevation3 = 5.0;
+        Double nodeElevation4 = 4.80;
+        Double nodeElevation5 = 4.50;
+        Double nodeElevation6 = 4.20;
+
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
         Double maximumDepthSurcharge = 1.0;
         Double nodePondingArea = 200.0;
 
-        junctions.put(nodeName, new Junction(nodeElevation, maximumDepthNode, initialDepthNode,
+        junctions.put(nodeName1, new Junction(nodeElevation1, maximumDepthNode, initialDepthNode,
                 maximumDepthSurcharge, nodePondingArea));
-
-        String nodeName2 = "N2";
-        Double nodeElevation2 = 2.0;
-        Double maximumDepthNode2 = 3.0;
-        Double initialDepthNode2 = 0.0;
-        Double maximumDepthSurcharge2 = 1.0;
-        Double nodePondingArea2 = 0.0;
-
-        junctions.put(nodeName2, new Junction(nodeElevation2, maximumDepthNode2, initialDepthNode2,
-                maximumDepthSurcharge2, nodePondingArea2));
+        junctions.put(nodeName2, new Junction(nodeElevation2, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
+        junctions.put(nodeName3, new Junction(nodeElevation3, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
+        junctions.put(nodeName4, new Junction(nodeElevation4, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
+        junctions.put(nodeName5, new Junction(nodeElevation5, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
+        junctions.put(nodeName6, new Junction(nodeElevation6, maximumDepthNode, initialDepthNode,
+                maximumDepthSurcharge, nodePondingArea));
     }
 
     private void setOutfalls() {
@@ -303,16 +283,16 @@ public class SWMMobject {
         //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
         //ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
-        String nodeName = "Out1";
-        Double nodeElevation = 0.0;
-        Double fixedStage = 0.0;
-        LinkedHashMap<Instant, Double> tidalCurve = null;
-        LinkedHashMap<Instant, Double> stageTimeseries = null;
-        boolean gated = false;
-        String routeTo = "";
-
-        outfalls.put(nodeName, new Outfall(nodeElevation, fixedStage, tidalCurve,stageTimeseries,
-                gated, routeTo));
+//        String nodeName = "Out1";
+//        Double nodeElevation = 0.0;
+//        Double fixedStage = 0.0;
+//        LinkedHashMap<Instant, Double> tidalCurve = null;
+//        LinkedHashMap<Instant, Double> stageTimeseries = null;
+//        boolean gated = false;
+//        String routeTo = "";
+//
+//        outfalls.put(nodeName, new Outfall(nodeElevation, fixedStage, tidalCurve,stageTimeseries,
+//                gated, routeTo));
     }
 
     private void setLinks() {
@@ -322,33 +302,104 @@ public class SWMMobject {
 
     private void setConduit() {
 
-        String linkName = "L1";
-        Double x = 0.0;
-        Double y = 0.0;
-        double upElevation = 1000;
-        double downElevation = 999;
-        String upstreamNodeName = "N1";
-        String downstreamNodeName = "Out1";
-        Double linkLength = 100.0;
+        String linkName8 = "8";
+        String linkName9 = "9";
+        String linkName10 = "10";
+        String linkName11 = "11";
+        String linkName12 = "12";
+
+        double terrain8up = 5.0;
+        double terrain8down = 4.80;
+        double terrain9up = 5.0;
+        double terrain9down = 4.80;
+        double terrain10up = 4.80;
+        double terrain10down = 4.50;
+        double terrain11up = 4.80;
+        double terrain11down = 4.50;
+        double terrain12up = 4.50;
+        double terrain12down = 4.20;
+
+        Double x8up = 0.0;
+        Double x8down = 0.0;
+        Double x9up = 200.0;
+        Double x9down = 0.0;
+        Double x10up = 0.0;
+        Double x10down = 0.0;
+        Double x11up = -200.0;
+        Double x11down = 0.0;
+        Double x12up = 0.0;
+        Double x12down = 0.0;
+
+        Double y8up = 0.0;
+        Double y8down = -200.0;
+        Double y9up = -200.0;
+        Double y9down = -200.0;
+        Double y10up = -200.0;
+        Double y10down = -400.0;
+        Double y11up = -400.0;
+        Double y11down = -400.0;
+        Double y12up = -400.0;
+        Double y12down = -600.0;
+
+        String upstreamNodeName8 = "N1";
+        String upstreamNodeName9 = "N3";
+        String upstreamNodeName10 = "N4";
+        String upstreamNodeName11 = "N2";
+        String upstreamNodeName12 = "N5";
+
+        String downstreamNodeName8 = "N4";
+        String downstreamNodeName9 = "N4";
+        String downstreamNodeName10 = "N5";
+        String downstreamNodeName11 = "N5";
+        String downstreamNodeName12 = "N6";
+
+        Double linkLength = 200.0;
         Double linkRoughness = 0.01;
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
         Double initialFlowRate = 0.0;
         Double maximumFlowRate = 0.0;
-        Double linkSlope = 10.0/linkLength; //TODO how SWMM evaluate it?
-        Double diameter = 0.8;
+        Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate, x, y, upElevation);
-        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate, x, y, downElevation);
+        OutsideSetup upstreamOutside8 = new OutsideSetup(upstreamNodeName8, upstreamOffset,
+                maximumFlowRate, x8up, y8up, terrain8up);
+        OutsideSetup downstreamOutside8 = new OutsideSetup(downstreamNodeName8, downstreamOffset,
+                maximumFlowRate, x8down, y8down, terrain8down);
 
-        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside, linkLength,
-                linkRoughness, linkSlope));
+        OutsideSetup upstreamOutside9 = new OutsideSetup(upstreamNodeName9, upstreamOffset,
+                maximumFlowRate, x9up, y9up, terrain9up);
+        OutsideSetup downstreamOutside9 = new OutsideSetup(downstreamNodeName9, downstreamOffset,
+                maximumFlowRate, x9down, y9down, terrain9down);
+
+        OutsideSetup upstreamOutside10 = new OutsideSetup(upstreamNodeName10, upstreamOffset,
+                maximumFlowRate, x10up, y10up, terrain10up);
+        OutsideSetup downstreamOutside10 = new OutsideSetup(downstreamNodeName10, downstreamOffset,
+                maximumFlowRate, x10down, y10down, terrain10down);
+
+        OutsideSetup upstreamOutside11 = new OutsideSetup(upstreamNodeName11, upstreamOffset,
+                maximumFlowRate, x11up, y11up, terrain11up);
+        OutsideSetup downstreamOutside11 = new OutsideSetup(downstreamNodeName11, downstreamOffset,
+                maximumFlowRate, x11down, y11down, terrain11down);
+
+        OutsideSetup upstreamOutside12 = new OutsideSetup(upstreamNodeName12, upstreamOffset,
+                maximumFlowRate, x12up, y12up, terrain8up);
+        OutsideSetup downstreamOutside12 = new OutsideSetup(downstreamNodeName12, downstreamOffset,
+                maximumFlowRate, x12down, y12down, terrain12down);
+
+        conduit.put(linkName8, new Conduit(routingSetup, crossSectionType, upstreamOutside8, downstreamOutside8,
+                linkLength, linkRoughness));
+        conduit.put(linkName9, new Conduit(routingSetup, crossSectionType, upstreamOutside9, downstreamOutside9,
+                linkLength, linkRoughness));
+        conduit.put(linkName10, new Conduit(routingSetup, crossSectionType, upstreamOutside10, downstreamOutside10,
+                linkLength, linkRoughness));
+        conduit.put(linkName11, new Conduit(routingSetup, crossSectionType, upstreamOutside11, downstreamOutside11,
+                linkLength, linkRoughness));
+        conduit.put(linkName12, new Conduit(routingSetup, crossSectionType, upstreamOutside12, downstreamOutside12,
+                linkLength, linkRoughness));
     }
-
-
 
     private List<Subarea> divideAreas(Double imperviousPercentage, Double subcatchmentArea,
                                       Double imperviousWOstoragePercentage, Double depressionStoragePervious, Double depressionStorageImpervious,
@@ -412,26 +463,36 @@ public class SWMMobject {
 
     //TODO add at each subcatchment!
     private void setInitialValues(Integer id) {
-        for(Subarea subarea : areas.get("Sub1").getSubareas()) {
+        setSubareasInitialValue(id, "1");
+        setSubareasInitialValue(id, "2");
+        setSubareasInitialValue(id, "3");
+        setSubareasInitialValue(id, "4");
+        setSubareasInitialValue(id, "5");
+        setSubareasInitialValue(id, "6");
+        setInitialTime(id, "8");
+        setInitialTime(id, "9");
+        setInitialTime(id, "10");
+        setInitialTime(id, "11");
+        setInitialTime(id, "12");
+    }
+
+    private void setSubareasInitialValue(Integer id, String areaName) {
+        for(Subarea subarea : areas.get(areaName).getSubareas()) {
             subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
         }
+    }
 
-        for(Subarea subarea : areas.get("Sub2").getSubareas()) {
-            subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
-            subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
-            subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
-        }
-
+    private void setInitialTime(Integer id, String linkName) {
         Instant time = timeSetup.getStartDate();
         while (time.isBefore(timeSetup.getEndDate())) {
-            conduit.get("L1").setInitialUpFlowRate(id, time, 0.0);
-            conduit.get("L1").setInitialUpWetArea(id, time, 0.0);
+            conduit.get(linkName).setInitialUpFlowRate(id, time, 0.0);
+            conduit.get(linkName).setInitialUpWetArea(id, time, 0.0);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());
         }
-        conduit.get("L1").setInitialUpFlowRate(id, time, 0.0);
-        conduit.get("L1").setInitialUpWetArea(id, time, 0.0);
+        conduit.get(linkName).setInitialUpFlowRate(id, time, 0.0);
+        conduit.get(linkName).setInitialUpWetArea(id, time, 0.0);
     }
 
     public List<Double> readFileList(String fileName) {
