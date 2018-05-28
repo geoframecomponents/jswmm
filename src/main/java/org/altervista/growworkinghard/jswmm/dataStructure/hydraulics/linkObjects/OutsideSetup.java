@@ -31,17 +31,19 @@ public class OutsideSetup {
     private double downOffset;
     private double upOffset;
     private double height;
+    private double excavation;
     private double fillCoeff;
     private double waterDepth;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
 
-    public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff, Double x, Double y) {
+    public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff, Double x, Double y, double terrainElevation) {
         this.nodeName = nodeName;
         this.downOffset = downOffset;
         this.fillCoeff = fillCoeff;
         this.nodeCoordinates = new Coordinate2D(x, y);
+        this.terrainElevation = terrainElevation;
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getStreamWetArea() {
@@ -80,12 +82,11 @@ public class OutsideSetup {
         return baseElevation;
     }
 
-    public double setHeight(double height) {
+    private void setHeight(double height) {
         this.height = height;
-        return height;
     }
 
-    public void setBaseElevation(double height) {
+    private void setBaseElevation(double height) {
         this.baseElevation = terrainElevation - height ;
     }
 
@@ -110,7 +111,23 @@ public class OutsideSetup {
 
     private void checkMaxExcavation(double escavation) {
         if (escavation > GEOconstants.MAXIMUMEXCAVATION) {
-            //TODO eccezione
+            //TODO warning
+            System.out.println("over MAXIMUMEXCAVATION");
         }
+    }
+
+    public void setHeights(double excavation, double offset) {
+        this.downOffset = offset;
+        setHeight(excavation + downOffset);
+        setBaseElevation( height );
+        this.excavation = excavation;
+        checkMaxExcavation(excavation);
+    }
+
+    public void setHeights(double excavation) {
+        setHeight(excavation + downOffset);
+        setBaseElevation( height );
+        this.excavation = excavation;
+        checkMaxExcavation(excavation);
     }
 }

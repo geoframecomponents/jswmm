@@ -132,11 +132,12 @@ public class Conduit extends AbstractLink {
         crossSectionType.setDimensions(diameters[0], diameters[1]);
 
         double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
-        double height = getUpstreamOutside().setHeight(excavation);
-        getUpstreamOutside().setBaseElevation( height );
-        getUpstreamOutside().checkMaxExcavation(excavation);
+        getUpstreamOutside().setHeights(excavation, 0.0);
+        getDownstreamOutside().setHeights(excavation);
 
-        getUpstreamOutside().setWaterDepth(GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth ));
+        double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
+        getUpstreamOutside().setWaterDepth(waterDepth);
+        getDownstreamOutside().setWaterDepth(waterDepth);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
