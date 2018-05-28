@@ -325,6 +325,8 @@ public class SWMMobject {
         String linkName = "L1";
         Double x = 0.0;
         Double y = 0.0;
+        double upElevation = 1000;
+        double downElevation = 999;
         String upstreamNodeName = "N1";
         String downstreamNodeName = "Out1";
         Double linkLength = 100.0;
@@ -339,8 +341,8 @@ public class SWMMobject {
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate, x, y);
-        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate, x, y);
+        OutsideSetup upstreamOutside = new OutsideSetup(upstreamNodeName, upstreamOffset, maximumFlowRate, x, y, upElevation);
+        OutsideSetup downstreamOutside = new OutsideSetup(downstreamNodeName, downstreamOffset, maximumFlowRate, x, y, downElevation);
 
         conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside, linkLength,
                 linkRoughness, linkSlope));
@@ -483,12 +485,16 @@ public class SWMMobject {
 
         List<Integer> outLinks = null;
         outLinks.add(Integer.decode(outLink));
-        upgradeStream(outLinks, downstreamDepthOut - maxDepth);
+        if (downstreamDepthOut - maxDepth != 0.0) {
+            upgradeStream(outLinks, downstreamDepthOut - maxDepth);
+        }
 
         for (List<Integer> subtreeList : subtrees.values()) {
             int firstSon = subtreeList.size();
             double downstreamDepth = getConduit(String.valueOf(firstSon)).getDownstreamOutside().getWaterDepth();
-            upgradeStream(subtreeList, downstreamDepth - maxDepth);
+            if (downstreamDepth - maxDepth != 0.0) {
+                upgradeStream(subtreeList, downstreamDepth - maxDepth);
+            }
         }
     }
 
