@@ -125,6 +125,7 @@ public class Routing {
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
     }
+
     @Finalize
     void upgradeSWMMobject() {
         routingFlowRate = conduit.getDownstreamFlowRate();

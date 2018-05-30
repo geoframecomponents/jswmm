@@ -27,7 +27,7 @@ import java.util.LinkedHashMap;
 
 public class FlowRateDispatcher {
 
-    @In
+    @InNode
     @Out
     SWMMobject dataStructure;
 
