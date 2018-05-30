@@ -37,13 +37,13 @@ public class PreRunoff {
 
     private LinkedHashMap<Instant, Double> rainfallData;
 
-    @In
+    @InNode
     public Double aLPP;
 
-    @In
+    @InNode
     public Double nLPP;
 
-    @In
+    @InNode
     public Integer numberOfCurves;
 
     @In
