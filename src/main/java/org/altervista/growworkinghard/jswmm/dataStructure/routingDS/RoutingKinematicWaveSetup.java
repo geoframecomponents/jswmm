@@ -113,12 +113,13 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
             downWetArea.put(time, 0.0);
         }
 
-        final Double beta = Math.sqrt(linkSlope) / linkRoughness;
+        final Double beta = Math.sqrt(linkSlope) * linkRoughness; //should be Math.sqrt(linkSlope) / linkRoughness but the Manning coefficient is 1 / Gs
 
         //A1(t+dt)
         upWetArea.put(nextTime, sectionFactorToArea( upFlowRate.get(nextTime)/beta ));
 
         final Double constantOne = linkLength / phi * iota / routingStepSize;
+
         final Double constantTwo = linkLength / (phi * routingStepSize) * ((1 - iota) * (upWetArea.get(nextTime) - upWetArea.get(currentTime)) -
                 iota * downWetArea.get(currentTime)) + (1 - phi) / phi * (downFlowRate.get(currentTime) - upFlowRate.get(currentTime))-
                 upFlowRate.get(nextTime);
@@ -248,8 +249,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
                 if (element.getAdimensionalSectionFactor() < sectionFactor) {
                     lowerSFValue = element.adimensionalSectionFactor;
                     elementCounter++;
-                }
-                else {
+                } else {
                     upperSFValue = element.adimensionalSectionFactor;
                     break;
                 }

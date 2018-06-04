@@ -110,7 +110,7 @@ public class Routing {
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
-        System.out.println("Q MAX " + maxDischarge);
+        System.out.println("Q_max " + maxDischarge);
 
         //dimensioning method!!
         //conduit.evaluateDimension(maxDischarge, pipeCompany);

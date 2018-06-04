@@ -55,15 +55,26 @@ public class OutsideSetup {
     }
 
     public void setWetArea(Integer id, Instant time, Double value) {
-        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
-        temp.put(time, value);
-        this.streamWetArea.put(id, temp);
+        LinkedHashMap<Instant, Double> data;
+        if (streamWetArea.get(id) == null) {
+            data = new LinkedHashMap<>();
+        }
+        else {
+            data = streamWetArea.get(id);
+        }
+        data.put(time, value);
+        this.streamWetArea.put(id, data);
     }
 
     public void setFlowRate(Integer id, Instant time, Double flowRate) {
-        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
-        temp.put(time, flowRate);
-        this.streamFlowRate.put(id, temp);
+        LinkedHashMap<Instant, Double> data;
+        if (streamWetArea.get(id) == null) {
+            data = new LinkedHashMap<>();
+        }
+        else {
+            data = streamFlowRate.get(id);
+        }
+        this.streamFlowRate.put(id, data);
     }
 
     public Double getFillCoeff() {

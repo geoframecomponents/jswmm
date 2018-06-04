@@ -80,8 +80,8 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void setInitialUpWetArea(Integer id, Instant time, double flowRate) {
-        upstreamOutside.setWetArea(id, time, flowRate);
+    public void setInitialUpWetArea(Integer id, Instant time, double area) {
+        upstreamOutside.setWetArea(id, time, area);
     }
 
     @Override
@@ -112,6 +112,11 @@ public class Conduit extends AbstractLink {
 
         for (Integer id : flowUpstreamNode.keySet()) {
 
+            //System.out.println("id" + id);
+            //System.out.println("flowUpstreamNode.get(id)" + flowUpstreamNode.get(id));
+            //System.out.println("currentTime" + currentTime);
+            //System.out.println("currentTime" + flowUpstreamNode.get(id).get(currentTime));
+
             double currentFlow = flowUpstreamNode.get(id).get(currentTime);
             if ( currentFlow >= maxDischarge) {
                 maxDischarge = currentFlow;
@@ -129,9 +134,6 @@ public class Conduit extends AbstractLink {
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
         double diameter = getDimension(discharge, naturalSlope);
-
-        System.out.println("diameter" + diameter);
-
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
@@ -157,14 +159,14 @@ public class Conduit extends AbstractLink {
         double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
         getUpstreamOutside().setWaterDepth(waterDepth);
         getDownstreamOutside().setWaterDepth(waterDepth);
+
+        System.out.println("diameter" + diameters[1]);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
         final double TWO_THIRTEENOVERTHREE = Math.pow(2, 13/3);
         final double EIGHTOVERTHREE = 8/3;
         double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
-
-        System.out.println("initFillAngle " + initFillAngle);
 
         double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
         double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize m2cm
@@ -274,19 +276,12 @@ public class Conduit extends AbstractLink {
             fillAngle = 0.01;
         }
 
-        System.out.println("discharge" + discharge);
-        System.out.println("fillCoeff" + fillCoeff);
-        System.out.println("fillAngle" + fillAngle);
-        System.out.println("slope" + slope);
-
         final double pow1 = 3.0 / 8;
-        double numerator = Math.pow((discharge * fillAngle)
-                / (linkRoughness * Math.pow(slope, 0.5)), pow1);
-        final double pow2 = 5.0 / 8;
-        double denominator = Math
-                .pow(1 - Math.sin(fillAngle) / fillAngle, pow2);
-        final double pow3 = -9.0 / 8;
+        double coeff = Math.pow(4, 2.0/3);
+        double numerator = (coeff * 8 * discharge);
+        double denominator = (fillAngle - Math.sin(fillAngle)) * linkRoughness *
+                Math.pow(slope, 0.5) * Math.pow( (1 - Math.sin(fillAngle) / fillAngle), 2.0/3 );
 
-        return numerator / denominator * Math.pow(10, pow3);
+        return Math.pow( numerator / denominator, pow1 );
     }
 }

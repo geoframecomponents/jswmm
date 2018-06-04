@@ -305,22 +305,22 @@ public class SWMMobject {
     private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
                             String downName, double downX, double downY, double downZ) {
 
-        Double linkRoughness = 0.01;
+        Double linkRoughness = 65.0; //Gs coefficient
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
         Double initialFlowRate = 0.0;
-        Double maximumFlowRate = 0.0;
+        Double fillCoeff = 0.8; // Max flowrate
         Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside8 = new OutsideSetup(upName, upstreamOffset,
-                maximumFlowRate, upX, upY, upZ);
-        OutsideSetup downstreamOutside8 = new OutsideSetup(downName, downstreamOffset,
-                maximumFlowRate, downX, downY, downZ);
+        OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
+                fillCoeff, upX, upY, upZ);
+        OutsideSetup downstreamOutside = new OutsideSetup(downName, downstreamOffset,
+                fillCoeff, downX, downY, downZ);
 
-        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside8, downstreamOutside8,
+        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness));
     }
 
@@ -525,38 +525,54 @@ public class SWMMobject {
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
 
-        double downstreamDepthOut = getConduit(outLink).getDownstreamOutside().getWaterDepth();
+        int numberOfSons = subtrees.values().size();
+        //if (numberOfSons > 1) {
+        double downstreamDepthOut = getConduit(outLink).getUpstreamOutside().getWaterDepth();
         double maxDepth = downstreamDepthOut;
+        Integer maxId = Integer.parseInt(outLink);
 
         for (Integer subtreeId : subtrees.keySet()) {
-            double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterDepth();
-            if (downstreamDepth > maxDepth) {
-                maxDepth = downstreamDepth;
+            if (getConduit(String.valueOf(subtreeId)) != null) {
+                double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterDepth();
+                if (downstreamDepth > maxDepth) {
+                    maxDepth = downstreamDepth;
+                    maxId = subtreeId;
+                }
             }
         }
 
-        List<Integer> outLinks = null;
-        outLinks.add(Integer.decode(outLink));
-        if (downstreamDepthOut - maxDepth != 0.0) {
-            upgradeStream(outLinks, downstreamDepthOut - maxDepth);
+        if (maxId != Integer.parseInt(outLink)) {
+            upgradeStream(outLink, downstreamDepthOut - maxDepth);
         }
 
         for (List<Integer> subtreeList : subtrees.values()) {
-            int firstSon = subtreeList.size();
-            double downstreamDepth = getConduit(String.valueOf(firstSon)).getDownstreamOutside().getWaterDepth();
-            if (downstreamDepth - maxDepth != 0.0) {
-                upgradeStream(subtreeList, downstreamDepth - maxDepth);
+
+            String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
+            if (getConduit(firstSon) != null) {
+                double downstreamDepth = getConduit(firstSon).getDownstreamOutside().getWaterDepth();
+                if (downstreamDepth - maxDepth != 0.0) {
+                    upgradeStream(subtreeList, downstreamDepth - maxDepth);
+                }
             }
         }
     }
 
     private void upgradeStream(List<Integer> subtreeList, double delta) {
         for (Integer subtreeLink : subtreeList) {
-            OutsideSetup upstream = getConduit(String.valueOf(subtreeLink)).getUpstreamOutside();
-            OutsideSetup downstream = getConduit(String.valueOf(subtreeLink)).getDownstreamOutside();
 
-            upstream.upgradeOffset(delta);
-            downstream.upgradeOffset(delta);
+            String currentLink = String.valueOf(subtreeLink);
+            upgradeStream(currentLink, delta);
         }
+    }
+
+    private void upgradeStream(String currentLink, double delta) {
+
+            if (getConduit(currentLink) != null) {
+                OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
+                OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
+
+                upstream.upgradeOffset(delta);
+                downstream.upgradeOffset(delta);
+            }
     }
 }
