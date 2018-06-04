@@ -15,14 +15,17 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
+
+import static org.altervista.growworkinghard.jswmm.dataStructure.options.units.UnitsSWMM.CMS;
 
 public abstract class Subarea {
+
+    ProjectUnits projectUnits;
 
     Double subareaArea;
     Double depthFactor;
@@ -37,6 +40,10 @@ public abstract class Subarea {
     HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;
     HashMap<Integer, Double> excessRainfall;
 
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {
+        return flowRate;
+    }
+
     public void setTotalDepth(Integer id, Instant time, Double depthValue) {
         LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
         temp.put(time, depthValue);
@@ -50,9 +57,15 @@ public abstract class Subarea {
     }
 
     public void setFlowRate(Integer id, Instant time, Double flowValue) {
-        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
-        temp.put(time, flowValue);
-        this.flowRate.put(id, temp);
+        double CMSFlowFactor = 1.0;
+        if ( projectUnits.getProjectUnits() == CMS ) {
+            CMSFlowFactor = 1.0E-5;
+        }
+        if ( !getFlowRate().containsKey(id) ) {
+            getFlowRate().put(id, new LinkedHashMap<>());
+        }
+        getFlowRate().get(id).put(time, flowValue * CMSFlowFactor);
+
     }
 
     public void setExcessRainfall(Integer id, Double value) {
@@ -69,7 +82,6 @@ public abstract class Subarea {
 
     public void evaluateFlowRate(Integer identifier, Double rainfall, Double evaporation, Instant currentTime,
                                  RunoffSetup runoffSetup, Double subareaSlope, Double characteristicWidth) {
-
         Double tempPrecipitation = rainfall;
         if (subareaConnections != null) {
             tempPrecipitation = null;
@@ -97,7 +109,9 @@ public abstract class Subarea {
         Double finalTime = (double) nextTime.getEpochSecond();
 
         runoffSetup.setOde(rainfall, depthFactor);
-        runoffSetup.getFirstOrderIntegrator().integrate(runoffSetup.getOde(), initialTime, inputValues, finalTime, outputValues);
+
+        runoffSetup.getFirstOrderIntegrator().integrate(runoffSetup.getOde(), initialTime, inputValues,
+                finalTime, outputValues);
 
         setRunoffDepth(id, nextTime, outputValues[0]);
         setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + (outputValues[0]-inputValues[0]));

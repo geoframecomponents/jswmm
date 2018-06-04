@@ -25,6 +25,7 @@ import org.geotools.graph.util.geom.Coordinate2D;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Conduit extends AbstractLink {
 
@@ -44,6 +45,10 @@ public class Conduit extends AbstractLink {
         this.linkRoughness = linkRoughness;
     }
 
+    public CrossSectionType getCrossSectionType() {
+        return crossSectionType;
+    }
+
     @Override
     public OutsideSetup getUpstreamOutside() {
         return upstreamOutside;
@@ -59,19 +64,12 @@ public class Conduit extends AbstractLink {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstream = getUpstreamOutside().getStreamFlowRate();
 
-        if ( flowUpstream == null) {
-            flowUpstream = new HashMap<>();
-        }
         for (Integer id : newFlowRate.keySet()) {
+            if (!flowUpstream.containsKey(id)) {
+                flowUpstream.put(id, new LinkedHashMap<>());
+            }
             for (Instant time : newFlowRate.get(id).keySet()) {
-                Double tempValue = 0.0;
-                if (flowUpstream.containsKey(id)) {
-                    tempValue = flowUpstream.get(id).get(time);
-                }
-                Double tempNewValue = newFlowRate.get(id).get(time);
-                LinkedHashMap<Instant, Double> sumValues = new LinkedHashMap<>();
-                sumValues.put(time, tempValue + tempNewValue);
-                flowUpstream.put(id, sumValues);
+                flowUpstream.get(id).put(time, newFlowRate.get(id).get(time));
             }
         }
     }
@@ -95,16 +93,31 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public Double evaluateMaxDischarge(Instant currentTime) {
+    public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
 
-        Double maxDischarge = 0.0;
+        //System.out.println("number of curves " + flowUpstreamNode.size());
+
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowUpstreamNode.entrySet()) {
+            for (Instant time : entry.getValue().keySet()) {
+                System.out.println("ID " + entry.getKey());
+                System.out.println("Instant " + time);
+                System.out.println("Value " + entry.getValue().get(time));
+            }
+        }*/
+
+        //System.out.println("ID 1" + " flowUpstreamNode " + flowUpstreamNode.get(1));
+
+
         for (Integer id : flowUpstreamNode.keySet()) {
-            if ( flowUpstreamNode.get(id).get(currentTime) >= maxDischarge) {
-                maxDischarge = flowUpstreamNode.get(id).get(currentTime);
+
+            double currentFlow = flowUpstreamNode.get(id).get(currentTime);
+            if ( currentFlow >= maxDischarge) {
+                maxDischarge = currentFlow;
             }
         }
+
         return maxDischarge;
     }
 
@@ -116,6 +129,9 @@ public class Conduit extends AbstractLink {
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
         double diameter = getDimension(discharge, naturalSlope);
+
+        System.out.println("diameter" + diameter);
+
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
@@ -147,6 +163,9 @@ public class Conduit extends AbstractLink {
         final double TWO_THIRTEENOVERTHREE = Math.pow(2, 13/3);
         final double EIGHTOVERTHREE = 8/3;
         double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
+
+        System.out.println("initFillAngle " + initFillAngle);
+
         double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
         double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize m2cm
 
@@ -220,16 +239,21 @@ public class Conduit extends AbstractLink {
 
     private double gsm(double known, double fillAngle, double exponent) {
         if (fillAngle <= 0) {
-            System.out.println("Negative fill angle: " + fillAngle + ". Minimum assigned.");
             fillAngle = 0.01; //minimum filling for channels
+            System.out.println("Negative fill angle: " + fillAngle + ". Minimum assigned.");
         }
         return (known - (fillAngle - Math.sin(fillAngle)) * Math.pow((1 - Math.sin(fillAngle)/fillAngle), exponent));
     }
 
     private Double computeNaturalSlope() {
         Coordinate2D upstream = getUpstreamOutside().getNodeCoordinates();
-        return GEOgeometry.computeSlope(upstream.x, upstream.y, getUpstreamOutside().getTerrainElevation(),
-                upstream.x, upstream.y, getDownstreamOutside().getTerrainElevation());
+        if ( getUpstreamOutside().getTerrainElevation().equals(getDownstreamOutside().getTerrainElevation()) ) {
+            return 0.01;//TODO is there a better method?
+        }
+        else {
+            return GEOgeometry.computeSlope(upstream.x, upstream.y, getUpstreamOutside().getTerrainElevation(),
+                    upstream.x, upstream.y, getDownstreamOutside().getTerrainElevation());
+        }
     }
 
     private double computeMinSlope(Double diameter) {
@@ -246,6 +270,14 @@ public class Conduit extends AbstractLink {
         
         Double fillCoeff = getUpstreamOutside().getFillCoeff();
         Double fillAngle = crossSectionType.computeFillAngle(fillCoeff);
+        if( fillAngle == 0.0 ) {
+            fillAngle = 0.01;
+        }
+
+        System.out.println("discharge" + discharge);
+        System.out.println("fillCoeff" + fillCoeff);
+        System.out.println("fillAngle" + fillAngle);
+        System.out.println("slope" + slope);
 
         final double pow1 = 3.0 / 8;
         double numerator = Math.pow((discharge * fillAngle)

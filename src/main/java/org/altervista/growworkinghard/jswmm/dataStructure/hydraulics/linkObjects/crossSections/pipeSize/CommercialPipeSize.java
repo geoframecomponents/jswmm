@@ -2,6 +2,6 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 
 public interface CommercialPipeSize {
 
-    double[] getCommercialDiameter(double designedDiameter);
+    double[] getCommercialDiameter(Double designedDiameter);
 
 }

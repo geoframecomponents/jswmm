@@ -24,4 +24,9 @@ public class Storage extends AbstractNode {
     public void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }
+
+    @Override
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {
+        throw new NullPointerException("Nothing implemented yet");
+    }
 }

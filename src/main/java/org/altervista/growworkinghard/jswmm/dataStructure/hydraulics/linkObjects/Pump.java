@@ -54,7 +54,7 @@ class Pump extends AbstractLink {
     }
 
     @Override
-    public Double evaluateMaxDischarge(Instant currentTime) {
+    public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
         throw new NullPointerException("Nothing implemented yet");
     }
 

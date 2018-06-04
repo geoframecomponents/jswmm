@@ -80,7 +80,12 @@ public class Routing {
 
     @Initialize
     public void initialize() {
+    }
 
+    @Execute
+    public void run() {
+
+        System.out.println("Routing on " + linkName);
         if(dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
@@ -94,25 +99,21 @@ public class Routing {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-    }
-
-    @Execute
-    public void run() {
 
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
         Double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
 
-            Double currentDischarge = conduit.evaluateMaxDischarge(currentTime);
-            if (maxDischarge < currentDischarge) {
-                maxDischarge = currentDischarge;
-            }
+            maxDischarge = conduit.evaluateMaxDischarge(currentTime, maxDischarge);
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
+        System.out.println("Q MAX " + maxDischarge);
+
         //dimensioning method!!
+        //conduit.evaluateDimension(maxDischarge, pipeCompany);
         conduit.evaluateDimension(maxDischarge, pipeCompany);
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 

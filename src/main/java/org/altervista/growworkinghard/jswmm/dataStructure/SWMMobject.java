@@ -23,6 +23,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GIUHsetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GlobalRaingage;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.*;
@@ -55,6 +56,7 @@ public class SWMMobject {
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
     private LinkedHashMap<Instant, Double> downstreamFlowRate;
+    private ProjectUnits projectUnits;
 
     public SWMMobject(String inpFileName) {
         setTime();
@@ -67,6 +69,7 @@ public class SWMMobject {
     }
 
     public SWMMobject() {
+        setUnits();
         setTime();
         setRunoff();
         setRouting();
@@ -84,13 +87,13 @@ public class SWMMobject {
     }
 
     public RunoffSetup getRunoffSetup() {
-        return new SWMM5RunoffSetup(runoffSetup);
+        return runoffSetup;
     }
 
     public RoutingSetup getRoutingSetup() { return routingSetup; }
 
-    public RaingageSetup getRaingage(String areaName) {
-        return raingageSetup.get(areaName);
+    public RaingageSetup getRaingage(String raingageName) {
+        return raingageSetup.get(raingageName);
     }
 
     public Area getAreas(String areaName) {
@@ -99,6 +102,15 @@ public class SWMMobject {
 
     public Conduit getConduit(String conduitName) {
         return conduit.get(conduitName);
+    }
+
+
+    private void setUnits() {
+        String units = "CMS";
+
+        if (units == "CMS") {
+            this.projectUnits = new CubicMetersperSecond();
+        }
     }
 
     private void setTime() {
@@ -114,14 +126,6 @@ public class SWMMobject {
                 sweepStart, sweepEnd, dryDays);
     }
 
-    private void setUnits() {
-        String units = "CMS";
-
-        if (units == "CMS") {
-            ProjectUnits projectUnits = new CubicMetersperSecond();
-        }
-    }
-
     private void setRunoff() {
         Long runoffStepSize = 60L; //must be in seconds!!
 
@@ -134,14 +138,10 @@ public class SWMMobject {
         Instant totalTime = timeSetup.getEndDate();
 
         this.runoffSetup = new SWMM5RunoffSetup(initialTime, totalTime, runoffStepSize,
-                minimumStepSize, maximumStepSize, absoluteRunoffTolerance, relativeRunoffTolerance);
+                minimumStepSize, maximumStepSize, absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
     }
 
     private void setRouting() {
-
-        Instant initialTime = timeSetup.getStartDate();
-        Instant totalTime = timeSetup.getEndDate();
-
         Long routingStepSize = 30L;
         Double toleranceMethod = 0.0015;
 
@@ -172,21 +172,21 @@ public class SWMMobject {
         //Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
         //Double snowpack = 0.0;
 
-        raingageSetup.put(raingageName, new GlobalRaingage(readDataFromFile, dataSourceName, stationName, rainfallStepSize));
+        raingageSetup.put(raingageName, new GIUHsetup(rainfallStepSize));
     }
 
     private void setSubcatchments() {
         //for (each subcatchment)
-        setAreas("1", 1.937E04);
-        setAreas("2", 1.731E04);
-        setAreas("3", 0.481E04);
-        setAreas("4", 0.547E04);
-        setAreas("5", 2.141E04);
-        setAreas("6", 0.383E04);
-        setAreas("7", 0.353E04);
-        setAreas("8", 0.999E04);
-        setAreas("9", 1.583E04);
-        setAreas("10", 0.633E04);
+        setAreas("1", 1.937);
+        setAreas("2", 1.731);
+        setAreas("3", 0.481);
+        setAreas("4", 0.547);
+        setAreas("5", 2.141);
+        setAreas("6", 0.383);
+        setAreas("7", 0.353);
+        setAreas("8", 0.999);
+        setAreas("9", 1.583);
+        setAreas("10", 0.633);
     }
 
     private void setAreas(String areaName, double subcatchmentArea) {
@@ -335,50 +335,55 @@ public class SWMMobject {
 
         List<Subarea> tmpSubareas = new LinkedList<>();
         if(imperviousPercentage == 0.0) {
-            tmpSubareas.add(new Pervious(perviousArea, depressionStoragePervious, roughnessCoefficientImpervious));
+            tmpSubareas.add(new Pervious(perviousArea, depressionStoragePervious,
+                    roughnessCoefficientImpervious, projectUnits));
         }
         else if(imperviousPercentage == 1.0) {
             if (imperviousWOstoragePercentage != 0.0) {
                 tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious));
+                        roughnessCoefficientImpervious, projectUnits));
             }
             if (imperviousWOstoragePercentage != 1.0) {
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, projectUnits));
             }
 
         }
         else {
             if (perviousTo.equals("IMPERVIOUS")) {
                 tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious));
+                        roughnessCoefficientImpervious, projectUnits));
 
                 List<Subarea> tmpConnections = null;
-                tmpConnections.add(new Pervious(perviousArea, depressionStoragePervious, roughnessCoefficientPervious));
+                tmpConnections.add(new Pervious(perviousArea, depressionStoragePervious,
+                        roughnessCoefficientPervious, projectUnits));
 
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious, tmpConnections));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
+                        tmpConnections, projectUnits));
             }
             else if(perviousTo.equals("OUTLET")) {
-                tmpSubareas.add(new Pervious(perviousArea, depressionStoragePervious, roughnessCoefficientPervious));
+                tmpSubareas.add(new Pervious(perviousArea, depressionStoragePervious,
+                        roughnessCoefficientPervious, projectUnits));
             }
 
             if (imperviousTo.equals("PERVIOUS")) {
 
                 List<Subarea> tmpConnections = null;
                 tmpConnections.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious));
+                        roughnessCoefficientImpervious, projectUnits));
                 tmpConnections.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious, tmpConnections));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
+                        tmpConnections, projectUnits));
 
                 tmpSubareas.add(new Pervious(perviousArea, depressionStoragePervious, roughnessCoefficientPervious,
-                        percentageFromImpervious, tmpConnections));
+                        percentageFromImpervious, tmpConnections, projectUnits));
             }
             else if (imperviousTo.equals("OUTLET")) {
                 tmpSubareas.add(new ImperviousWithStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious));
+                        depressionStorageImpervious, roughnessCoefficientImpervious, projectUnits));
                 tmpSubareas.add(new ImperviousWithoutStorage(imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious));
+                        roughnessCoefficientImpervious, projectUnits));
             }
         }
         return tmpSubareas;
@@ -409,7 +414,7 @@ public class SWMMobject {
     }
 
     private void setSubareasInitialValue(Integer id, String areaName) {
-        for(Subarea subarea : areas.get(areaName).getSubareas()) {
+        for( Subarea subarea : areas.get(areaName).getSubareas() ) {
             subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
@@ -454,6 +459,60 @@ public class SWMMobject {
         }
 
         return testingValues;
+    }
+
+    public LinkedHashMap<Instant, Double> adaptDataSeries(Long toStepSize, Long fromStepSize, Long finalTime,
+                                                           Long initialTime, LinkedHashMap<Instant, Double> HMData) {
+
+        LinkedHashMap<Instant, Double> adaptedData = new LinkedHashMap<>();
+        Long currentDataTime = initialTime;
+
+        for (Long currentTime = initialTime; currentTime<finalTime; currentTime+=toStepSize) {
+
+            while(currentDataTime <= currentTime) {
+                currentDataTime += fromStepSize;
+            }
+
+            Long upperTime = currentDataTime;
+            Double upperRainfallData = 0.0;
+            if(HMData.get(Instant.ofEpochSecond(upperTime)) != null) {
+                upperRainfallData = HMData.get(Instant.ofEpochSecond(upperTime));
+            }
+
+            Long lowerTime = upperTime - fromStepSize;
+            Double lowerData = 0.0;
+            if(HMData.get(Instant.ofEpochSecond(lowerTime)) != null) {
+                lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
+            }
+
+            Double currentData = interpolateData(currentTime, lowerTime, lowerData,
+                    upperTime, upperRainfallData);
+
+            adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
+        }
+        adaptedData.put(Instant.ofEpochSecond(finalTime), HMData.get(Instant.ofEpochSecond(finalTime)));
+
+        //System.out.println(adaptedRainfallData);
+        return adaptedData;
+    }
+
+    private Double interpolateData(Long currentRunoffTime, Long lowerTime,
+                                   Double lowerTimeData, Long upperTime, Double upperTimeData) {
+        Long rangeTime = upperTime - lowerTime;
+
+        if( rangeTime == 0 ) { return lowerTimeData; }
+        else {
+            if (upperTimeData == null) {
+                upperTimeData = 0.0;
+            }
+            if (lowerTimeData == null) {
+                lowerTimeData = 0.0;
+            }
+
+            Double numerator = upperTimeData - lowerTimeData;
+
+            return lowerTimeData + numerator / rangeTime * (currentRunoffTime - lowerTime);
+        }
     }
 
     public void setNodeFlowRate(String nodeName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {

@@ -75,18 +75,27 @@ public class Runoff {
      * Data structure
      */
     @In
-    @Out
     public SWMMobject dataStructure;
 
     @OutNode
-    public HashMap<Integer, LinkedHashMap<Instant, Double>> runoffFlowRate;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> runoffFlowRate = new HashMap<>();
 
     @Initialize
     public void initialize() {
+    }
+
+    @Execute
+    public void run() {
+
+        //System.out.println("Processing area " + areaName);
+        if (dataStructure == null) {
+            System.out.println("Data structure null");
+        }
         if (dataStructure != null && areaName != null) {
 
             //TODO evaporation!!
             this.runoffSetup = dataStructure.getRunoffSetup();
+            this.runoffStepSize = runoffSetup.getRunoffStepSize();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
             this.area = dataStructure.getAreas(areaName);
 
@@ -96,10 +105,15 @@ public class Runoff {
         else {
             throw new NullPointerException("Nothing implemented yet");
         }
-    }
 
-    @Execute
-    public void run() {
+/*        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
+            System.out.println("ID rain" + entry.getKey());
+            for (Instant time : entry.getValue().keySet()) {
+                System.out.println("Instant rain" + time);
+                System.out.println("Value rain" + entry.getValue().get(time));
+            }
+        }*/
+
         Instant currentTime = Instant.parse(initialTime.toString());
         while (currentTime.isBefore(totalTime)) {
 

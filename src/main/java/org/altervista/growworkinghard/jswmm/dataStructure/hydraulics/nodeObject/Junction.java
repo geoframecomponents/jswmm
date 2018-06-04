@@ -37,20 +37,18 @@ public class Junction extends AbstractNode {
 
     @Override
     public void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
-        if (nodeFlowRate == null) {
-            nodeFlowRate = new HashMap<>();
-        }
         for (Integer id : newFlowRate.keySet()) {
+            if (!getFlowRate().containsKey(id)) {
+                getFlowRate().put(id, new LinkedHashMap<>());
+            }
             for (Instant time : newFlowRate.get(id).keySet()) {
-                Double tempValue = 0.0;
-                if (nodeFlowRate.containsKey(id)) {
-                    tempValue = nodeFlowRate.get(id).get(time);
-                }
-                Double tempNewValue = newFlowRate.get(id).get(time);
-                LinkedHashMap<Instant, Double> sumValues = new LinkedHashMap<>();
-                sumValues.put(time, tempValue + tempNewValue);
-                nodeFlowRate.put(id, sumValues);
+                getFlowRate().get(id).put(time, newFlowRate.get(id).get(time));
             }
         }
+    }
+
+    @Override
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {
+        return this.nodeFlowRate;
     }
 }

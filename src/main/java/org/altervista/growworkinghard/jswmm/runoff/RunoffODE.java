@@ -15,13 +15,19 @@
 
 package org.altervista.growworkinghard.jswmm.runoff;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.UnitsSWMM;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.util.FastMath;
+
+import static org.altervista.growworkinghard.jswmm.dataStructure.options.units.UnitsSWMM.CMS;
 
 public class RunoffODE implements FirstOrderDifferentialEquations {
 
     private double precipitation;
     private double alpha;
+
+    public RunoffODE() {}
 
     public RunoffODE(double precipitation, double alpha) {
         this.precipitation = precipitation;

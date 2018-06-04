@@ -20,7 +20,7 @@ public class Oppo_pvc implements CommercialPipeSize {
     // returns commercial size in meters
     // expects designed size in meters
     @Override
-    public double[] getCommercialDiameter(double designedDiameter) {
+    public double[] getCommercialDiameter(Double designedDiameter) {
         designedDiameter = GEOunitsTransform.meters2millimiters(designedDiameter);
         double[] commercialSize = null;
         for(Map.Entry<Double, Double> diameter : pipe.entrySet()) {

@@ -15,6 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.runoffDS;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.runoff.RunoffODE;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -24,7 +25,7 @@ import java.time.Instant;
 
 public class SWMM5RunoffSetup implements RunoffSetup {
 
-    private String areaName;
+    private ProjectUnits units;
 
     private Instant initialTime;
 
@@ -37,19 +38,11 @@ public class SWMM5RunoffSetup implements RunoffSetup {
     private Double absoluteRunoffTolerance;
     private Double relativeRunoffTolerance;
 
-    private FirstOrderDifferentialEquations ode = new RunoffODE(0.0, 0.0);
+    private FirstOrderDifferentialEquations ode = new RunoffODE();
 
-    public SWMM5RunoffSetup (RunoffSetup obj) {
-        this.initialTime = obj.getInitialTime();
-        this.totalTime = obj.getTotalTime();
-        this.runoffStepSize = obj.getRunoffStepSize();
-        this.minimumStepSize = obj.getMinimumStepSize();
-        this.maximumStepSize = obj.getMaximumStepSize();
-        this.absoluteRunoffTolerance = obj.getAbsoluteRunoffTolerance();
-        this.relativeRunoffTolerance = obj.getRelativeRunoffTolerance();
-    }
-
-    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, Double minimumStepSize, Double maximumStepSize, Double absoluteRunoffTolerance, Double relativeRunoffTolerance) {
+    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, Double minimumStepSize,
+                            Double maximumStepSize, Double absoluteRunoffTolerance, Double relativeRunoffTolerance,
+                            ProjectUnits units) {
         this.initialTime = initialTime;
         this.totalTime = totalTime;
         this.runoffStepSize = runoffStepSize;
@@ -57,6 +50,7 @@ public class SWMM5RunoffSetup implements RunoffSetup {
         this.maximumStepSize = maximumStepSize;
         this.absoluteRunoffTolerance = absoluteRunoffTolerance;
         this.relativeRunoffTolerance = relativeRunoffTolerance;
+        this.units = units;
     }
 
     @Override
@@ -109,10 +103,5 @@ public class SWMM5RunoffSetup implements RunoffSetup {
     @Override
     public void setOde(Double rainfall, Double depthFactor) {
         this.ode = new RunoffODE(rainfall, depthFactor);
-    }
-
-    @Override
-    public String getAreaName() {
-        return areaName;
     }
 }

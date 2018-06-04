@@ -24,12 +24,13 @@ import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class FlowRateDispatcher {
 
     @InNode
     @Out
-    SWMMobject dataStructure;
+    public SWMMobject dataStructure;
 
     @InNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate1;
@@ -67,52 +68,96 @@ public class FlowRateDispatcher {
     @In
     public String linkName = null;
 
-    public FlowRateDispatcher(String upstreamNodeName, String linkName) {
-        this.upstreamNodeName = upstreamNodeName;
-        this.linkName = linkName; 
-    }
-
     @Execute
     public void run() {
+
+        Long routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
+        Long flowRateStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();//TODO must be generalized
+        Instant initialTime = dataStructure.getTimeSetup().getStartDate();
+        Instant totalTime = dataStructure.getTimeSetup().getEndDate();
+
         if (flowRate1 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate1);
-            dataStructure.setLinkFlowRate(linkName, flowRate1);
+            System.out.println("Processing flowrate1");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate1);
         }
+
         if (flowRate2 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate2);
-            dataStructure.setLinkFlowRate(linkName, flowRate2);
+            System.out.println("Processing flowrate2");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate2);
         }
+
         if (flowRate3 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate3);
-            dataStructure.setLinkFlowRate(linkName, flowRate3);
+            System.out.println("Processing flowrate3");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate3);
         }
+
         if (flowRate4 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate4);
-            dataStructure.setLinkFlowRate(linkName, flowRate4);
+            System.out.println("Processing flowrate4");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate4);
         }
+
         if (flowRate5 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate5);
-            dataStructure.setLinkFlowRate(linkName, flowRate5);
+            System.out.println("Processing flowRate5");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate5);
         }
+
         if (flowRate6 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate6);
-            dataStructure.setLinkFlowRate(linkName, flowRate6);
+            System.out.println("Processing flowRate6");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate6);
         }
+
         if (flowRate7 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate7);
-            dataStructure.setLinkFlowRate(linkName, flowRate7);
+            System.out.println("Processing flowRate7");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate7);
         }
+
         if (flowRate8 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate8);
-            dataStructure.setLinkFlowRate(linkName, flowRate8);
+            System.out.println("Processing flowrate8");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate8);
         }
+
         if (flowRate9 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate9);
-            dataStructure.setLinkFlowRate(linkName, flowRate9);
+            System.out.println("Processing flowrate9");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate1);
         }
+
         if (flowRate10 != null) {
-            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate10);
-            dataStructure.setLinkFlowRate(linkName, flowRate10);
+            System.out.println("Processing flowrate10");
+            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+                    initialTime.getEpochSecond(), flowRate10);
         }
+
+    }
+
+    private void dispatchFlow(Long routingStepSize, Long flowRateStepSize, long totalTime, long initialTime,
+                              HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
+
+        HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
+        for (Integer id : flowRate.keySet()) {
+            LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
+                    flowRateStepSize, totalTime, initialTime, flowRate1.get(id));
+
+            newFlowRate.put(id, currentFlowRate);
+        }
+
+            /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate1.entrySet()) {
+                for (Instant time : entry.getValue().keySet()) {
+                    System.out.println("ID " + entry.getKey());
+                    System.out.println("Instant " + time);
+                    System.out.println("Value " + entry.getValue().get(time));
+                }
+            }*/
+
+        dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
+        dataStructure.setLinkFlowRate(linkName, newFlowRate);
     }
 }

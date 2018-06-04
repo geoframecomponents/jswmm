@@ -103,4 +103,8 @@ public class Circular implements CrossSectionType {
     public Double computeFillAngle(Double fillCoefficient) {
         return 2 * Math.acos( 1 - 2 * fillCoefficient );
     }
+
+    public double getMainDimension() {
+        return diameters[0];
+    }
 }

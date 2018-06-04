@@ -15,22 +15,27 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.altervista.growworkinghard.jswmm.dataStructure.options.units.UnitsSWMM.CMS;
+
 public class Pervious extends Subarea {
 
     Double infiltration = 0.0; //TODO temporary 0.0
 
-    public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient) {
-        this(subareaArea, depressionStoragePervious, roughnessCoefficient, null, null);
+    public Pervious(Double subareaArea, Double depressionStoragePervious,
+                    Double roughnessCoefficient, ProjectUnits projectUnits) {
+        this(subareaArea, depressionStoragePervious, roughnessCoefficient, null, null,
+                projectUnits);
     }
 
     public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient,
-                    Double percentageRouted, List<Subarea> connections) {
+                    Double percentageRouted, List<Subarea> connections, ProjectUnits projectUnits) {
 
         this.subareaArea = subareaArea;
         this.depressionStorage = depressionStoragePervious;
@@ -42,19 +47,26 @@ public class Pervious extends Subarea {
         this.runoffDepth = new HashMap<>();
         this.flowRate = new HashMap<>();
         this.excessRainfall = new HashMap<>();
+
+        this.projectUnits = projectUnits;
     }
 
     @Override
     public void setDepthFactor(Double subareaSlope, Double characteristicWidth) {
+        double depthFactor = 0.0;
         if (subareaConnections != null) {
             for (Subarea connections : subareaConnections) {
                 connections.setDepthFactor(subareaSlope, characteristicWidth);
-                this.depthFactor = Math.pow(subareaSlope, 0.5) *
+                depthFactor = Math.pow(subareaSlope, 0.5) *
                         characteristicWidth / (roughnessCoefficient * subareaArea);
             }
         }
         else {
-            this.depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * subareaArea);
+            depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * subareaArea);
+        }
+
+        if ( projectUnits.getProjectUnits() == CMS ) {
+            this.depthFactor = 3.6E-3 * depthFactor; //return the depth in [ mm/h ]
         }
     }
 
@@ -82,19 +94,37 @@ public class Pervious extends Subarea {
         setExcessRainfall(id, rainfall - evaporation);
 
         if(evaporation * runoffStepSize >= moistureVolume) {
-            setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + 0.0);
-            setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + 0.0);
-            setFlowRate(id, nextTime, flowRate.get(id).get(currentTime) + 0.0);
+            setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
+            setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
+            setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
-            if(excessRainfall.get(id) * runoffStepSize <= depressionStorage - totalDepth.get(id).get(currentTime)) {
-                setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + getExcessRainfall(id) * runoffStepSize);
-                setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + 0.0);
-                setFlowRate(id, nextTime, flowRate.get(id).get(currentTime) + 0.0);
+            Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
+            if ( exRainHeigth == 0.0 ) {
+                if ( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
+                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
+                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                }
+                else {
+                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
+                    setFlowRate( id, nextTime, getFlowRate().get(id).get(currentTime) +
+                            evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                                    runoffDepth.get(id).get(nextTime)) );
+                }
             }
             else {
-                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth, runoffDepth.get(id).get(nextTime)) );
+                if( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
+                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
+                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                }
+                else {
+                    runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+                    setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                            runoffDepth.get(id).get(nextTime)) );
+                }
             }
         }
     }

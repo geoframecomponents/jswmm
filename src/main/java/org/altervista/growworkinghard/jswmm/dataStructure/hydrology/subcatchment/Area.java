@@ -15,6 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
@@ -51,7 +52,7 @@ public class Area extends AbstractSubcatchment {
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer identifier) {
         for(Subarea subarea : subareas) {
-            subarea.flowRate.get(identifier).forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
+            subarea.getFlowRate().get(identifier).forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
         }
         return getTotalAreaFlowRate();
     }

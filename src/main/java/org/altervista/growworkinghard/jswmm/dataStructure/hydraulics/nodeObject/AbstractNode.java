@@ -36,14 +36,12 @@ public abstract class AbstractNode {
     String nodeName;
     Double nodeElevation;
 
-    HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate = new HashMap<>();
     LinkedHashMap<Instant, Double> nodeDepth;
 
     public abstract void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate);
 
-    public LinkedHashMap<Instant, Double> getFlowRate(Integer id) {
-        return nodeFlowRate.get(id);
-    }
+    public abstract HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate();
 }
 
 

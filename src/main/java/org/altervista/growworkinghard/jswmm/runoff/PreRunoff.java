@@ -37,17 +37,17 @@ public class PreRunoff {
 
     private LinkedHashMap<Instant, Double> rainfallData;
 
-    @InNode
+    @In
     public Double aLPP;
 
-    @InNode
+    @In
     public Double nLPP;
 
-    @InNode
+    @In
     public Integer numberOfCurves;
 
     @In
-    public Long stormwaterInterval;
+    public Long stormwaterInterval = null;
 
     @InNode
     @Out
@@ -74,122 +74,91 @@ public class PreRunoff {
 
             //this.dataStructure = dataStructure;
 
-            RaingageSetup raingage = dataStructure.getRaingage(areaName);
+            //TODO ocio al raingage
+            RaingageSetup raingage = dataStructure.getRaingage("RG1");
 
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
             this.rainfallStepSize = raingage.getRainfallStepSize();
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
 
-            String stationRaingage = raingage.getStationName();
-            this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
+            if(aLPP == null && nLPP == null) {
+                String stationRaingage = raingage.getStationName();
+                this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
+                adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize,
+                        totalTime.getEpochSecond(), initialTime.getEpochSecond(), rainfallData) );
+            }
+            else{
+                for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
+                    adaptedRainfallData.put(rainfallTimeId, dataStructure.adaptDataSeries(runoffStepSize,
+                            rainfallStepSize, totalTime.getEpochSecond(), initialTime.getEpochSecond(),
+                            generateRainfall().get(rainfallTimeId)) );
+                }
+            }
         }
         else {
-            throw new NullPointerException();//TODO
-        }
-
-        if (aLPP != null && nLPP != null) {
-            generateRainfall();
-        }
-        else {
-            adaptedRainfallData.put( 1,adaptRainfallData(runoffStepSize, rainfallStepSize, totalTime.getEpochSecond(),
-                    initialTime.getEpochSecond(), rainfallData) );
+            throw new NullPointerException("Data structure is null");//TODO
         }
 
         //adaptInfiltrationData();
     }
 
+    private HashMap<Integer, LinkedHashMap<Instant, Double>> generateRainfall() {
 
-    /**
-     * Adapt runoffDS stepsize to total time
-     */
-    //private Double adaptRunoffStepSize(Long runoffStepSize, Long totalTime) {
-    //    Long tempFactor = totalTime/runoffStepSize;
-    //    return totalTime / (double)tempFactor;
-    //}
+        HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData = new HashMap<>();
 
-    /**
-     * Adapt rainfall data
-     */
-    private LinkedHashMap<Instant, Double> adaptRainfallData(Long runoffStepSize, Long rainfallStepSize, Long totalTime,
-                                                             Long initialTime, LinkedHashMap<Instant, Double> rainfallData) {
-
-        LinkedHashMap<Instant, Double> adaptedRainfallData = new LinkedHashMap<>();
-        Long currentRainfallTime = initialTime;
-
-        for (Long currentTime = initialTime; currentTime<totalTime; currentTime+=runoffStepSize) {
-
-            while(currentRainfallTime <= currentTime) {
-                currentRainfallTime += rainfallStepSize;
-            }
-
-            Long upperTime = currentRainfallTime;
-            Double upperRainfallData = 0.0;
-            if(rainfallData.get(Instant.ofEpochSecond(upperTime)) != null) {
-                upperRainfallData = rainfallData.get(Instant.ofEpochSecond(upperTime));
-            }
-
-            Long lowerTime = upperTime - rainfallStepSize;
-            Double lowerRainfallData = 0.0;
-            if(rainfallData.get(Instant.ofEpochSecond(lowerTime)) != null) {
-                lowerRainfallData = rainfallData.get(Instant.ofEpochSecond(lowerTime));
-            }
-
-            Double currentRainfall = interpolateRainfall(currentTime, lowerTime, lowerRainfallData, upperTime, upperRainfallData);
-
-            adaptedRainfallData.put(Instant.ofEpochSecond(currentTime), currentRainfall);
-        }
-        adaptedRainfallData.put(Instant.ofEpochSecond(totalTime), rainfallData.get(Instant.ofEpochSecond(totalTime)));
-
-        return adaptedRainfallData;
-    }
-
-    private Double interpolateRainfall(Long currentRunoffTime, Long lowerTime, Double lowerTimeData, Long upperTime, Double upperTimeData) {
-        Long rangeTime = upperTime - lowerTime;
-
-        if( rangeTime == 0 ) { return lowerTimeData; }
-        else {
-            if (upperTimeData == null) {
-                upperTimeData = 0.0;
-            }
-            if (lowerTimeData == null) {
-                lowerTimeData = 0.0;
-            }
-
-            Double numerator = upperTimeData - lowerTimeData;
-
-            return lowerTimeData + numerator / rangeTime * (currentRunoffTime - lowerTime);
-        }
-    }
-
-    private LinkedHashMap<Instant, Double> constantRainfallData(Instant rainfallTime) {
-
-        LinkedHashMap<Instant, Double> rainfallDataGenerated = new LinkedHashMap<>();
-
-        for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime=+runoffStepSize) {
-            if (rainfallTime.getEpochSecond() < currentTime) {
-                Double rainfallValue = aLPP * Math.pow(rainfallTime.getEpochSecond(), nLPP - 1.0);
-                rainfallDataGenerated.put(Instant.ofEpochSecond(currentTime), rainfallValue);
-            }
-            else {
-                rainfallDataGenerated.put(Instant.ofEpochSecond(currentTime), 0.0);
-            }
-        }
-        return rainfallDataGenerated;
-    }
-
-    private void generateRainfall() {
-        Integer counter = 1;
         Long rainfallTimeInterval;
-        if (stormwaterInterval != null) {
+        if (stormwaterInterval == null) {
             rainfallTimeInterval = ( totalTime.getEpochSecond() - initialTime.getEpochSecond() ) / numberOfCurves;
         }
         else {
             rainfallTimeInterval = stormwaterInterval / numberOfCurves;
         }
-        for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallTimeInterval) {
-            adaptedRainfallData.put(counter, constantRainfallData(Instant.ofEpochSecond(currentTime)));
-            counter++;
+
+        Instant finalRainfallTime = initialTime;
+        //System.out.println("Number of rainfall times: " + numberOfCurves);
+        for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
+
+            finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
+            LinkedHashMap<Instant, Double> rainfallValues = new LinkedHashMap<>();
+
+            for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallStepSize) {
+                rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                        constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
+                        Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+            }
+
+            //TODO nullo
+            rainfallData.put( rainfallTimeId, rainfallValues );
+
         }
+
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : rainfallData.entrySet()) {
+            LinkedHashMap<Instant, Double> val = entry.getValue();
+            for (Instant time : val.keySet() ) {
+                System.out.println(time);
+                System.out.println(val.get(time));
+            }
+        }*/
+
+        return rainfallData;
+    }
+
+    private Double constantRainfallData(Instant finalRainfallTime, Instant currentTime) {
+
+        Double rainfallValue;
+
+        if (currentTime.getEpochSecond() == 0) {
+            rainfallValue = 0.0;
+        }
+        else {
+            if ( currentTime.isBefore(finalRainfallTime) ) {
+                rainfallValue = aLPP * Math.pow(currentTime.getEpochSecond(), nLPP - 1.0);
+            }
+            else {
+                rainfallValue = 0.0;
+            }
+        }
+       return rainfallValue;
     }
 }
