@@ -35,21 +35,13 @@ public abstract class AbstractLink {
     OutsideSetup upstreamOutside;
     OutsideSetup downstreamOutside;
 
-    private LinkedHashMap<Instant, Double> downstreamFlowRate;
-
-    public LinkedHashMap<Instant, Double> getDownstreamFlowRate() {
-        return downstreamFlowRate;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getDownstreamFlowRate() {
+        return downstreamOutside.streamFlowRate;
     }
 
     public abstract OutsideSetup getUpstreamOutside();
 
     public abstract OutsideSetup getDownstreamOutside();
-
-    public abstract void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate);
-
-    public abstract void setInitialUpFlowRate(Integer id, Instant time, Double flowRate);
-
-    public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
 
     public enum LinkShape {
         CIRCURAL,

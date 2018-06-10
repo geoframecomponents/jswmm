@@ -106,14 +106,6 @@ public class Runoff {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-/*        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
-            System.out.println("ID rain" + entry.getKey());
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("Instant rain" + time);
-                System.out.println("Value rain" + entry.getValue().get(time));
-            }
-        }*/
-
         Instant currentTime = Instant.parse(initialTime.toString());
         while (currentTime.isBefore(totalTime)) {
 
@@ -122,15 +114,25 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-    }
 
-    @Finalize
-    public void upgradeNodeFlowRate() {
         for (Integer identifier : adaptedRainfallData.keySet()) {
             runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier));
         }
+
+
+        /*
+        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : runoffFlowRate.entrySet()) {
+            System.out.println("ID rain" + entry.getKey());
+            for (Instant time : entry.getValue().keySet()) {
+                System.out.println("Instant rain" + time);
+                System.out.println("Value rain" + entry.getValue().get(time));
+            }
+        }
+        */
+
     }
 
+    /*
     public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
         List<Double> defined = dataStructure.readFileList(fileChecks);
@@ -143,5 +145,5 @@ public class Runoff {
             //System.out.println(defined.get(i));
             i = i + 1;
         }
-    }
+    }*/
 }

@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import it.blogspot.geoframe.utils.GEOconstants;
 import org.geotools.graph.util.geom.Coordinate2D;
 
@@ -54,7 +55,7 @@ public class OutsideSetup {
         return streamFlowRate;
     }
 
-    public void setWetArea(Integer id, Instant time, Double value) {
+    public void setStreamWetArea(Integer id, Instant time, Double value) {
         LinkedHashMap<Instant, Double> data;
         if (streamWetArea.get(id) == null) {
             data = new LinkedHashMap<>();
@@ -66,15 +67,42 @@ public class OutsideSetup {
         this.streamWetArea.put(id, data);
     }
 
-    public void setFlowRate(Integer id, Instant time, Double flowRate) {
+    public void setStreamFlowRate(Integer id, Instant time, Double flowRate) {
         LinkedHashMap<Instant, Double> data;
-        if (streamWetArea.get(id) == null) {
+
+        //System.out.print("ID " + id);
+        //System.out.println("Is empty? " + (streamFlowRate.get(id) == null));
+
+        if (streamFlowRate.get(id) == null) {
             data = new LinkedHashMap<>();
+            //System.out.println("IF " + time);
         }
         else {
             data = streamFlowRate.get(id);
+            //System.out.println("Else " + time);
         }
+        data.put(time, flowRate);
         this.streamFlowRate.put(id, data);
+    }
+
+    public void sumStreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
+
+        for (Integer id : newFlowRate.keySet()) {
+            if (!streamFlowRate.containsKey(id)) {
+                streamFlowRate.put(id, new LinkedHashMap<>());
+            }
+            for (Instant time : newFlowRate.get(id).keySet()) {
+                Double oldFLowRate = streamFlowRate.get(id).get(time);
+                if (oldFLowRate == null) {
+                    LinkedHashMap<Instant, Double> newLHM = newFlowRate.get(id);
+                    streamFlowRate.put(id, newLHM);
+                }
+                else {
+                    LinkedHashMap<Instant, Double> oldLHM = streamFlowRate.get(id);
+                    streamFlowRate.replace(id, oldLHM);
+                }
+            }
+        }
     }
 
     public Double getFillCoeff() {
@@ -115,8 +143,13 @@ public class OutsideSetup {
 
     public void upgradeOffset(double delta) {
         this.upOffset += delta;
+        //System.out.println(upOffset);
         this.height += delta;
+        //System.out.println(upOffset);
         this.baseElevation += delta;
+        //System.out.println(upOffset);
+
+        //System.out.println(upOffset);
         checkMaxExcavation(height);//TODO
     }
 

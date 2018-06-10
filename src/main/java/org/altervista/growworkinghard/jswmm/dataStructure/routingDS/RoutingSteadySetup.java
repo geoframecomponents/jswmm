@@ -19,22 +19,64 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 
 public class RoutingSteadySetup implements RoutingSetup {
-    @Override
-    public void evaluateFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
-                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                 Double linkSlope, CrossSectionType crossSectionType) {
-        throw new NullPointerException("nothing implemented yet");
+
+    private final Long routingStepSize;
+    private SWMMroutingTools routingTools;
+
+    public RoutingSteadySetup(Long routingStepSize, Integer referenceTableLength) {
+        this.routingStepSize = routingStepSize;
+        this.routingTools = new SWMMroutingTools(referenceTableLength);
     }
 
-    //@Override
-    //public Double evaluateStreamWetArea(Double runoffFlowRate, Double linkLength, Double linkRoughness) {
-    //    throw new NullPointerException("nothing implemented yet");
-    //}
+    public RoutingSteadySetup(Long routingStepSize) {
+        this(routingStepSize, 180);
+    }
+
+    @Override
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
+                              OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
+                              Double linkSlope, CrossSectionType crossSectionType) {
+
+        Double dischargeFull = crossSectionType.getDischargeFull(linkRoughness, linkSlope);
+        Double Afull = crossSectionType.getAreaFull();
+
+        final Double beta = (Math.sqrt(linkSlope) * linkRoughness) / dischargeFull; //should be Math.sqrt(linkSlope) / linkRoughness but the Manning coefficient is 1 / Gs
+
+        LinkedHashMap<Instant, Double> upstreamFlow = upstreamOutside.getStreamFlowRate().get(id);
+
+        double currentFlow = upstreamFlow.get(currentTime) / dischargeFull;
+        double area = routingTools.sectionFactorToArea(currentFlow / beta) * Afull;
+        double celerity = currentFlow * dischargeFull / area;
+        Long timeDelay = (long) (linkLength / celerity);
+        Long timeDelayLong = adaptTimeDelay(routingStepSize, timeDelay);
+
+        double qout;
+        if (currentFlow == 0.0) {
+            qout = 0.0;
+        }
+        else if (currentFlow > 1.0) {
+            qout = 1.0;
+        }
+        else {
+            qout = currentFlow;
+        }
+
+        //System.out.println("qout " + qout);
+        //System.out.println("dischargeFull " + dischargeFull);
+
+        return new RoutedFlow(currentTime.plusSeconds(timeDelayLong), (qout * dischargeFull));
+    }
+
+    private Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
+        long temp = timeDelay / routingStepSize;
+        return temp * routingStepSize;
+    }
 
     @Override
     public Long getRoutingStepSize() {
-        return null;
+        return this.routingStepSize;
     }
 }

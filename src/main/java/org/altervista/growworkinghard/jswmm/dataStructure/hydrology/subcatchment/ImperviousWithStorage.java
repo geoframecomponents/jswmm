@@ -97,7 +97,7 @@ public class ImperviousWithStorage extends Subarea {
         if(evaporation * runoffStepSize >= moistureVolume) {
             setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
             setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-            setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+            setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
             Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
@@ -105,12 +105,12 @@ public class ImperviousWithStorage extends Subarea {
                 if ( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
                 }
                 else {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
+                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
                             evaluateNextFlowRate(subareaSlope, characteristicWidth,
                                     runoffDepth.get(id).get(nextTime)));
                 }
@@ -119,11 +119,11 @@ public class ImperviousWithStorage extends Subarea {
                 if( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
                 }
                 else {
                     runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                    setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                    setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
                             runoffDepth.get(id).get(nextTime)) );
                 }
             }
@@ -135,7 +135,7 @@ public class ImperviousWithStorage extends Subarea {
 
             setTotalDepth(identifier, nextTime, totalDepth.get(identifier).get(currentTime) + 0.0);
             setRunoffDepth(identifier, nextTime, runoffDepth.get(identifier).get(currentTime) + 0.0);
-            setFlowRate(identifier, nextTime, getFlowRate().get(identifier).get(currentTime) + 0.0);
+            setAreaFlowRate(identifier, nextTime, getFlowRate().get(identifier).get(currentTime) + 0.0);
         }
         else {
             if(getExcessRainfall(identifier) * runoffStepSize <= depressionStorage - totalDepth.get(identifier).get(currentTime)) {
@@ -145,7 +145,7 @@ public class ImperviousWithStorage extends Subarea {
                 setTotalDepth(identifier, nextTime, totalDepth.get(identifier).get(currentTime) +
                         getExcessRainfall(identifier) * runoffStepSize);
                 setRunoffDepth(identifier, nextTime, runoffDepth.get(identifier).get(currentTime) + 0.0);
-                setFlowRate(identifier, nextTime, getFlowRate().get(identifier).get(currentTime) + 0.0);
+                setAreaFlowRate(identifier, nextTime, getFlowRate().get(identifier).get(currentTime) + 0.0);
             }
             else {
 
@@ -161,7 +161,7 @@ public class ImperviousWithStorage extends Subarea {
                 System.out.println("AFTER ODE ");
 
 
-                setFlowRate( identifier, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                setAreaFlowRate( identifier, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
                         runoffDepth.get(identifier).get(nextTime)) );
             }
         }*/

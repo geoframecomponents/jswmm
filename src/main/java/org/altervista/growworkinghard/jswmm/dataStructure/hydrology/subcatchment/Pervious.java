@@ -96,7 +96,7 @@ public class Pervious extends Subarea {
         if(evaporation * runoffStepSize >= moistureVolume) {
             setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
             setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-            setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+            setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
             Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
@@ -104,12 +104,12 @@ public class Pervious extends Subarea {
                 if ( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
                 }
                 else {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                    setFlowRate( id, nextTime, getFlowRate().get(id).get(currentTime) +
+                    setAreaFlowRate( id, nextTime, getFlowRate().get(id).get(currentTime) +
                             evaluateNextFlowRate(subareaSlope, characteristicWidth,
                                     runoffDepth.get(id).get(nextTime)) );
                 }
@@ -118,11 +118,11 @@ public class Pervious extends Subarea {
                 if( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
                     setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                     setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
                 }
                 else {
                     runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                    setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                    setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
                             runoffDepth.get(id).get(nextTime)) );
                 }
             }

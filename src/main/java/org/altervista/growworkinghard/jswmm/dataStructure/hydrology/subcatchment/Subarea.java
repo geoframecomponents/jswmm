@@ -56,16 +56,20 @@ public abstract class Subarea {
         this.runoffDepth.put(id, temp);
     }
 
-    public void setFlowRate(Integer id, Instant time, Double flowValue) {
-        double CMSFlowFactor = 1.0;
+    public void setAreaFlowRate(Integer id, Instant time, Double flowValue) {
+        double UnitsFactor = 1.0;
         if ( projectUnits.getProjectUnits() == CMS ) {
-            CMSFlowFactor = 1.0E-5;
+            UnitsFactor = 1.0E-5;
         }
-        if ( !getFlowRate().containsKey(id) ) {
-            getFlowRate().put(id, new LinkedHashMap<>());
+        LinkedHashMap<Instant, Double> data;
+        if (flowRate.get(id) == null) {
+            data = new LinkedHashMap<>();
         }
-        getFlowRate().get(id).put(time, flowValue * CMSFlowFactor);
-
+        else {
+            data = flowRate.get(id);
+        }
+        data.put(time, flowValue * UnitsFactor);
+        this.flowRate.put(id, data);
     }
 
     public void setExcessRainfall(Integer id, Double value) {

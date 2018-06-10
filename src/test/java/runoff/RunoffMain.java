@@ -73,8 +73,8 @@ public class RunoffMain {
         runoff_1.run();
         runoff_2.run();
 
-        runoff_1.test("./data/testingData/runoffTesting/N1");
-        runoff_2.test("./data/testingData/runoffTesting/N2");
+        //runoff_1.test("./data/testingData/runoffTesting/N1");
+        //runoff_2.test("./data/testingData/runoffTesting/N2");
 
         //System.out.println(data.getAreas().get("Sub1").getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
         //System.out.println(data.getAreas().get("Sub2").getTotalAreaFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));

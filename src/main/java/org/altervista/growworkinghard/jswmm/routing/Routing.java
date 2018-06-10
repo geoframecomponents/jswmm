@@ -76,7 +76,7 @@ public class Routing {
     public HashMap<Integer, List<Integer>> net3subtrees;
 
     @OutNode
-    public LinkedHashMap<Instant, Double> routingFlowRate;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
 
     @Initialize
     public void initialize() {
@@ -86,7 +86,7 @@ public class Routing {
     public void run() {
 
         System.out.println("Routing on " + linkName);
-        if(dataStructure != null && linkName != null) {
+        if (dataStructure != null && linkName != null) {
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
 
@@ -94,19 +94,15 @@ public class Routing {
             this.routingStepSize = routingSetup.getRoutingStepSize();
 
             this.conduit = dataStructure.getConduit(linkName);
-        }
-        else {
+        } else {
             throw new NullPointerException("Nothing implemented yet");
         }
-
 
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
         Double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
-
             maxDischarge = conduit.evaluateMaxDischarge(currentTime, maxDischarge);
-
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
@@ -115,23 +111,25 @@ public class Routing {
         //dimensioning method!!
         //conduit.evaluateDimension(maxDischarge, pipeCompany);
         conduit.evaluateDimension(maxDischarge, pipeCompany);
+
+        //System.out.println("UPGRADING SUBTREES");
+
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
         currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
-
             conduit.evaluateFlowRate(currentTime);
-
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
-    }
 
-    @Finalize
-    void upgradeSWMMobject() {
         routingFlowRate = conduit.getDownstreamFlowRate();
+
     }
 
+
+    /*
+    TODO RIMETTERE TEST
     public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
         List<Double> defined = dataStructure.readFileList(fileChecks);
@@ -145,4 +143,5 @@ public class Routing {
             i = i + 1;
         }
     }
+    */
 }

@@ -19,13 +19,13 @@ import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutedFlow;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 import org.geotools.graph.util.geom.Coordinate2D;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Conduit extends AbstractLink {
 
@@ -60,62 +60,26 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
-
-        HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstream = getUpstreamOutside().getStreamFlowRate();
-
-        for (Integer id : newFlowRate.keySet()) {
-            if (!flowUpstream.containsKey(id)) {
-                flowUpstream.put(id, new LinkedHashMap<>());
-            }
-            for (Instant time : newFlowRate.get(id).keySet()) {
-                flowUpstream.get(id).put(time, newFlowRate.get(id).get(time));
-            }
-        }
-    }
-
-    @Override
-    public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
-        upstreamOutside.setFlowRate(id, time, flowRate);
-    }
-
-    @Override
-    public void setInitialUpWetArea(Integer id, Instant time, double area) {
-        upstreamOutside.setWetArea(id, time, area);
-    }
-
-    @Override
     public void evaluateFlowRate(Instant currentTime) {
-        for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
-            routingSetup.evaluateFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
-                    linkLength, linkRoughness, linkSlope, crossSectionType);
+
+        //System.out.println("START evaluateFlowRate");
+
+        for (Integer id : upstreamOutside.getStreamFlowRate().keySet()) {
+            RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamOutside,
+                    downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType);
+
+            downstreamOutside.setStreamFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+            //downstreamOutside.setStreamFlowRate(id, currentTime, 0.0);
         }
+
+        //System.out.println("END evaluateFlowRate");
     }
 
     @Override
     public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
-
-        //System.out.println("number of curves " + flowUpstreamNode.size());
-
-        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowUpstreamNode.entrySet()) {
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("ID " + entry.getKey());
-                System.out.println("Instant " + time);
-                System.out.println("Value " + entry.getValue().get(time));
-            }
-        }*/
-
-        //System.out.println("ID 1" + " flowUpstreamNode " + flowUpstreamNode.get(1));
-
-
         for (Integer id : flowUpstreamNode.keySet()) {
-
-            //System.out.println("id" + id);
-            //System.out.println("flowUpstreamNode.get(id)" + flowUpstreamNode.get(id));
-            //System.out.println("currentTime" + currentTime);
-            //System.out.println("currentTime" + flowUpstreamNode.get(id).get(currentTime));
 
             double currentFlow = flowUpstreamNode.get(id).get(currentTime);
             if ( currentFlow >= maxDischarge) {
@@ -129,38 +93,36 @@ public class Conduit extends AbstractLink {
     @Override
     public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
-        double naturalSlope = computeNaturalSlope();
+        linkSlope = computeNaturalSlope();
 
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
-        double diameter = getDimension(discharge, naturalSlope);
+        double diameter = getDimension(discharge, linkSlope);
+
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
-        double fillAngleMax = evaluateFillAngle(diameters[0], naturalSlope, discharge);
-        double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
-
         Double minSlope = computeMinSlope(diameters[0]);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
-        if (naturalSlope < minSlope) {
+        if (linkSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
             linkSlope = minSlope;
         }
-        else {
-            linkSlope = naturalSlope;
-        }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
+        double fillAngleMax = evaluateFillAngle(diameters[0], linkSlope, discharge);
+        double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
 
         double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
-        getUpstreamOutside().setHeights(excavation, 0.0);
-        getDownstreamOutside().setHeights(excavation);
+        upstreamOutside.setHeights(excavation, 0.0);
+        downstreamOutside.setHeights(excavation);
 
         double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
-        getUpstreamOutside().setWaterDepth(waterDepth);
-        getDownstreamOutside().setWaterDepth(waterDepth);
+        upstreamOutside.setWaterDepth(waterDepth);
+        downstreamOutside.setWaterDepth(waterDepth);
 
-        System.out.println("diameter" + diameters[1]);
+        //System.out.println("fillAngle " + fillAngleMax);
+        //System.out.println("diameter" + diameters[1]);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
@@ -249,12 +211,12 @@ public class Conduit extends AbstractLink {
 
     private Double computeNaturalSlope() {
         Coordinate2D upstream = getUpstreamOutside().getNodeCoordinates();
-        if ( getUpstreamOutside().getTerrainElevation().equals(getDownstreamOutside().getTerrainElevation()) ) {
-            return 0.01;//TODO is there a better method?
+        if ( upstreamOutside.getTerrainElevation().equals(downstreamOutside.getTerrainElevation()) ) {
+            return 0.001;//TODO is there a better method?
         }
         else {
-            return GEOgeometry.computeSlope(upstream.x, upstream.y, getUpstreamOutside().getTerrainElevation(),
-                    upstream.x, upstream.y, getDownstreamOutside().getTerrainElevation());
+            return GEOgeometry.computeSlope(upstream.x, upstream.y, upstreamOutside.getTerrainElevation(),
+                    upstream.x, upstream.y, downstreamOutside.getTerrainElevation());
         }
     }
 
@@ -273,12 +235,12 @@ public class Conduit extends AbstractLink {
         Double fillCoeff = getUpstreamOutside().getFillCoeff();
         Double fillAngle = crossSectionType.computeFillAngle(fillCoeff);
         if( fillAngle == 0.0 ) {
-            fillAngle = 0.01;
+            fillAngle = 0.001;
         }
 
         final double pow1 = 3.0 / 8;
-        double coeff = Math.pow(4, 2.0/3);
-        double numerator = (coeff * 8 * discharge);
+        double coeff = Math.pow(2, 13.0/3);
+        double numerator = (coeff * discharge);
         double denominator = (fillAngle - Math.sin(fillAngle)) * linkRoughness *
                 Math.pow(slope, 0.5) * Math.pow( (1 - Math.sin(fillAngle) / fillAngle), 2.0/3 );
 

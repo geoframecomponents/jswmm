@@ -27,7 +27,7 @@ public interface CrossSectionType {
 
     Double getHydraulicRadiusFull();
 
-    Double getSectionFactorFull();
+    Double getDischargeFull(double roughnessCoefficient, double slope);
 
     Double getAreaMax();
 

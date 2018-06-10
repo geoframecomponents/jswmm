@@ -16,7 +16,6 @@
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
-import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadSWMM5RainfallFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
@@ -24,7 +23,6 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GIUHsetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GlobalRaingage;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
@@ -34,6 +32,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTim
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.SWMM5RunoffSetup;
 
@@ -80,6 +79,34 @@ public class SWMMobject {
         setInitialValues(1);
         setInitialValues(2);
         setInitialValues(3);
+        /*setInitialValues(4);
+        setInitialValues(5);
+        setInitialValues(6);
+        setInitialValues(7);
+        setInitialValues(8);
+        setInitialValues(9);
+        setInitialValues(10);
+        setInitialValues(11);
+        setInitialValues(12);
+        setInitialValues(13);
+        setInitialValues(14);
+        setInitialValues(15);
+        setInitialValues(16);
+        setInitialValues(17);
+        setInitialValues(18);
+        setInitialValues(19);
+        setInitialValues(20);
+        setInitialValues(21);
+        setInitialValues(22);
+        setInitialValues(23);
+        setInitialValues(24);
+        setInitialValues(25);
+        setInitialValues(26);
+        setInitialValues(27);
+        setInitialValues(28);
+        setInitialValues(29);
+        setInitialValues(30);*/
+
     }
 
     public TimeSetup getTimeSetup() {
@@ -146,7 +173,8 @@ public class SWMMobject {
         Double toleranceMethod = 0.0015;
 
         //TODO need change to parallelize
-        routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        //routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        routingSetup = new RoutingSteadySetup(routingStepSize);
     }
 
     private void setRaingages() {
@@ -186,6 +214,7 @@ public class SWMMobject {
         setAreas("7", 0.353);
         setAreas("8", 0.999);
         setAreas("9", 1.583);
+        //setAreas("10", 1.583);
         setAreas("10", 0.633);
     }
 
@@ -305,12 +334,12 @@ public class SWMMobject {
     private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
                             String downName, double downX, double downY, double downZ) {
 
-        Double linkRoughness = 65.0; //Gs coefficient
+        Double linkRoughness = 120.0; //Gs coefficient
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
-        Double initialFlowRate = 0.0;
-        Double fillCoeff = 0.8; // Max flowrate
-        Double diameter = 1.0;
+        //Double initialFlowRate = 0.0;
+        Double fillCoeff = 0.9; // Max flowrate
+        Double diameter = 0.5;
 
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
@@ -415,7 +444,7 @@ public class SWMMobject {
 
     private void setSubareasInitialValue(Integer id, String areaName) {
         for( Subarea subarea : areas.get(areaName).getSubareas() ) {
-            subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
+            subarea.setAreaFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
         }
@@ -424,12 +453,12 @@ public class SWMMobject {
     private void setInitialTime(Integer id, String linkName) {
         Instant time = timeSetup.getStartDate();
         while (time.isBefore(timeSetup.getEndDate())) {
-            conduit.get(linkName).setInitialUpFlowRate(id, time, 0.0);
-            conduit.get(linkName).setInitialUpWetArea(id, time, 0.0);
+            conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
+            conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());
         }
-        conduit.get(linkName).setInitialUpFlowRate(id, time, 0.0);
-        conduit.get(linkName).setInitialUpWetArea(id, time, 0.0);
+        conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
+        conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
     }
 
     public List<Double> readFileList(String fileName) {
@@ -520,13 +549,13 @@ public class SWMMobject {
     }
 
     public void setLinkFlowRate(String linkName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
-        conduit.get(linkName).sumUpstreamFlowRate(flowRate);
+        conduit.get(linkName).getUpstreamOutside().sumStreamFlowRate(flowRate);
     }
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
 
-        int numberOfSons = subtrees.values().size();
-        //if (numberOfSons > 1) {
+        //System.out.println("Part 1");
+
         double downstreamDepthOut = getConduit(outLink).getUpstreamOutside().getWaterDepth();
         double maxDepth = downstreamDepthOut;
         Integer maxId = Integer.parseInt(outLink);
@@ -541,28 +570,48 @@ public class SWMMobject {
             }
         }
 
+        //System.out.println("Part 2");
+
         if (maxId != Integer.parseInt(outLink)) {
             upgradeStream(outLink, downstreamDepthOut - maxDepth);
         }
 
+        //System.out.println("Part 3");
+
         for (List<Integer> subtreeList : subtrees.values()) {
 
             String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
+
+            //System.out.println("firstSon " + firstSon);
+
             if (getConduit(firstSon) != null) {
                 double downstreamDepth = getConduit(firstSon).getDownstreamOutside().getWaterDepth();
                 if (downstreamDepth - maxDepth != 0.0) {
+
+                    //System.out.println("subtreeList " + subtreeList );
+                    //System.out.println("downstreamDepth - maxDepth " + (downstreamDepth - maxDepth) );
+
                     upgradeStream(subtreeList, downstreamDepth - maxDepth);
                 }
             }
+
+            //System.out.println("END part 3");
         }
     }
 
     private void upgradeStream(List<Integer> subtreeList, double delta) {
         for (Integer subtreeLink : subtreeList) {
-
             String currentLink = String.valueOf(subtreeLink);
+
+            //System.out.println("Conduit " + subtreeLink);
+
             upgradeStream(currentLink, delta);
+
+            //System.out.println("For loop upgradeStream");
         }
+
+        //System.out.println("END For loop upgradeStream");
+
     }
 
     private void upgradeStream(String currentLink, double delta) {
@@ -571,8 +620,14 @@ public class SWMMobject {
                 OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
                 OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
 
+                //System.out.println("upstream " + upstream );
                 upstream.upgradeOffset(delta);
+
+                //System.out.println("downstream " + downstream );
+                //System.out.println("delta " + delta );
                 downstream.upgradeOffset(delta);
+
+                //System.out.println("END UPSTREAM upgrade!");
             }
     }
 }
