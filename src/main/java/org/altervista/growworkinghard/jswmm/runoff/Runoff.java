@@ -122,14 +122,12 @@ public class Runoff {
 
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
-    }
 
-    @Finalize
-    public void upgradeNodeFlowRate() {
         for (Integer identifier : adaptedRainfallData.keySet()) {
             runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier));
         }
     }
+
 
     public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
