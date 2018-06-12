@@ -34,6 +34,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTim
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.SWMM5RunoffSetup;
 
@@ -146,7 +147,8 @@ public class SWMMobject {
         Double toleranceMethod = 0.0015;
 
         //TODO need change to parallelize
-        routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        //routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        routingSetup = new RoutingSteadySetup(routingStepSize);
     }
 
     private void setRaingages() {
@@ -305,22 +307,23 @@ public class SWMMobject {
     private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
                             String downName, double downX, double downY, double downZ) {
 
-        Double linkRoughness = 0.01;
+        Double linkRoughness = 120.0;
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
-        Double initialFlowRate = 0.0;
-        Double maximumFlowRate = 0.0;
+        //Double initialFlowRate = 0.0;
+        //Double maximumFlowRate = 0.0;
+        Double fillCoefficient = 0.9;
         Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
-        OutsideSetup upstreamOutside8 = new OutsideSetup(upName, upstreamOffset,
-                maximumFlowRate, upX, upY, upZ);
-        OutsideSetup downstreamOutside8 = new OutsideSetup(downName, downstreamOffset,
-                maximumFlowRate, downX, downY, downZ);
+        OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
+                fillCoefficient, upX, upY, upZ);
+        OutsideSetup downstreamOutside = new OutsideSetup(downName, downstreamOffset,
+                fillCoefficient, downX, downY, downZ);
 
-        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside8, downstreamOutside8,
+        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness));
     }
 
@@ -525,38 +528,65 @@ public class SWMMobject {
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
 
-        double downstreamDepthOut = getConduit(outLink).getDownstreamOutside().getWaterDepth();
+        double downstreamDepthOut = getConduit(outLink).getUpstreamOutside().getWaterDepth();
         double maxDepth = downstreamDepthOut;
+        Integer maxId = Integer.parseInt(outLink);
 
         for (Integer subtreeId : subtrees.keySet()) {
-            double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterDepth();
-            if (downstreamDepth > maxDepth) {
-                maxDepth = downstreamDepth;
+            if (getConduit(String.valueOf(subtreeId)) != null) {
+                double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterD$
+                if (downstreamDepth > maxDepth) {
+                    maxDepth = downstreamDepth;
+                    maxId = subtreeId;
+                }
+
             }
         }
 
-        List<Integer> outLinks = null;
-        outLinks.add(Integer.decode(outLink));
-        if (downstreamDepthOut - maxDepth != 0.0) {
-            upgradeStream(outLinks, downstreamDepthOut - maxDepth);
+        if (maxId != Integer.parseInt(outLink)) {
+            upgradeStream(outLink, downstreamDepthOut - maxDepth);
         }
 
         for (List<Integer> subtreeList : subtrees.values()) {
-            int firstSon = subtreeList.size();
-            double downstreamDepth = getConduit(String.valueOf(firstSon)).getDownstreamOutside().getWaterDepth();
-            if (downstreamDepth - maxDepth != 0.0) {
-                upgradeStream(subtreeList, downstreamDepth - maxDepth);
+            String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
+
+            //System.out.println("firstSon " + firstSon);
+
+            if (getConduit(firstSon) != null) {
+                double downstreamDepth = getConduit(firstSon).getDownstreamOutside().getWaterDepth();
+                if (downstreamDepth - maxDepth != 0.0) {
+
+                    //System.out.println("subtreeList " + subtreeList );
+                    //System.out.println("downstreamDepth - maxDepth " + (downstreamDepth - maxDepth) );
+
+                    upgradeStream(subtreeList, downstreamDepth - maxDepth);
+                }
+
             }
         }
     }
 
     private void upgradeStream(List<Integer> subtreeList, double delta) {
         for (Integer subtreeLink : subtreeList) {
-            OutsideSetup upstream = getConduit(String.valueOf(subtreeLink)).getUpstreamOutside();
-            OutsideSetup downstream = getConduit(String.valueOf(subtreeLink)).getDownstreamOutside();
-
-            upstream.upgradeOffset(delta);
-            downstream.upgradeOffset(delta);
+            String currentLink = String.valueOf(subtreeLink);
+            upgradeStream(currentLink, delta);
         }
+    }
+
+    private void upgradeStream(String currentLink, double delta) {
+
+            if (getConduit(currentLink) != null) {
+                OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
+                OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
+
+                //System.out.println("upstream " + upstream );
+                upstream.upgradeOffset(delta);
+
+                //System.out.println("downstream " + downstream );
+                //System.out.println("delta " + delta );
+                downstream.upgradeOffset(delta);
+
+                //System.out.println("END UPSTREAM upgrade!");
+            }
     }
 }
