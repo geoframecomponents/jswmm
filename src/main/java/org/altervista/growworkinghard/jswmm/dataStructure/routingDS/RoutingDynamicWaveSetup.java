@@ -22,12 +22,21 @@ import java.time.Instant;
 
 public class RoutingDynamicWaveSetup implements RoutingSetup {
 
-    Instant routingStepSize;
+    private final Long routingStepSize;
+
+    public RoutingDynamicWaveSetup(Long routingStepSize) {
+        this.routingStepSize = routingStepSize;
+    }
 
     @Override
-    public void evaluateFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
+    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
         throw new NullPointerException("Nothing implemented yet");
     }
 
@@ -38,6 +47,6 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
 
     @Override
     public Long getRoutingStepSize() {
-        return null;
+        return this.routingStepSize;
     }
 }
