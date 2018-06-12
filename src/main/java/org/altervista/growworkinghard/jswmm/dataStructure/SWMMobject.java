@@ -147,8 +147,8 @@ public class SWMMobject {
         Double toleranceMethod = 0.0015;
 
         //TODO need change to parallelize
-        //routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
-        routingSetup = new RoutingSteadySetup(routingStepSize);
+        routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        //routingSetup = new RoutingSteadySetup(routingStepSize);
     }
 
     private void setRaingages() {
@@ -534,7 +534,7 @@ public class SWMMobject {
 
         for (Integer subtreeId : subtrees.keySet()) {
             if (getConduit(String.valueOf(subtreeId)) != null) {
-                double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterD$
+                double downstreamDepth = getConduit(String.valueOf(subtreeId)).getDownstreamOutside().getWaterDepth();
                 if (downstreamDepth > maxDepth) {
                     maxDepth = downstreamDepth;
                     maxId = subtreeId;

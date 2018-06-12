@@ -129,7 +129,7 @@ public class Runoff {
     }
 
 
-    public void test(String fileChecks) {
+    /*public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
         List<Double> defined = dataStructure.readFileList(fileChecks);
 
@@ -141,5 +141,5 @@ public class Runoff {
             //System.out.println(defined.get(i));
             i = i + 1;
         }
-    }
+    }*/
 }
