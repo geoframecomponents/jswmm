@@ -32,7 +32,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMet
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
+//import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
@@ -147,8 +147,8 @@ public class SWMMobject {
         Double toleranceMethod = 0.0015;
 
         //TODO need change to parallelize
-        routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
-        //routingSetup = new RoutingSteadySetup(routingStepSize);
+        //routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
+        routingSetup = new RoutingSteadySetup(routingStepSize);
     }
 
     private void setRaingages() {
