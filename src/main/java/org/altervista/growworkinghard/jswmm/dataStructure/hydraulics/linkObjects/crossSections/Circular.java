@@ -18,7 +18,7 @@ package org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObject
 public class Circular implements CrossSectionType {
 
     private double[] diameters;
-    Boolean alwaysIncrease = false;
+    private Boolean alwaysIncrease = false;
 
     private Double depthFull;
     private Double areaFull;
@@ -48,6 +48,11 @@ public class Circular implements CrossSectionType {
             this.diameters[0] = innerDiameter;
             this.diameters[1] = outerDiameter;
         }
+        this.depthFull = 0.938 * innerDiameter;
+        this.areaFull = Math.PI * innerDiameter * innerDiameter / 4;
+        this.areaMax = 0.7854 * Math.pow(getDepthFull(), 2);
+        this.hydraulicRadiousFull = 0.25 * getDepthFull();
+        this.sectionFactorFull = getAreaFull() * Math.pow(getHydraulicRadiusFull(), 2.0 / 3.0);
     }
 
     @Override
@@ -62,7 +67,7 @@ public class Circular implements CrossSectionType {
 
     @Override
     public Double computeHydraulicRadious(Double diameter, Double fillAngle) {
-        return diameter / ( 1 - Math.sin(fillAngle)/fillAngle );
+        return (diameter / 4.0) / ( 1 - Math.sin(fillAngle)/fillAngle );
     }
 
     @Override
@@ -71,8 +76,8 @@ public class Circular implements CrossSectionType {
     }
 
     @Override
-    public Double getSectionFactorFull() {
-        return sectionFactorFull;
+    public Double getDischargeFull(double roughnessCoefficient, double slope) {
+        return areaFull * Math.pow(hydraulicRadiousFull, 2.0 / 3) * roughnessCoefficient * Math.pow(slope, 0.5);
     }
 
     @Override
@@ -89,7 +94,7 @@ public class Circular implements CrossSectionType {
         Double area = areaFull * (theta - Math.sin(theta)) / (2 * Math.PI);
         Double wetPerimeter = theta * depthFull / 2;
         return (5.0 / 3 - 2.0 / 3 * derivatedWetPerimeter(theta) * getHydraulicRadious(area, wetPerimeter)) *
-                Math.pow(getHydraulicRadious(area, wetPerimeter), 2.0 / 3);
+                Math.pow(getHydraulicRadious(area, wetPerimeter), 2.0 / 3) / sectionFactorFull;
     }
 
     private Double getHydraulicRadious(Double area, Double wetPerimeter) {
