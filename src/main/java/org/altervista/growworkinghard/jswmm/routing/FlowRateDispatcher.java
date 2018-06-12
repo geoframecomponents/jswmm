@@ -127,7 +127,7 @@ public class FlowRateDispatcher {
         if (flowRate9 != null) {
             System.out.println("Processing flowrate9");
             dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
-                    initialTime.getEpochSecond(), flowRate1);
+                    initialTime.getEpochSecond(), flowRate9);
         }
 
         if (flowRate10 != null) {
@@ -142,12 +142,18 @@ public class FlowRateDispatcher {
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
-        for (Integer id : flowRate.keySet()) {
-            LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
-                    flowRateStepSize, totalTime, initialTime, flowRate1.get(id));
+        if ( !routingStepSize.equals(flowRateStepSize) ) {
+            for (Integer id : flowRate.keySet()) {
+                LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
+                        flowRateStepSize, totalTime, initialTime, flowRate.get(id));
+                newFlowRate.put(id, currentFlowRate);
+            }
+         }
 
-            newFlowRate.put(id, currentFlowRate);
-        }
+        dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
+        dataStructure.setLinkFlowRate(linkName, newFlowRate);
+    }
+}
 
             /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate1.entrySet()) {
                 for (Instant time : entry.getValue().keySet()) {
@@ -156,8 +162,3 @@ public class FlowRateDispatcher {
                     System.out.println("Value " + entry.getValue().get(time));
                 }
             }*/
-
-        dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
-        dataStructure.setLinkFlowRate(linkName, newFlowRate);
-    }
-}
