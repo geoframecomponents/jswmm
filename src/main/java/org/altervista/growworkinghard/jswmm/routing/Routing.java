@@ -76,7 +76,7 @@ public class Routing {
     public HashMap<Integer, List<Integer>> net3subtrees;
 
     @OutNode
-    public LinkedHashMap<Instant, Double> routingFlowRate;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
 
     @Initialize
     public void initialize() {
@@ -99,7 +99,6 @@ public class Routing {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
         Double maxDischarge = 0.0;
@@ -110,7 +109,7 @@ public class Routing {
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
-        System.out.println("Q MAX " + maxDischarge);
+        System.out.println("Q_MAX " + maxDischarge);
 
         //dimensioning method!!
         //conduit.evaluateDimension(maxDischarge, pipeCompany);
@@ -125,24 +124,21 @@ public class Routing {
 
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
-    }
 
-    @Finalize
-    void upgradeSWMMobject() {
         routingFlowRate = conduit.getDownstreamFlowRate();
     }
 
-    public void test(String fileChecks) {
-        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
-        List<Double> defined = dataStructure.readFileList(fileChecks);
-
-        int i = 0;
-        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
-            //TODO check a method to do it better - not always is ordered
-            assertEquals(data.getValue(), defined.get(i), 0.85);
-            //System.out.println(data.getValue());
-            //System.out.println(defined.get(i));
-            i = i + 1;
-        }
-    }
+//    public void test(String fileChecks) {
+//        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
+//        List<Double> defined = dataStructure.readFileList(fileChecks);
+//
+//        int i = 0;
+//        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
+//            //TODO check a method to do it better - not always is ordered
+//            assertEquals(data.getValue(), defined.get(i), 0.85);
+//            //System.out.println(data.getValue());
+//            //System.out.println(defined.get(i));
+//            i = i + 1;
+//        }
+//    }
 }
