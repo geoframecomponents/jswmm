@@ -54,15 +54,11 @@ public class Area extends AbstractSubcatchment {
         for(Subarea subarea : subareas) {
             subarea.getFlowRate().get(identifier).forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
         }
-        return getTotalAreaFlowRate();
+        return totalAreaFlowRate;
     }
 
     public List<ReceiverRunoff> getReceivers() {
         return receivers;
-    }
-
-    public LinkedHashMap<Instant, Double> getTotalAreaFlowRate() {
-        return totalAreaFlowRate;
     }
 
     public List<Subarea> getSubareas() {
