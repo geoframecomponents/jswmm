@@ -29,7 +29,7 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
                                  OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                  Double linkSlope, CrossSectionType crossSectionType) {
         throw new NullPointerException("Nothing implemented yet");
