@@ -19,6 +19,7 @@ import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutedFlow;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 import org.geotools.graph.util.geom.Coordinate2D;
 
@@ -87,8 +88,10 @@ public class Conduit extends AbstractLink {
     @Override
     public void evaluateFlowRate(Instant currentTime) {
         for (Integer id : this.getUpstreamOutside().getStreamFlowRate().keySet()) {
-            routingSetup.routeFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
+            RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamOutside, downstreamOutside,
                     linkLength, linkRoughness, linkSlope, crossSectionType);
+            upstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+            //downstreamOutside.setStreamFlowRate(id, currentTime, 0.0);
         }
     }
 
@@ -96,19 +99,6 @@ public class Conduit extends AbstractLink {
     public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
-
-        //System.out.println("number of curves " + flowUpstreamNode.size());
-
-        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowUpstreamNode.entrySet()) {
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("ID " + entry.getKey());
-                System.out.println("Instant " + time);
-                System.out.println("Value " + entry.getValue().get(time));
-            }
-        }*/
-
-        //System.out.println("ID 1" + " flowUpstreamNode " + flowUpstreamNode.get(1));
-
 
         for (Integer id : flowUpstreamNode.keySet()) {
 
@@ -124,31 +114,25 @@ public class Conduit extends AbstractLink {
     @Override
     public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
-        double naturalSlope = computeNaturalSlope();
+        linkSlope = computeNaturalSlope();
 
         // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
-        double diameter = getDimension(discharge, naturalSlope);
-
-        System.out.println("diameter" + diameter);
+        double diameter = getDimension(discharge, linkSlope);
 
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
-        double fillAngleMax = evaluateFillAngle(diameters[0], naturalSlope, discharge);
-        double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
-
         Double minSlope = computeMinSlope(diameters[0]);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
-        if (naturalSlope < minSlope) {
+        if (linkSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
             linkSlope = minSlope;
         }
-        else {
-            linkSlope = naturalSlope;
-        }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
+        double fillAngleMax = evaluateFillAngle(diameters[0], linkSlope, discharge);
+        double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
 
         double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
         getUpstreamOutside().setHeights(excavation, 0.0);
@@ -157,14 +141,14 @@ public class Conduit extends AbstractLink {
         double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
         getUpstreamOutside().setWaterDepth(waterDepth);
         getDownstreamOutside().setWaterDepth(waterDepth);
+
+        System.out.println("D " + diameters[0]);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
         final double TWO_THIRTEENOVERTHREE = Math.pow(2, 13/3);
         final double EIGHTOVERTHREE = 8/3;
         double initFillAngle = 2 * Math.acos((1 - 2 * getUpstreamOutside().getFillCoeff()));
-
-        System.out.println("initFillAngle " + initFillAngle);
 
         double b = discharge / (linkRoughness * Math.sqrt(slope)); // conversione di discharge m3 to l e slope m to cm
         double known = (b * TWO_THIRTEENOVERTHREE) / Math.pow(innerSize, EIGHTOVERTHREE); // innersize m2cm
@@ -280,13 +264,11 @@ public class Conduit extends AbstractLink {
         System.out.println("slope" + slope);
 
         final double pow1 = 3.0 / 8;
-        double numerator = Math.pow((discharge * fillAngle)
-                / (linkRoughness * Math.pow(slope, 0.5)), pow1);
-        final double pow2 = 5.0 / 8;
-        double denominator = Math
-                .pow(1 - Math.sin(fillAngle) / fillAngle, pow2);
-        final double pow3 = -9.0 / 8;
+        double coeff = Math.pow(2, 13.0/3);
+        double numerator = (coeff * discharge);
+        double denominator = (fillAngle - Math.sin(fillAngle)) * linkRoughness *
+                Math.pow(slope, 0.5) * Math.pow( (1 - Math.sin(fillAngle) / fillAngle), 2.0/3 );
 
-        return numerator / denominator * Math.pow(10, pow3);
+        return Math.pow( numerator / denominator, pow1 );
     }
 }
