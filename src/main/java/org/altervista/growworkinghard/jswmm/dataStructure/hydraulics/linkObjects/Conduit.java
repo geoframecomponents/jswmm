@@ -62,27 +62,6 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
-
-        HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstream = getUpstreamOutside().getStreamFlowRate();
-
-        for (Integer id : newFlowRate.keySet()) {
-            LinkedHashMap<Instant, Double> data = new LinkedHashMap<>();
-            if (flowUpstream.containsKey(id)) {
-                for (Instant time : newFlowRate.get(id).keySet()) {
-                    data.put(time, newFlowRate.get(id).get(time) + flowUpstream.get(id).get(time) );
-                }
-            }
-            else {
-                for (Instant time : newFlowRate.get(id).keySet()) {
-                    data.put(time, newFlowRate.get(id).get(time));
-                }
-            }
-            flowUpstream.put(id, data);
-        }
-    }
-
-    @Override
     public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
         upstreamOutside.setFlowRate(id, time, flowRate);
     }

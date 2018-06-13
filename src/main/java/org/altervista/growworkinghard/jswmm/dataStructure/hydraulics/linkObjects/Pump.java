@@ -34,11 +34,6 @@ class Pump extends AbstractLink {
     }
 
     @Override
-    public void sumUpstreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
-        throw new NullPointerException("Nothing implemented yet");
-    }
-
-    @Override
     public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
         throw new NullPointerException("Nothing implemented yet");
     }

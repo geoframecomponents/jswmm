@@ -91,14 +91,14 @@ public class OutsideSetup {
                 streamFlowRate.put(id, new LinkedHashMap<>());
             }
             for (Instant time : newFlowRate.get(id).keySet()) {
-
                 Double oldFLowRate = streamFlowRate.get(id).get(time);
                 if (oldFLowRate == null) {
                     LinkedHashMap<Instant, Double> newLHM = newFlowRate.get(id);
                     streamFlowRate.put(id, newLHM);
                 } else {
                     LinkedHashMap<Instant, Double> oldLHM = streamFlowRate.get(id);
-                    streamFlowRate.replace(id, oldLHM);
+                    oldLHM.put(time, newFlowRate.get(id).get(time) + oldFLowRate);
+                    streamFlowRate.put(id, oldLHM);
                 }
             }
         }

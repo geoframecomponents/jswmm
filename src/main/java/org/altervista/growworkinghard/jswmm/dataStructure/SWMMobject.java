@@ -514,7 +514,7 @@ public class SWMMobject {
     }
 
     public void setLinkFlowRate(String linkName, HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
-        conduit.get(linkName).sumUpstreamFlowRate(flowRate);
+        conduit.get(linkName).getUpstreamOutside().sumStreamFlowRate(flowRate);
     }
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
