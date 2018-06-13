@@ -142,13 +142,14 @@ public class FlowRateDispatcher {
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
+
         if ( !routingStepSize.equals(flowRateStepSize) ) {
             for (Integer id : flowRate.keySet()) {
                 LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
                         flowRateStepSize, totalTime, initialTime, flowRate.get(id));
                 newFlowRate.put(id, currentFlowRate);
             }
-         }
+        }
 
         dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
         dataStructure.setLinkFlowRate(linkName, newFlowRate);
@@ -161,4 +162,15 @@ public class FlowRateDispatcher {
                     System.out.println("Instant " + time);
                     System.out.println("Value " + entry.getValue().get(time));
                 }
-            }*/
+            }
+
+
+            for (Integer id : flowRate.keySet()) {
+            LinkedHashMap<Instant, Double> currentFlow = dataStructure.getConduit(linkName).getUpstreamOutside().getStreamFlowRate().get(id);
+            for (Instant time : currentFlow.keySet()) {
+                System.out.println("time " +  time);
+                System.out.println("Value " + currentFlow.get(time));
+            }
+        }
+
+        */

@@ -78,10 +78,6 @@ public class Routing {
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
 
-    @Initialize
-    public void initialize() {
-    }
-
     @Execute
     public void run() {
 
@@ -116,12 +112,19 @@ public class Routing {
         conduit.evaluateDimension(maxDischarge, pipeCompany);
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
+//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = dataStructure.getConduit(linkName).getUpstreamOutside().getStreamFlowRate();
+//        for (Integer id : currentFlow.keySet()) {
+//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
+//            for (Instant time : flow.keySet()) {
+//                System.out.println("time " +  time);
+//                System.out.println("Value " + currentFlow.get(time));
+//            }
+//        }
+
         //route the maximum discharge to next bucket
         currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
-
             conduit.evaluateFlowRate(currentTime);
-
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 

@@ -15,8 +15,8 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
+import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
-import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadSWMM5RainfallFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
@@ -24,7 +24,6 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GIUHsetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.GlobalRaingage;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
@@ -418,7 +417,7 @@ public class SWMMobject {
 
     private void setSubareasInitialValue(Integer id, String areaName) {
         for( Subarea subarea : areas.get(areaName).getSubareas() ) {
-            subarea.setFlowRate(id, timeSetup.getStartDate(), 0.0);
+            subarea.setAreaFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
         }
@@ -472,30 +471,29 @@ public class SWMMobject {
 
         for (Long currentTime = initialTime; currentTime<finalTime; currentTime+=toStepSize) {
 
-            while(currentDataTime <= currentTime) {
-                currentDataTime += fromStepSize;
+            double currentData;
+            if (currentDataTime.equals(currentTime)) {
+                currentData = HMData.get(Instant.ofEpochSecond(currentTime));
             }
+            else {
+                while(currentDataTime <= currentTime) {
+                    currentDataTime += fromStepSize;
+                }
+                Long upperTime = currentDataTime;
+                double upperData = HMData.get(Instant.ofEpochSecond(upperTime));
 
-            Long upperTime = currentDataTime;
-            Double upperRainfallData = 0.0;
-            if(HMData.get(Instant.ofEpochSecond(upperTime)) != null) {
-                upperRainfallData = HMData.get(Instant.ofEpochSecond(upperTime));
+                Long lowerTime = upperTime - fromStepSize;
+                double lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
+
+                currentData = interpolateData(currentTime, lowerTime, lowerData,
+                        upperTime, upperData);
             }
-
-            Long lowerTime = upperTime - fromStepSize;
-            Double lowerData = 0.0;
-            if(HMData.get(Instant.ofEpochSecond(lowerTime)) != null) {
-                lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
-            }
-
-            Double currentData = interpolateData(currentTime, lowerTime, lowerData,
-                    upperTime, upperRainfallData);
-
             adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
         }
         adaptedData.put(Instant.ofEpochSecond(finalTime), HMData.get(Instant.ofEpochSecond(finalTime)));
 
         //System.out.println(adaptedRainfallData);
+
         return adaptedData;
     }
 
@@ -505,13 +503,6 @@ public class SWMMobject {
 
         if( rangeTime == 0 ) { return lowerTimeData; }
         else {
-            if (upperTimeData == null) {
-                upperTimeData = 0.0;
-            }
-            if (lowerTimeData == null) {
-                lowerTimeData = 0.0;
-            }
-
             Double numerator = upperTimeData - lowerTimeData;
 
             return lowerTimeData + numerator / rangeTime * (currentRunoffTime - lowerTime);
