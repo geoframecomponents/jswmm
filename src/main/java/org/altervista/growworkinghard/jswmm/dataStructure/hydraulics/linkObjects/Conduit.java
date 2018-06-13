@@ -25,6 +25,7 @@ import org.geotools.graph.util.geom.Coordinate2D;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,12 +67,18 @@ public class Conduit extends AbstractLink {
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstream = getUpstreamOutside().getStreamFlowRate();
 
         for (Integer id : newFlowRate.keySet()) {
-            if (!flowUpstream.containsKey(id)) {
-                flowUpstream.put(id, new LinkedHashMap<>());
+            LinkedHashMap<Instant, Double> data = new LinkedHashMap<>();
+            if (flowUpstream.containsKey(id)) {
+                for (Instant time : newFlowRate.get(id).keySet()) {
+                    data.put(time, newFlowRate.get(id).get(time) + flowUpstream.get(id).get(time) );
+                }
             }
-            for (Instant time : newFlowRate.get(id).keySet()) {
-                flowUpstream.get(id).put(time, newFlowRate.get(id).get(time));
+            else {
+                for (Instant time : newFlowRate.get(id).keySet()) {
+                    data.put(time, newFlowRate.get(id).get(time));
+                }
             }
+            flowUpstream.put(id, data);
         }
     }
 
