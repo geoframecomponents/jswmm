@@ -96,20 +96,20 @@ public class ImperviousWithoutStorage extends Subarea {
         if(evaporation * runoffStepSize >= moistureVolume) {
             setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
             setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-            setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+            setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
             Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
             if ( exRainHeigth == 0.0 ) {
                 setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
                 setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                setFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
+                setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
                         evaluateNextFlowRate(subareaSlope, characteristicWidth,
                                 runoffDepth.get(id).get(nextTime)) );
             }
             else {
                 runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                setFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
                         runoffDepth.get(id).get(nextTime)) );
             }
         }
