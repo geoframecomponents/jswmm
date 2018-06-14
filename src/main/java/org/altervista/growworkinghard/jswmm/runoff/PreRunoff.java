@@ -133,13 +133,13 @@ public class PreRunoff {
 
         }
 
-        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : rainfallData.entrySet()) {
-            LinkedHashMap<Instant, Double> val = entry.getValue();
-            for (Instant time : val.keySet() ) {
-                System.out.println(time);
-                System.out.println(val.get(time));
-            }
-        }*/
+//        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : rainfallData.entrySet()) {
+//            LinkedHashMap<Instant, Double> val = entry.getValue();
+//            for (Instant time : val.keySet() ) {
+//                System.out.println(time);
+//                System.out.println(val.get(time));
+//            }
+//        }
 
         return rainfallData;
     }
@@ -153,12 +153,12 @@ public class PreRunoff {
         }
         else {
             if ( currentTime.isBefore(finalRainfallTime) ) {
-                rainfallValue = aLPP * Math.pow(currentTime.getEpochSecond(), nLPP - 1.0);
+                rainfallValue = aLPP * Math.pow(finalRainfallTime.getEpochSecond(), nLPP - 1.0);
             }
             else {
                 rainfallValue = 0.0;
             }
         }
-       return rainfallValue;
+        return rainfallValue;
     }
 }
