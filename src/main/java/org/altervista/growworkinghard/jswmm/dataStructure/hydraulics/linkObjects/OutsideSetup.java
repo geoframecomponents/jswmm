@@ -55,37 +55,40 @@ public class OutsideSetup {
     }
 
     public void setWetArea(Integer id, Instant time, Double wetArea) {
-        if (streamWetArea == null) {
-            streamWetArea = new HashMap<>();
+        if (!streamWetArea.containsKey(id)) {
+            streamWetArea.put(id, new LinkedHashMap<>());
         }
-        LinkedHashMap<Instant, Double> data = new LinkedHashMap<>();
-        if (streamWetArea.get(id) != null){
-            for (Instant times : streamWetArea.get(id).keySet()) {
-                data.put(times, streamWetArea.get(id).get(times));
-            }
+        Double oldWetArea = streamWetArea.get(id).get(time);
+        if (oldWetArea == null) {
+            LinkedHashMap<Instant, Double> newLHM = new LinkedHashMap<>();
+            newLHM.put(time, wetArea);
+            streamWetArea.put(id, newLHM);
         }
-        data.put(time, wetArea);
-
-        this.streamWetArea.put(id, data);
+        else {
+            LinkedHashMap<Instant, Double> oldLHM = streamWetArea.get(id);
+            oldLHM.put(time, wetArea);
+            streamWetArea.put(id, oldLHM);
+        }
     }
 
     public void setFlowRate(Integer id, Instant time, Double flowRate) {
-        if (streamFlowRate == null) {
-            streamFlowRate = new HashMap<>();
+        if (!streamFlowRate.containsKey(id)) {
+            streamFlowRate.put(id, new LinkedHashMap<>());
         }
-        LinkedHashMap<Instant, Double> data = new LinkedHashMap<>();
-        if (streamFlowRate.get(id) != null){
-            for (Instant times : streamFlowRate.get(id).keySet()) {
-                data.put(times, streamFlowRate.get(id).get(times));
-            }
+        Double oldFLowRate = streamFlowRate.get(id).get(time);
+        if (oldFLowRate == null) {
+            LinkedHashMap<Instant, Double> newLHM = new LinkedHashMap<>();
+            newLHM.put(time, flowRate);
+            streamFlowRate.put(id, newLHM);
         }
-        data.put(time, flowRate);
-
-        this.streamFlowRate.put(id, data);
+        else {
+            LinkedHashMap<Instant, Double> oldLHM = streamFlowRate.get(id);
+            oldLHM.put(time, flowRate);
+            streamFlowRate.put(id, oldLHM);
+        }
     }
 
     public void sumStreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
-
         for (Integer id : newFlowRate.keySet()) {
             if (!streamFlowRate.containsKey(id)) {
                 streamFlowRate.put(id, new LinkedHashMap<>());
