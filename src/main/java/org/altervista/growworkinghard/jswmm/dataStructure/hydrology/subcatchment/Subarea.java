@@ -45,31 +45,34 @@ public abstract class Subarea {
     }
 
     public void setTotalDepth(Integer id, Instant time, Double depthValue) {
-        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
-        temp.put(time, depthValue);
-        this.totalDepth.put(id, temp);
+        if (!totalDepth.containsKey(id)) {
+            totalDepth.put(id, new LinkedHashMap<>());
+        }
+        LinkedHashMap<Instant, Double> oldLHM = totalDepth.get(id);
+        oldLHM.put(time, depthValue);
+        totalDepth.put(id, oldLHM);
     }
 
     public void setRunoffDepth(Integer id, Instant time, Double depthValue) {
-        LinkedHashMap<Instant, Double> temp = new LinkedHashMap<>();
-        temp.put(time, depthValue);
-        this.runoffDepth.put(id, temp);
+        if (!runoffDepth.containsKey(id)) {
+            runoffDepth.put(id, new LinkedHashMap<>());
+        }
+        LinkedHashMap<Instant, Double> oldLHM = runoffDepth.get(id);
+        oldLHM.put(time, depthValue);
+        runoffDepth.put(id, oldLHM);
     }
 
     public void setAreaFlowRate(Integer id, Instant time, Double flowValue) {
-        double UnitsFactor = 1.0;
+        double unitsFactor = 1.0;
         if ( projectUnits.getProjectUnits() == CMS ) {
-            UnitsFactor = 1.0E-5;
+            unitsFactor = 1.0E-5;
         }
-        LinkedHashMap<Instant, Double> data;
-        if (flowRate.get(id) == null) {
-            data = new LinkedHashMap<>();
+        if (!flowRate.containsKey(id)) {
+            flowRate.put(id, new LinkedHashMap<>());
         }
-        else {
-            data = flowRate.get(id);
-        }
-        data.put(time, flowValue * UnitsFactor);
-        this.flowRate.put(id, data);
+        LinkedHashMap<Instant, Double> oldLHM = flowRate.get(id);
+        oldLHM.put(time, flowValue * unitsFactor);
+        flowRate.put(id, oldLHM);
     }
 
     public void setExcessRainfall(Integer id, Double value) {
