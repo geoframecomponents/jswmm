@@ -24,6 +24,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Area extends AbstractSubcatchment {
 
@@ -37,11 +38,11 @@ public class Area extends AbstractSubcatchment {
     Double areaSlope;
     //Double curbLength;
 
-    List<Subarea> subareas;
-    LinkedHashMap<Instant, Double> totalAreaFlowRate;
+    HashMap<Integer, List<Subarea>> subareas;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
     public Area(Double subcatchmentArea, RaingageSetup raingageSetup, Double characteristicWidth, Double areaSlope,
-                List<Subarea> subareas) {
+                HashMap<Integer, List<Subarea>> subareas) {
         this.subcatchmentArea = subcatchmentArea;
         this.raingageSetup = raingageSetup;
         this.characteristicWidth = characteristicWidth;
@@ -50,37 +51,45 @@ public class Area extends AbstractSubcatchment {
         this.totalAreaFlowRate = new LinkedHashMap<>();
     }
 
-    public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer identifier) {
-        for(Subarea subarea : subareas) {
-            subarea.getFlowRate().get(identifier).forEach((k, v) -> totalAreaFlowRate.merge(k, v*subarea.subareaArea, Double::sum));
+    public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {
+        //check if totalarea contain the rainfallTimeId
+        if (!totalAreaFlowRate.containsKey(id)) {
+            totalAreaFlowRate.put(id, new LinkedHashMap<>());
         }
-        return totalAreaFlowRate;
+        //sum the volume of each subarea as product of the flowrate and the subarea's area
+        for(Subarea subarea : subareas.get(id)) {
+
+
+            LinkedHashMap<Instant, Double> subareaFlowRate = subarea.getFlowRate().get(id);
+            for (Instant time : subareaFlowRate.keySet()) {
+                Double oldFLowRate = totalAreaFlowRate.get(id).get(time);
+                double value;
+                if (oldFLowRate == null) {
+                    value = subareaFlowRate.get(time) * subarea.subareaArea;
+                } else {
+                    value = oldFLowRate + subareaFlowRate.get(time) * subarea.subareaArea;
+                }
+                LinkedHashMap<Instant, Double> upgradedLHM = totalAreaFlowRate.get(id);
+                upgradedLHM.put(time, value);
+                totalAreaFlowRate.put(id, upgradedLHM);
+            }
+        }
+        return totalAreaFlowRate.get(id);
     }
 
     public List<ReceiverRunoff> getReceivers() {
         return receivers;
     }
 
-    public List<Subarea> getSubareas() {
+    public HashMap<Integer, List<Subarea>> getSubareas() {
         return subareas;
-    }
-
-    public void setTotalAreaFlowRate(LinkedHashMap<Instant, Double> totalAreaFlowRate) {
-        this.totalAreaFlowRate = totalAreaFlowRate;
-    }
-
-    public Double getCharacteristicWidth() {
-        return characteristicWidth;
-    }
-
-    public Double getAreaSlope() {
-        return areaSlope;
     }
 
     public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData,
                                        RunoffSetup runoffSetup, Instant currentTime) {
+
         for (Integer identifier : adaptedRainfallData.keySet()) {
-            for (Subarea subarea : subareas) {
+            for (Subarea subarea : subareas.get(identifier)) {
                 subarea.setDepthFactor(areaSlope, characteristicWidth);
                 subarea.evaluateFlowRate(identifier, adaptedRainfallData.get(identifier).get(currentTime), 0.0,
                         currentTime, runoffSetup, areaSlope, characteristicWidth); //TODO evaporation!!
