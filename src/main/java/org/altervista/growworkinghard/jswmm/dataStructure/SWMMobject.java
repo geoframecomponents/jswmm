@@ -115,9 +115,9 @@ public class SWMMobject {
 
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T02:00:00Z");
+        Instant endDate = Instant.parse("2018-01-01T00:10:00Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2018-01-01T02:00:00Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T00:10:00Z");
         Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
         Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;
@@ -181,13 +181,13 @@ public class SWMMobject {
         setAreas("1", 1.937);
         setAreas("2", 1.731);
         setAreas("3", 0.481);
-        setAreas("4", 0.547);
+        /*setAreas("4", 0.547);
         setAreas("5", 2.141);
         setAreas("6", 0.383);
         setAreas("7", 0.353);
         setAreas("8", 0.999);
         setAreas("9", 1.583);
-        setAreas("10", 0.633);
+        setAreas("10", 0.633);*/
     }
 
     private void setAreas(String areaName, double subcatchmentArea) {
@@ -218,12 +218,15 @@ public class SWMMobject {
 
         String raingageName = "RG1";
         ReceiverRunoff receiverSubcatchment = null;
+        Integer numberOfCurves = 3;
 
-        List<Subarea> subareas = divideAreas(imperviousPercentage, subcatchmentArea,
-                imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
-                roughnessCoefficientPervious, roughnessCoefficientImpervious,
-                perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
-
+        HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
+        for (int id = 1; id<=numberOfCurves; id++) {
+            subareas.put(id, divideAreas(imperviousPercentage, subcatchmentArea,
+                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious) );
+        }
         areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
                 characteristicWidth, areaSlope, subareas));
     }
@@ -233,14 +236,14 @@ public class SWMMobject {
         setJunctions("J2", 0.0);
         setJunctions("J3", 0.0);
         setJunctions("J4", 0.0);
-        setJunctions("J5", 0.0);
+        /*setJunctions("J5", 0.0);
         setJunctions("J6", 0.0);
         setJunctions("J7", 0.0);
         setJunctions("J8", 0.0);
         setJunctions("J9", 0.0);
         setJunctions("J10", 0.0);
         setJunctions("J11", 0.0);
-        setOutfalls();
+        setOutfalls();*/
     }
 
     private void setJunctions(String nodeName, double nodeElevation) {
@@ -287,7 +290,7 @@ public class SWMMobject {
                 "J3",-119.0, 197.0, 0);
         setConduit("13", 119,  "J3",-119.0, 197.0, 0.0,
                 "J4",0.0, 197.0, 0);
-        setConduit("14", 43,   "J5",111.0, 240.0, 0.0,
+        /*setConduit("14", 43,   "J5",111.0, 240.0, 0.0,
                 "J7",111.0, 197.0, 0);
         setConduit("15", 92,   "J6",203.0, 197.0, 0.0,
                 "J7",111.0, 197.0, 0);
@@ -300,7 +303,7 @@ public class SWMMobject {
         setConduit("19", 134,  "J10",-134.0, 116.0, 0.0,
                 "J8",0.0, 116.0, 0);
         setConduit("20", 116,   "J8",  0.0, 116.0, 0.0,
-                "J11",0.0,   0.0, 0);
+                "J11",0.0,   0.0, 0);*/
     }
 
     private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
@@ -396,27 +399,27 @@ public class SWMMobject {
         setSubareasInitialValue(id, "1");
         setSubareasInitialValue(id, "2");
         setSubareasInitialValue(id, "3");
-        setSubareasInitialValue(id, "4");
+        /*setSubareasInitialValue(id, "4");
         setSubareasInitialValue(id, "5");
         setSubareasInitialValue(id, "6");
         setSubareasInitialValue(id, "7");
         setSubareasInitialValue(id, "8");
         setSubareasInitialValue(id, "9");
-        setSubareasInitialValue(id, "10");
+        setSubareasInitialValue(id, "10");*/
         setInitialTime(id, "11");
         setInitialTime(id, "12");
         setInitialTime(id, "13");
-        setInitialTime(id, "14");
+        /*setInitialTime(id, "14");
         setInitialTime(id, "15");
         setInitialTime(id, "16");
         setInitialTime(id, "17");
         setInitialTime(id, "18");
         setInitialTime(id, "19");
-        setInitialTime(id, "20");
+        setInitialTime(id, "20");*/
     }
 
     private void setSubareasInitialValue(Integer id, String areaName) {
-        for( Subarea subarea : areas.get(areaName).getSubareas() ) {
+        for( Subarea subarea : areas.get(areaName).getSubareas().get(id) ) {
             subarea.setAreaFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
