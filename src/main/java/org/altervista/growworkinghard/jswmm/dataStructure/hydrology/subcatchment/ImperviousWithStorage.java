@@ -86,40 +86,44 @@ public class ImperviousWithStorage extends Subarea {
         Long runoffStepSize = runoffSetup.getRunoffStepSize();
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
-        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(id).get(currentTime);
+        double totalDepthCurrent = totalDepth.get(id).get(currentTime);
+        double runoffDepthCurrent = runoffDepth.get(id).get(currentTime);
+        double areaFlowRateCurrent = getFlowRate().get(id).get(currentTime);
+
+        Double moistureVolume = rainfall * runoffStepSize + totalDepthCurrent;
 
         if(evaporation != 0.0) {
-            evaporation = Math.max(evaporation, totalDepth.get(id).get(currentTime)/runoffStepSize);
+            evaporation = Math.max(evaporation, totalDepthCurrent/runoffStepSize);
         }
 
         setExcessRainfall(id, rainfall - evaporation);
 
         if(evaporation * runoffStepSize >= moistureVolume) {
-            setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
-            setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-            setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+            setTotalDepth(id, nextTime, totalDepthCurrent);
+            setRunoffDepth(id, nextTime, runoffDepthCurrent);
+            setAreaFlowRate(id, nextTime, areaFlowRateCurrent);
         }
         else {
             Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
             if ( exRainHeigth == 0.0 ) {
-                if ( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                if ( depressionStorage - totalDepthCurrent >= 0.0 ) {
+                    setTotalDepth(id, nextTime, totalDepthCurrent + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepthCurrent);
+                    setAreaFlowRate(id, nextTime, areaFlowRateCurrent);
                 }
                 else {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
+                    setTotalDepth(id, nextTime, totalDepthCurrent + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepthCurrent + exRainHeigth);
+                    setAreaFlowRate(id, nextTime, areaFlowRateCurrent +
                             evaluateNextFlowRate(subareaSlope, characteristicWidth,
                                     runoffDepth.get(id).get(nextTime)));
                 }
             }
             else {
-                if( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+                if( depressionStorage - totalDepthCurrent >= 0.0 ) {
+                    setTotalDepth(id, nextTime, totalDepthCurrent + exRainHeigth);
+                    setRunoffDepth(id, nextTime, runoffDepthCurrent);
+                    setAreaFlowRate(id, nextTime, areaFlowRateCurrent);
                 }
                 else {
                     runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
@@ -169,7 +173,7 @@ public class ImperviousWithStorage extends Subarea {
 
     @Override
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        return Math.pow(subareaSlope, 0.5) * characteristicWidth *
-                Math.pow(currentDepth, 5.0/3.0) / (totalImperviousArea * roughnessCoefficient);
+        return ( Math.pow(subareaSlope, 0.5) * characteristicWidth *
+                Math.pow(currentDepth, 5.0/3.0) ) / (totalImperviousArea * roughnessCoefficient);
     }
 }
