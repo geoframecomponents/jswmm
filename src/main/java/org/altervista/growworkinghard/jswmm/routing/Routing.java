@@ -95,6 +95,16 @@ public class Routing {
             throw new NullPointerException("Nothing implemented yet");
         }
 
+//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = dataStructure.getConduit(linkName).getUpstreamOutside().getStreamFlowRate();
+//        for (Integer id : currentFlow.keySet()) {
+//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
+//            for (Instant time : flow.keySet()) {
+//                System.out.print("ID " + id);
+//                System.out.print(" time " +  time);
+//                System.out.println("value " + currentFlow.get(id).get(time));
+//            }
+//        }
+
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
         Double maxDischarge = 0.0;

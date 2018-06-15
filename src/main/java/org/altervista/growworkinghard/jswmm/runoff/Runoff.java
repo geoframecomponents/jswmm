@@ -106,20 +106,11 @@ public class Runoff {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-/*        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
-            System.out.println("ID rain" + entry.getKey());
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("Instant rain" + time);
-                System.out.println("Value rain" + entry.getValue().get(time));
-            }
-        }*/
-
-        Instant currentTime = Instant.parse(initialTime.toString());
+        Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
             //check snownelt - snowaccumulation TODO build a new component
             area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSetup, currentTime);
-
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
 

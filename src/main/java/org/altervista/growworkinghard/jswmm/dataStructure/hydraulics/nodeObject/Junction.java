@@ -42,7 +42,6 @@ public class Junction extends AbstractNode {
                 nodeFlowRate.put(id, new LinkedHashMap<>());
             }
             for (Instant time : newFlowRate.get(id).keySet()) {
-
                 Double oldFLowRate = nodeFlowRate.get(id).get(time);
                 if (oldFLowRate == null) {
                     LinkedHashMap<Instant, Double> newLHM = newFlowRate.get(id);
