@@ -141,14 +141,6 @@ public class FlowRateDispatcher {
     private void dispatchFlow(Long routingStepSize, Long flowRateStepSize, long totalTime, long initialTime,
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
 
-//        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate.entrySet()) {
-//            for (Instant time : entry.getValue().keySet()) {
-//                System.out.println("ID " + entry.getKey());
-//                System.out.println("Instant " + time);
-//                System.out.println("Value " + entry.getValue().get(time));
-//            }
-//        }
-
         HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
 
         if ( !routingStepSize.equals(flowRateStepSize) ) {
@@ -158,6 +150,14 @@ public class FlowRateDispatcher {
                 newFlowRate.put(id, currentFlowRate);
             }
         }
+
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : newFlowRate.entrySet()) {
+            for (Instant time : entry.getValue().keySet()) {
+                System.out.println("ID " + entry.getKey());
+                System.out.println("Instant " + time);
+                System.out.println("Value " + entry.getValue().get(time));
+            }
+        }*/
 
         dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
         dataStructure.setLinkFlowRate(linkName, newFlowRate);

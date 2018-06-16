@@ -107,7 +107,7 @@ public class Routing {
 
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
-        Double maxDischarge = 0.0;
+        double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
 
             maxDischarge = conduit.evaluateMaxDischarge(currentTime, maxDischarge);
