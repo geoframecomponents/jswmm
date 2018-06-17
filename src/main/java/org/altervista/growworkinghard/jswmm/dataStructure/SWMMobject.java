@@ -197,7 +197,7 @@ public class SWMMobject {
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
 
-        Double imperviousPercentage = 0.25;
+        Double imperviousPercentage = 0.75;
         Double imperviousWOstoragePercentage = 0.25;
 
         Double depressionStorageImpervious = 0.00005;
@@ -472,7 +472,8 @@ public class SWMMobject {
         LinkedHashMap<Instant, Double> adaptedData = new LinkedHashMap<>();
         Long currentDataTime = initialTime;
 
-        for (Long currentTime = initialTime; currentTime<finalTime; currentTime+=toStepSize) {
+        Long currentTime = initialTime;
+        while (currentTime<finalTime) {
 
             double currentData;
             if (currentDataTime.equals(currentTime)) {
@@ -482,8 +483,13 @@ public class SWMMobject {
                 while(currentDataTime <= currentTime) {
                     currentDataTime += fromStepSize;
                 }
+
                 Long upperTime = currentDataTime;
-                double upperData = HMData.get(Instant.ofEpochSecond(upperTime));
+
+                Double upperData = HMData.get(Instant.ofEpochSecond(upperTime));
+                if (upperData == null) {
+                    upperData = HMData.get(Instant.ofEpochSecond(finalTime));
+                }
 
                 Long lowerTime = upperTime - fromStepSize;
                 double lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
@@ -492,10 +498,13 @@ public class SWMMobject {
                         upperTime, upperData);
             }
             adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
+            currentTime+=toStepSize;
         }
-        adaptedData.put(Instant.ofEpochSecond(finalTime), HMData.get(Instant.ofEpochSecond(finalTime)));
+        adaptedData.put(Instant.ofEpochSecond(currentTime), HMData.get(Instant.ofEpochSecond(finalTime)));
 
-        //System.out.println(adaptedRainfallData);
+//        for (Instant time : adaptedData.keySet()) {
+//            System.out.println("Time " + time + " value " + adaptedData.get(time));
+//        }
 
         return adaptedData;
     }
