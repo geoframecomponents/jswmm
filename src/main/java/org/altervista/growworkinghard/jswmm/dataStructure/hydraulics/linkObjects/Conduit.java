@@ -82,8 +82,7 @@ public class Conduit extends AbstractLink {
 
             RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
                     downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType);
-
-            upstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+            downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
         }
     }
 
@@ -250,10 +249,9 @@ public class Conduit extends AbstractLink {
             fillAngle = 0.01;
         }
 
-        System.out.println("discharge" + discharge);
-        System.out.println("fillCoeff" + fillCoeff);
-        System.out.println("fillAngle" + fillAngle);
-        System.out.println("slope" + slope);
+        System.out.println("fillCoeff " + fillCoeff);
+        System.out.println("fillAngle " + fillAngle);
+        System.out.println("slope " + slope);
 
         final double pow1 = 3.0 / 8;
         double coeff = Math.pow(2, 13.0/3);
