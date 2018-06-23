@@ -118,18 +118,8 @@ public class Routing {
         System.out.println("Q_MAX " + maxDischarge);
 
         //dimensioning method!!
-        //conduit.evaluateDimension(maxDischarge, pipeCompany);
         conduit.evaluateDimension(maxDischarge, pipeCompany);
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
-
-//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = dataStructure.getConduit(linkName).getUpstreamOutside().getStreamFlowRate();
-//        for (Integer id : currentFlow.keySet()) {
-//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
-//            for (Instant time : flow.keySet()) {
-//                System.out.println("time " +  time);
-//                System.out.println("Value " + currentFlow.get(time));
-//            }
-//        }
 
         //route the maximum discharge to next bucket
         currentTime = initialTime;
@@ -137,8 +127,21 @@ public class Routing {
             conduit.evaluateFlowRate(currentTime);
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
+        conduit.evaluateFlowRate(currentTime);
 
         routingFlowRate = conduit.getDownstreamFlowRate();
+        //routingFlowRate = conduit.getUpstreamFlowRate();
+
+
+//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
+//        for (Integer id : currentFlow.keySet()) {
+//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
+//            System.out.print("ID " + id);
+//            for (Instant time : flow.keySet()) {
+//                System.out.print("time " +  time);
+//                System.out.println("Value " + currentFlow.get(id).get(time));
+//            }
+//        }
     }
 
 //    public void test(String fileChecks) {
