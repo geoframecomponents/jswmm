@@ -55,16 +55,6 @@ public class Junction extends AbstractNode {
                 nodeFlowRate.put(id, oldLHM);
             }
         }
-
-        System.out.println("Sum flow rate");
-
-        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : nodeFlowRate.entrySet()) {
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("ID " + entry.getKey());
-                System.out.println("Instant " + time);
-                System.out.println("Value " + entry.getValue().get(time));
-            }
-        }
     }
 
     @Override

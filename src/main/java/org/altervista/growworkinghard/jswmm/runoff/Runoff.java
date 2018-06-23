@@ -33,9 +33,9 @@ import static org.junit.Assert.assertEquals;
 public class Runoff {
 
     @In
-    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData; // [mm/hour]
 
-    private LinkedHashMap<Instant, Double> evaporationData = null;
+    private LinkedHashMap<Instant, Double> evaporationData = null; // [mm/hour]
 
     /**
      * Time setup of the simulation
@@ -106,6 +106,14 @@ public class Runoff {
             throw new NullPointerException("Nothing implemented yet");
         }
 
+//        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
+//            LinkedHashMap<Instant, Double> val = entry.getValue();
+//            for (Instant time : val.keySet() ) {
+//                System.out.print(time);
+//                System.out.println(val.get(time));
+//            }
+//        }
+
         Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
@@ -115,7 +123,7 @@ public class Runoff {
         }
 
         for (Integer identifier : adaptedRainfallData.keySet()) {
-            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier));
+            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier)); //[m^3/s]
         }
     }
 

@@ -209,10 +209,10 @@ public class SWMMobject {
         String imperviousTo = "OUTLET";
         Double percentageFromImpervious = 0.0;
 
-        Double roughnessCoefficientPervious = 0.1;
-        Double roughnessCoefficientImpervious = 0.01;
+        Double roughnessCoefficientPervious = 0.1;      //Manning number
+        Double roughnessCoefficientImpervious = 0.01;   //Manning number
 
-        Double characteristicWidth = 100.0;
+        Double characteristicWidth = 100.0;             // [m]
         Double areaSlope = 0.01;
         Double curbLength = 0.0;
 
@@ -228,7 +228,7 @@ public class SWMMobject {
                     perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious) );
         }
         areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
-                characteristicWidth, areaSlope, subareas));
+                characteristicWidth, areaSlope, subareas, projectUnits));
     }
 
     private void setNodes() {

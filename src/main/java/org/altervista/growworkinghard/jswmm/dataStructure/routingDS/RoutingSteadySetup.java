@@ -64,7 +64,7 @@ public class RoutingSteadySetup implements RoutingSetup {
             qout = currentFlow;
         }
 
-        //System.out.println("qout " + qout);
+        //System.out.println(" discharge " + qout * dischargeFull);
         //System.out.println("dischargeFull " + dischargeFull);
 
         return new RoutedFlow(currentTime.plusSeconds(timeDelayLong), (qout * dischargeFull));
