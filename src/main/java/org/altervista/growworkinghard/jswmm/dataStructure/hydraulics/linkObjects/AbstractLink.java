@@ -39,6 +39,10 @@ public abstract class AbstractLink {
         return downstreamOutside.streamFlowRate;
     }
 
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> getUpstreamFlowRate() {
+        return upstreamOutside.streamFlowRate;
+    }
+
     public abstract OutsideSetup getUpstreamOutside();
 
     public abstract OutsideSetup getDownstreamOutside();
