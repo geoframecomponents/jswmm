@@ -26,6 +26,8 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractSubcatchment {
 
+    ProjectUnits projectUnits;
+
     ReadDataFromFile readDataFromFile;
     AcquiferSetup acquiferSetup;
     SnowPackSetup snowpack;
@@ -37,4 +39,6 @@ public abstract class AbstractSubcatchment {
     Double subcatchmentArea;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData;
+
+    public abstract void setProjectUnits(ProjectUnits projectUnits);
 }

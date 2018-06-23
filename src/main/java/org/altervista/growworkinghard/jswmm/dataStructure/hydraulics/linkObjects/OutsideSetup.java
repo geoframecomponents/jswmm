@@ -75,17 +75,9 @@ public class OutsideSetup {
         if (!streamFlowRate.containsKey(id)) {
             streamFlowRate.put(id, new LinkedHashMap<>());
         }
-        Double oldFLowRate = streamFlowRate.get(id).get(time);
-        if (oldFLowRate == null) {
-            LinkedHashMap<Instant, Double> newLHM = new LinkedHashMap<>();
-            newLHM.put(time, flowRate);
-            streamFlowRate.put(id, newLHM);
-        }
-        else {
-            LinkedHashMap<Instant, Double> oldLHM = streamFlowRate.get(id);
-            oldLHM.put(time, flowRate);
-            streamFlowRate.put(id, oldLHM);
-        }
+        LinkedHashMap<Instant, Double> oldLHM = streamFlowRate.get(id);
+        oldLHM.put(time, flowRate);
+        streamFlowRate.put(id, oldLHM);
     }
 
     public void sumStreamFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {

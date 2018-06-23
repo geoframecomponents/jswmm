@@ -61,22 +61,28 @@ public class ImperviousWithStorage extends Subarea {
         if (subareaConnections != null) {
             for (Subarea connections : subareaConnections) {
                 connections.setDepthFactor(subareaSlope, characteristicWidth);
-                depthFactor = Math.pow(subareaSlope, 0.5) *
-                        characteristicWidth / (roughnessCoefficient * totalImperviousArea);
+                depthFactor = ( Math.sqrt(subareaSlope) * characteristicWidth ) /
+                        (roughnessCoefficient * totalImperviousArea);
             }
         }
         else {
-            depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * totalImperviousArea);
+            depthFactor = (Math.sqrt(subareaSlope) * characteristicWidth) / (roughnessCoefficient * totalImperviousArea);
         }
 
+        //TODO move somewhere else!!!
         if ( projectUnits.getProjectUnits() == CMS ) {
-            this.depthFactor = 3.6E-3 * depthFactor; //return the depth in [ mm/h ]
+            this.depthFactor = 1E-6 * depthFactor; //return the depth over time in [ mm/s ]
         }
     }
 
     @Override
     Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
-        return flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
+
+        double weightedFlowRate = flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
+//        if (projectUnits.getProjectUnits() == CMS) {
+//            weightedFlowRate = weightedFlowRate * 1E3;      // [mm/s]
+//        }
+        return weightedFlowRate;
     }
 
     @Override
@@ -173,7 +179,12 @@ public class ImperviousWithStorage extends Subarea {
 
     @Override
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        return ( Math.pow(subareaSlope, 0.5) * characteristicWidth *
+        double unitsFactor = 1.0;
+        if (projectUnits.getProjectUnits() == CMS) {
+            unitsFactor = 1E-6; //[mm/s]
+        }
+
+        return unitsFactor * ( Math.sqrt(subareaSlope) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) ) / (totalImperviousArea * roughnessCoefficient);
     }
 }

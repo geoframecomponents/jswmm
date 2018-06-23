@@ -35,9 +35,9 @@ public abstract class Subarea {
 
     List<Subarea> subareaConnections;
 
-    HashMap<Integer, LinkedHashMap<Instant, Double>> totalDepth;
-    HashMap<Integer, LinkedHashMap<Instant, Double>> runoffDepth;
-    HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;
+    HashMap<Integer, LinkedHashMap<Instant, Double>> totalDepth;    //[mm]
+    HashMap<Integer, LinkedHashMap<Instant, Double>> runoffDepth;   //[mm]
+    HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;      //[mm/s]
     HashMap<Integer, Double> excessRainfall;
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {
@@ -62,11 +62,11 @@ public abstract class Subarea {
         runoffDepth.put(id, oldLHM);
     }
 
-    public void setAreaFlowRate(Integer id, Instant time, Double flowValue) {
+    public void setAreaFlowRate(Integer id, Instant time, Double flowValue) { //[mm/s]
         double unitsFactor = 1.0;
-        if ( projectUnits.getProjectUnits() == CMS ) {
-            unitsFactor = 1.0E-5;
-        }
+//        if ( projectUnits.getProjectUnits() == CMS ) {
+//            unitsFactor = 1.0E-5;
+//        }
         if (!flowRate.containsKey(id)) {
             flowRate.put(id, new LinkedHashMap<>());
         }

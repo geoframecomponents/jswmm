@@ -120,9 +120,11 @@ public class PreRunoff {
         for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
 
             finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
+
             LinkedHashMap<Instant, Double> rainfallValues = new LinkedHashMap<>();
 
             for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallStepSize) {
+
                 rainfallValues.put(Instant.ofEpochSecond(currentTime),
                         constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
                         Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
@@ -133,32 +135,29 @@ public class PreRunoff {
 
         }
 
-//        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : rainfallData.entrySet()) {
-//            LinkedHashMap<Instant, Double> val = entry.getValue();
-//            for (Instant time : val.keySet() ) {
-//                System.out.println(time);
-//                System.out.println(val.get(time));
-//            }
-//        }
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : rainfallData.entrySet()) {
+            LinkedHashMap<Instant, Double> val = entry.getValue();
+            for (Instant time : val.keySet() ) {
+                System.out.println(time);
+                System.out.println(val.get(time));
+            }
+        }*/
 
         return rainfallData;
     }
 
     private Double constantRainfallData(Instant finalRainfallTime, Instant currentTime) {
 
-        Double rainfallValue;
+        Double rainfallValue = 0.0;
 
-        if (currentTime.getEpochSecond() == 0) {
-            rainfallValue = 0.0;
-        }
-        else {
-            if ( currentTime.isBefore(finalRainfallTime) ) {
-                rainfallValue = aLPP * Math.pow(finalRainfallTime.getEpochSecond(), nLPP - 1.0);
+        if ( currentTime.isBefore(finalRainfallTime) ) {
+            double timeInHours = finalRainfallTime.getEpochSecond() / 3600.0;
+            if (timeInHours == 0.0) {
+                timeInHours = 1.0;//TODO better way?
             }
-            else {
-                rainfallValue = 0.0;
-            }
+            rainfallValue = aLPP * Math.pow(timeInHours, nLPP - 1.0) / 3600.0; // [mm/s]
         }
+
         return rainfallValue;
     }
 }
