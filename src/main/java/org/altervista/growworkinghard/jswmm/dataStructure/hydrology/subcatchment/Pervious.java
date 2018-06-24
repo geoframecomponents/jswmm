@@ -66,7 +66,7 @@ public class Pervious extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            this.depthFactor = 1E-6 * depthFactor; //return the depth in [ mm/s ]
+            this.depthFactor = 1E-5 * depthFactor; //return the depth in [ mm/s ]
         }
     }
 

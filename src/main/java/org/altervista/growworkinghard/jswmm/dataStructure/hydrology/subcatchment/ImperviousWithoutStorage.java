@@ -69,7 +69,7 @@ public class ImperviousWithoutStorage extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            double CMSdepthFactor = 1E-6;
+            double CMSdepthFactor = 1E-5;
             this.depthFactor = CMSdepthFactor * depthFactor; //return the q = depthFactor * d^(5/3) in [ mm/s ]
         }
     }
