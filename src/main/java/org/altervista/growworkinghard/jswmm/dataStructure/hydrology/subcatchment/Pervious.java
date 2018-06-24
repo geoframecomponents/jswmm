@@ -66,7 +66,7 @@ public class Pervious extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            this.depthFactor = 1E-6 * depthFactor; //return the depth in [ mm/s ]
+            this.depthFactor = 1E-5 * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
 
@@ -74,7 +74,7 @@ public class Pervious extends Subarea {
     Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
         double weightedFlowRate = flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
 //        if (projectUnits.getProjectUnits() == CMS) {
-//            weightedFlowRate = weightedFlowRate * 1E10;      // [mm^3/s]
+//            weightedFlowRate = weightedFlowRate * 1E10;      // [mm/s]
 //        }
         return weightedFlowRate;
     }

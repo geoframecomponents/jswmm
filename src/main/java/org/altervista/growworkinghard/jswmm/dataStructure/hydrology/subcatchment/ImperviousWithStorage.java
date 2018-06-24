@@ -71,7 +71,7 @@ public class ImperviousWithStorage extends Subarea {
 
         //TODO move somewhere else!!!
         if ( projectUnits.getProjectUnits() == CMS ) {
-            this.depthFactor = 1E-6 * depthFactor; //return the depth over time in [ mm/s ]
+            this.depthFactor = 1E-5 * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
 
