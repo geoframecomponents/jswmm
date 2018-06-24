@@ -64,14 +64,15 @@ public class Area extends AbstractSubcatchment {
         }
         //sum the volume of each subarea as product of the flowrate and the subarea's area
         for(Subarea subarea : subareas.get(id)) {
+
             LinkedHashMap<Instant, Double> subareaFlowRate = subarea.getFlowRate().get(id);
             for (Instant time : subareaFlowRate.keySet()) {
                 Double oldFLowRate = totalAreaFlowRate.get(id).get(time);
                 double value;
                 if (oldFLowRate == null) {
-                    value = subareaFlowRate.get(time) * subarea.subareaArea * 10;// [m^3/s]
+                    value = subareaFlowRate.get(time) * subarea.subareaArea * 10.0;// [m^3/s]
                 } else {
-                    value = oldFLowRate + subareaFlowRate.get(time) * subarea.subareaArea * 10;// [m^3/s]
+                    value = oldFLowRate + subareaFlowRate.get(time) * subarea.subareaArea * 10.0;// [m^3/s]
                 }
                 LinkedHashMap<Instant, Double> upgradedLHM = totalAreaFlowRate.get(id);
                 upgradedLHM.put(time, value);

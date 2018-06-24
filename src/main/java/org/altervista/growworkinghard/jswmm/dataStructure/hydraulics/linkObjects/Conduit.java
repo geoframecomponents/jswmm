@@ -133,7 +133,7 @@ public class Conduit extends AbstractLink {
         getUpstreamOutside().setWaterDepth(waterDepth);
         getDownstreamOutside().setWaterDepth(waterDepth);
 
-        System.out.println("D " + diameters[1]);
+        System.out.println("D " + diameters[0]);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {

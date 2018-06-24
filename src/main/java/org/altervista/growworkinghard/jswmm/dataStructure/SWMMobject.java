@@ -197,7 +197,7 @@ public class SWMMobject {
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
 
-        Double imperviousPercentage = 0.25;
+        Double imperviousPercentage = 0.75;
         Double imperviousWOstoragePercentage = 0.25;
 
         Double depressionStorageImpervious = 0.00005;
@@ -243,7 +243,7 @@ public class SWMMobject {
         setJunctions("J9", 0.0);
         setJunctions("J10", 0.0);
         setJunctions("J11", 0.0);
-        setOutfalls();
+        //setOutfalls();
     }
 
     private void setJunctions(String nodeName, double nodeElevation) {

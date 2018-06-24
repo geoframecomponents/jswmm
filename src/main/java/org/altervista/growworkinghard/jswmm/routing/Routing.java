@@ -19,6 +19,7 @@ import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Lucchese_ca;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Oppo_pvc;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
@@ -56,7 +57,7 @@ public class Routing {
     public Conduit conduit;
 
     @In
-    public CommercialPipeSize pipeCompany = new Oppo_pvc();
+    public CommercialPipeSize pipeCompany = new Lucchese_ca();
 
     /**
      * Integration method setup

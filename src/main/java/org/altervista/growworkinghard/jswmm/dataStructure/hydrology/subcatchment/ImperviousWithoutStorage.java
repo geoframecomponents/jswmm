@@ -69,8 +69,8 @@ public class ImperviousWithoutStorage extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            double CMSdepthFactor = 1E-5;
-            this.depthFactor = CMSdepthFactor * depthFactor; //return the q = depthFactor * d^(5/3) in [ mm/s ]
+            double CMSdepthFactor = 1E-6;
+            this.depthFactor = CMSdepthFactor * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
 
@@ -103,19 +103,9 @@ public class ImperviousWithoutStorage extends Subarea {
             setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
-            Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
-            if ( exRainHeigth == 0.0 ) {
-                setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
-                        evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                                runoffDepth.get(id).get(nextTime)) );
-            }
-            else {
-                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                        runoffDepth.get(id).get(nextTime)) );
-            }
+            runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+            setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                    runoffDepth.get(id).get(nextTime)) );
         }
     }
 
