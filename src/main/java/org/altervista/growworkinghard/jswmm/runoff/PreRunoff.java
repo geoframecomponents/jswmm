@@ -125,9 +125,25 @@ public class PreRunoff {
 
             for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallStepSize) {
 
-                rainfallValues.put(Instant.ofEpochSecond(currentTime),
-                        constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
-                        Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+//              rainfallValues.put(Instant.ofEpochSecond(currentTime),
+//                        constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
+//                        Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                if (rainfallTimeId == 1) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(180L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+                if (rainfallTimeId == 2) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(300L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+                if (rainfallTimeId == 3) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(600L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+
             }
 
             //TODO nullo
