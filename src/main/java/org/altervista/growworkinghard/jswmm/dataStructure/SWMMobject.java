@@ -115,9 +115,9 @@ public class SWMMobject {
 
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T00:16:00Z");
+        Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2018-01-01T00:16:00Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T01:00:00Z");
         Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
         Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;

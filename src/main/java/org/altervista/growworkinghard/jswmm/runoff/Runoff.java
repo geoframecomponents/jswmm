@@ -110,7 +110,7 @@ public class Runoff {
 //            LinkedHashMap<Instant, Double> val = entry.getValue();
 //            for (Instant time : val.keySet() ) {
 //                System.out.print(time);
-//                System.out.println(val.get(time));
+//                System.out.println(val.get(time) * 3600.0);
 //            }
 //        }
 
@@ -125,6 +125,14 @@ public class Runoff {
         for (Integer identifier : adaptedRainfallData.keySet()) {
             runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier)); //[m^3/s]
         }
+
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : runoffFlowRate.entrySet()) {
+            LinkedHashMap<Instant, Double> val = entry.getValue();
+            for (Instant time : val.keySet() ) {
+                System.out.print("Time " + time);
+                System.out.println(" value " + val.get(time));
+            }
+        }*/
     }
 
 
