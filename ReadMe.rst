@@ -12,5 +12,5 @@ To build the ReadMe file from markdown to rst
 
    pandoc doc/ReadMe/ReadMe.md -o ReadMe.rst
 
-.. |ftt01| image:: https://github.com/GrowWorkingHard/logos/blob/master/ftt01/ftt01_50x50.png
+.. |ftt01| image:: https://github.com/GrowWorkingHard/logos/blob/master/ftt01/ftt01_50X50.png
 
