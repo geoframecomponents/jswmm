@@ -134,13 +134,13 @@ public class Routing {
         //routingFlowRate = conduit.getUpstreamFlowRate();
 
 
-//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
+        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
 //        for (Integer id : currentFlow.keySet()) {
 //            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
-//            System.out.print("ID " + id);
+//            //System.out.print("ID " + id);
 //            for (Instant time : flow.keySet()) {
-//                System.out.print("time " +  time);
-//                System.out.println("Value " + currentFlow.get(id).get(time));
+//                //System.out.print("time " +  time);
+//                System.out.println(currentFlow.get(id).get(time));
 //            }
 //        }
     }
