@@ -38,13 +38,13 @@ public class PreRunoff {
     private LinkedHashMap<Instant, Double> rainfallData;
 
     @In
-    public Double aLPP;
+    public Double aLPP = 60.4;
 
     @In
-    public Double nLPP;
+    public Double nLPP = 0.61;
 
     @In
-    public Integer numberOfCurves;
+    public Integer numberOfCurves = 3;
 
     @In
     public Long stormwaterInterval = null;

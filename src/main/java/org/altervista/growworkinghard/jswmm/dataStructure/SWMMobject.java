@@ -232,7 +232,18 @@ public class SWMMobject {
     }
 
     private void setNodes() {
-        setJunctions("J1", 8.0);
+        setJunctions("J1", 0.0);
+        setJunctions("J2", 0.0);
+        setJunctions("J3", 0.0);
+        setJunctions("J4", 0.0);
+        setJunctions("J5", 0.0);
+        setJunctions("J6", 0.0);
+        setJunctions("J7", 0.0);
+        setJunctions("J8", 0.0);
+        setJunctions("J9", 0.0);
+        setJunctions("J10", 0.0);
+        setJunctions("J11", 0.0);
+        /*setJunctions("J1", 8.0);
         setJunctions("J2", 8.0);
         setJunctions("J3", 6.0);
         setJunctions("J4", 4.0);
@@ -242,7 +253,7 @@ public class SWMMobject {
         setJunctions("J8", 2.0);
         setJunctions("J9", 4.0);
         setJunctions("J10", 4.0);
-        setJunctions("J11", 0.0);
+        setJunctions("J11", 0.0);*/
         //setOutfalls();
     }
 
