@@ -469,12 +469,12 @@ public class SWMMobject {
     private void setInitialTime(Integer id, String linkName) {
         Instant time = timeSetup.getStartDate();
         while (time.isBefore(timeSetup.getEndDate())) {
-            conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
-            conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
+            conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
+            conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());
         }
-        conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
-        conduit.get(linkName).getUpstreamOutside().setStreamFlowRate(id, time, 0.01);
+        conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
+        conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
     }
 
     public List<Double> readFileList(String fileName) {
@@ -621,23 +621,6 @@ public class SWMMobject {
 
         //System.out.println("END For loop upgradeStream");
 
-    }
-
-    private void upgradeStream(String currentLink, double delta) {
-
-            if (getConduit(currentLink) != null) {
-                OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
-                OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
-
-                //System.out.println("upstream " + upstream );
-                upstream.upgradeOffset(delta);
-
-                //System.out.println("downstream " + downstream );
-                //System.out.println("delta " + delta );
-                downstream.upgradeOffset(delta);
-
-                //System.out.println("END UPSTREAM upgrade!");
-            }
     }
 
     private void upgradeStream(String currentLink, double delta) {
