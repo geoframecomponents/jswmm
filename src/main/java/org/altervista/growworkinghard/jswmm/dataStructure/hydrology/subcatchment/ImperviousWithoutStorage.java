@@ -69,14 +69,18 @@ public class ImperviousWithoutStorage extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            double CMSdepthFactor = 3.6E-3;
-            this.depthFactor = CMSdepthFactor * depthFactor; //return the q = depthFactor * d^(5/3) in [ mm/h ]
+            double CMSdepthFactor = 1E-6;
+            this.depthFactor = CMSdepthFactor * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
 
     @Override
-    Double getWeightedFlowRate(Integer id, Instant currentTime) {
-        return flowRate.get(id).get(currentTime) * subareaArea * percentageRouted;
+    Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
+        double weightedFlowRate = flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
+        /*if (projectUnits.getProjectUnits() == CMS) {
+            weightedFlowRate = weightedFlowRate * 1E10;      // [mm^3/s]
+        }*/
+        return weightedFlowRate;
     }
 
     @Override
@@ -99,24 +103,18 @@ public class ImperviousWithoutStorage extends Subarea {
             setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
         }
         else {
-            Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
-            if ( exRainHeigth == 0.0 ) {
-                setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) +
-                        evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                                runoffDepth.get(id).get(nextTime)) );
-            }
-            else {
-                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                        runoffDepth.get(id).get(nextTime)) );
-            }
+            runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+            setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                    runoffDepth.get(id).get(nextTime)) );
         }
     }
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        return Math.pow(subareaSlope, 0.5) * characteristicWidth *
+        double unitsFactor = 1.0;
+        if (projectUnits.getProjectUnits() == CMS) {
+            unitsFactor = 1E-6; //[mm/s]
+        }
+        return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) / (totalImperviousArea * roughnessCoefficient);
     }
 }

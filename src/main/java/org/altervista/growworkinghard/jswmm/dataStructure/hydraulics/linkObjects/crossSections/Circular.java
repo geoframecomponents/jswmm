@@ -67,7 +67,7 @@ public class Circular implements CrossSectionType {
 
     @Override
     public Double computeHydraulicRadious(Double diameter, Double fillAngle) {
-        return diameter / 4.0 / ( 1 - Math.sin(fillAngle)/fillAngle );
+        return (diameter / 4.0) / ( 1 - Math.sin(fillAngle)/fillAngle );
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Circular implements CrossSectionType {
 
     @Override
     public Double getDischargeFull(double roughnessCoefficient, double slope) {
-        return areaFull * Math.pow(hydraulicRadiousFull, 2.0/3) * roughnessCoefficient * Math.pow(slope, 0.5);
+        return areaFull * Math.pow(hydraulicRadiousFull, 2.0 / 3) * roughnessCoefficient * Math.pow(slope, 0.5);
     }
 
     @Override
@@ -93,8 +93,8 @@ public class Circular implements CrossSectionType {
     public Double derivatedSectionFactor(Double theta) {
         Double area = areaFull * (theta - Math.sin(theta)) / (2 * Math.PI);
         Double wetPerimeter = theta * depthFull / 2;
-        return ( (5.0 / 3 - 2.0 / 3 * derivatedWetPerimeter(theta) * getHydraulicRadious(area, wetPerimeter)) *
-                Math.pow(getHydraulicRadious(area, wetPerimeter), 2.0 / 3) ) / sectionFactorFull;
+        return (5.0 / 3 - 2.0 / 3 * derivatedWetPerimeter(theta) * getHydraulicRadious(area, wetPerimeter)) *
+                Math.pow(getHydraulicRadious(area, wetPerimeter), 2.0 / 3) / sectionFactorFull;
     }
 
     private Double getHydraulicRadious(Double area, Double wetPerimeter) {

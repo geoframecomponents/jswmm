@@ -29,9 +29,14 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
     }
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
-                              OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                              Double linkSlope, CrossSectionType crossSectionType) {
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
+                                 OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
+                                 Double linkSlope, CrossSectionType crossSectionType) {
+        throw new NullPointerException("Nothing implemented yet");
+    }
+
+    @Override
+    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
         throw new NullPointerException("Nothing implemented yet");
     }
 
@@ -42,6 +47,6 @@ public class RoutingDynamicWaveSetup implements RoutingSetup {
 
     @Override
     public Long getRoutingStepSize() {
-        return routingStepSize;
+        return this.routingStepSize;
     }
 }

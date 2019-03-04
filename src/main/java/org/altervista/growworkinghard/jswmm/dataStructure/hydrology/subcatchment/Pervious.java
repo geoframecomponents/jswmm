@@ -66,13 +66,17 @@ public class Pervious extends Subarea {
         }
 
         if ( projectUnits.getProjectUnits() == CMS ) {
-            this.depthFactor = 3.6E-3 * depthFactor; //return the depth in [ mm/h ]
+            this.depthFactor = 1E-6 * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
 
     @Override
-    Double getWeightedFlowRate(Integer id, Instant currentTime) {
-        return flowRate.get(id).get(currentTime) * subareaArea * percentageRouted;
+    Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
+        double weightedFlowRate = flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
+//        if (projectUnits.getProjectUnits() == CMS) {
+//            weightedFlowRate = weightedFlowRate * 1E10;      // [mm/s]
+//        }
+        return weightedFlowRate;
     }
 
     @Override
@@ -83,10 +87,14 @@ public class Pervious extends Subarea {
 
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
-        Double moistureVolume = rainfall * runoffStepSize + totalDepth.get(id).get(currentTime);
+        double totalDepthCurrent = totalDepth.get(id).get(currentTime);
+        double runoffDepthCurrent = runoffDepth.get(id).get(currentTime);
+        double areaFlowRateCurrent = getFlowRate().get(id).get(currentTime);
+
+        Double moistureVolume = rainfall * runoffStepSize + totalDepthCurrent;
 
         if(evaporation != 0.0) {
-            evaporation = Math.max(evaporation, totalDepth.get(id).get(currentTime)/runoffStepSize);
+            evaporation = Math.max(evaporation, totalDepthCurrent/runoffStepSize);
         }
         //infiltration
         //excessRainfall = rainfall - evaporation - infiltration;
@@ -94,43 +102,30 @@ public class Pervious extends Subarea {
         setExcessRainfall(id, rainfall - evaporation);
 
         if(evaporation * runoffStepSize >= moistureVolume) {
-            setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime));
-            setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-            setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
+            setTotalDepth(id, nextTime, totalDepthCurrent);
+            setRunoffDepth(id, nextTime, runoffDepthCurrent);
+            setAreaFlowRate(id, nextTime, areaFlowRateCurrent);
         }
         else {
-            Double exRainHeigth = excessRainfall.get(id) * runoffStepSize;
-            if ( exRainHeigth == 0.0 ) {
-                if ( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
-                }
-                else {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + exRainHeigth);
-                    setAreaFlowRate( id, nextTime, getFlowRate().get(id).get(currentTime) +
-                            evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                                    runoffDepth.get(id).get(nextTime)) );
-                }
-            }
-            else {
-                if( depressionStorage - totalDepth.get(id).get(currentTime) >= 0.0 ) {
-                    setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + exRainHeigth);
-                    setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime));
-                    setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime));
-                }
-                else {
-                    runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
-                    setAreaFlowRate( id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
-                            runoffDepth.get(id).get(nextTime)) );
-                }
+            if (excessRainfall.get(id) * runoffStepSize <= depressionStorage - totalDepth.get(id).get(currentTime)) {
+                setTotalDepth(id, nextTime, totalDepthCurrent + getExcessRainfall(id) * runoffStepSize);
+                setRunoffDepth(id, nextTime, runoffDepthCurrent);
+                setAreaFlowRate(id, nextTime, areaFlowRateCurrent);
+            } else {
+                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+                setAreaFlowRate(id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
+                        runoffDepth.get(id).get(nextTime)));
+
             }
         }
     }
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        return Math.pow(subareaSlope, 0.5) * characteristicWidth *
+        double unitsFactor = 1.0;
+        if (projectUnits.getProjectUnits() == CMS) {
+            unitsFactor = 1E-6; //[mm/s]
+        }
+        return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) / (subareaArea * roughnessCoefficient);
     }
 }

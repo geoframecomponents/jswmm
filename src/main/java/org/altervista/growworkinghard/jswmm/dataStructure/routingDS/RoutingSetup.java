@@ -19,14 +19,15 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.HashMap;
 
 public interface RoutingSetup {
 
-    RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
-                       OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                       Double linkSlope, CrossSectionType crossSectionType);
+    RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow,
+                             OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
+                             Double linkSlope, CrossSectionType crossSectionType);
 
-    //public Double evaluateStreamWetArea(Double runoffFlowRate, Double linkLength, Double linkRoughness);
+    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay);
 
     public Long getRoutingStepSize();
 }

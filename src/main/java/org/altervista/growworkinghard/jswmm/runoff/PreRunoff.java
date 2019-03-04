@@ -38,13 +38,13 @@ public class PreRunoff {
     private LinkedHashMap<Instant, Double> rainfallData;
 
     @In
-    public Double aLPP;
+    public Double aLPP = 60.4;
 
     @In
-    public Double nLPP;
+    public Double nLPP = 0.61;
 
     @In
-    public Integer numberOfCurves;
+    public Integer numberOfCurves = 3;
 
     @In
     public Long stormwaterInterval = null;
@@ -120,12 +120,30 @@ public class PreRunoff {
         for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
 
             finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
+
             LinkedHashMap<Instant, Double> rainfallValues = new LinkedHashMap<>();
 
             for (Long currentTime = initialTime.getEpochSecond(); currentTime<=totalTime.getEpochSecond(); currentTime+=rainfallStepSize) {
-                rainfallValues.put(Instant.ofEpochSecond(currentTime),
-                        constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
-                        Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+
+//              rainfallValues.put(Instant.ofEpochSecond(currentTime),
+//                        constantRainfallData(finalRainfallTime.minusSeconds(initialTime.getEpochSecond()),
+//                        Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                if (rainfallTimeId == 1) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(180L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+                if (rainfallTimeId == 2) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(300L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+                if (rainfallTimeId == 3) {
+                    rainfallValues.put(Instant.ofEpochSecond(currentTime),
+                            constantRainfallData(Instant.ofEpochSecond(600L),
+                                    Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                }
+
             }
 
             //TODO nullo
@@ -146,19 +164,16 @@ public class PreRunoff {
 
     private Double constantRainfallData(Instant finalRainfallTime, Instant currentTime) {
 
-        Double rainfallValue;
+        Double rainfallValue = 0.0;
 
-        if (currentTime.getEpochSecond() == 0) {
-            rainfallValue = 0.0;
-        }
-        else {
-            if ( currentTime.isBefore(finalRainfallTime) ) {
-                rainfallValue = aLPP * Math.pow(currentTime.getEpochSecond(), nLPP - 1.0);
+        if ( currentTime.isBefore(finalRainfallTime) ) {
+            double timeInHours = finalRainfallTime.getEpochSecond() / 3600.0;
+            if (timeInHours == 0.0) {
+                timeInHours = 1.0;//TODO better way?
             }
-            else {
-                rainfallValue = 0.0;
-            }
+            rainfallValue = aLPP * Math.pow(timeInHours, nLPP - 1.0) / 3600.0; // [mm/s]
         }
-       return rainfallValue;
+
+        return rainfallValue;
     }
 }

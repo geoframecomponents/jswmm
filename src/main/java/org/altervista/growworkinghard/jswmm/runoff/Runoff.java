@@ -33,9 +33,9 @@ import static org.junit.Assert.assertEquals;
 public class Runoff {
 
     @In
-    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData;
+    public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData; // [mm/hour]
 
-    private LinkedHashMap<Instant, Double> evaporationData = null;
+    private LinkedHashMap<Instant, Double> evaporationData = null; // [mm/hour]
 
     /**
      * Time setup of the simulation
@@ -106,34 +106,37 @@ public class Runoff {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-        Instant currentTime = Instant.parse(initialTime.toString());
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
+            LinkedHashMap<Instant, Double> val = entry.getValue();
+            for (Instant time : val.keySet() ) {
+                System.out.print(time);
+                System.out.println(val.get(time) * 3600.0);
+            }
+        }*/
+
+        Instant currentTime = initialTime;
         while (currentTime.isBefore(totalTime)) {
 
             //check snownelt - snowaccumulation TODO build a new component
             area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSetup, currentTime);
-
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
 
         for (Integer identifier : adaptedRainfallData.keySet()) {
-            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier));
+            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier)); //[m^3/s]
         }
 
-
-        /*
-        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : runoffFlowRate.entrySet()) {
-            System.out.println("ID rain" + entry.getKey());
-            for (Instant time : entry.getValue().keySet()) {
-                System.out.println("Instant rain" + time);
-                System.out.println("Value rain" + entry.getValue().get(time));
+        /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : runoffFlowRate.entrySet()) {
+            LinkedHashMap<Instant, Double> val = entry.getValue();
+            for (Instant time : val.keySet() ) {
+                //System.out.print("Time " + time);
+                System.out.println(val.get(time));
             }
-        }
-        */
-
+        }*/
     }
 
-    /*
-    public void test(String fileChecks) {
+
+    /*public void test(String fileChecks) {
         LinkedHashMap<Instant, Double> evaluated = area.getTotalAreaFlowRate();
         List<Double> defined = dataStructure.readFileList(fileChecks);
 

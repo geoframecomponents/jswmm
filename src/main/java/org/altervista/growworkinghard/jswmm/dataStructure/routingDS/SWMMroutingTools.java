@@ -17,7 +17,7 @@ class ChowTable {
     }
 
     public Double getAdimensionalArea() {
-        return adimensionalArea;
+       return adimensionalArea;
     }
 
     public Double getAdimensionalSectionFactor() {
@@ -67,6 +67,13 @@ public class SWMMroutingTools {
                     break;
                 }
             }
+
+            //TODO check if correct
+            if (upperSFValue == null) {
+                int listSize = relationsTable.size();
+                upperSFValue = relationsTable.get(listSize).adimensionalSectionFactor;
+            }
+
             double[] x = {lowerSFValue, upperSFValue};
             double[] y = {relationsTable.get(elementCounter-1).getAdimensionalArea(),
                     relationsTable.get(elementCounter).getAdimensionalArea()};

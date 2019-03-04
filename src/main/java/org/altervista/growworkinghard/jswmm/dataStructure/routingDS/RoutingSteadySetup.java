@@ -19,11 +19,13 @@ import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class RoutingSteadySetup implements RoutingSetup {
 
     private final Long routingStepSize;
+
     private SWMMroutingTools routingTools;
 
     public RoutingSteadySetup(Long routingStepSize, Integer referenceTableLength) {
@@ -36,18 +38,16 @@ public class RoutingSteadySetup implements RoutingSetup {
     }
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, OutsideSetup upstreamOutside,
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
                               OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                               Double linkSlope, CrossSectionType crossSectionType) {
 
         Double dischargeFull = crossSectionType.getDischargeFull(linkRoughness, linkSlope);
         Double Afull = crossSectionType.getAreaFull();
 
-        final Double beta = (Math.sqrt(linkSlope) * linkRoughness) / dischargeFull; //should be Math.sqrt(linkSlope) / linkRoughness but the Manning coefficient is 1 / Gs
+        final Double beta = (Math.sqrt(linkSlope) * linkRoughness) / dischargeFull; //with Gs as linkRoughness
 
-        LinkedHashMap<Instant, Double> upstreamFlow = upstreamOutside.getStreamFlowRate().get(id);
-
-        double currentFlow = upstreamFlow.get(currentTime) / dischargeFull;
+        double currentFlow = upstreamFlow / dischargeFull;
         double area = routingTools.sectionFactorToArea(currentFlow / beta) * Afull;
         double celerity = currentFlow * dischargeFull / area;
         Long timeDelay = (long) (linkLength / celerity);
@@ -64,19 +64,20 @@ public class RoutingSteadySetup implements RoutingSetup {
             qout = currentFlow;
         }
 
-        //System.out.println("qout " + qout);
+        //System.out.println(" discharge " + qout * dischargeFull);
         //System.out.println("dischargeFull " + dischargeFull);
 
         return new RoutedFlow(currentTime.plusSeconds(timeDelayLong), (qout * dischargeFull));
-    }
+     }
 
-    private Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
+    @Override
+    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
         long temp = timeDelay / routingStepSize;
         return temp * routingStepSize;
     }
 
     @Override
-    public Long getRoutingStepSize() {
+     public Long getRoutingStepSize() {
         return this.routingStepSize;
     }
 }

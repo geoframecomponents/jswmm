@@ -15,6 +15,7 @@
 
 package org.altervista.growworkinghard.jswmm.dataStructure;
 
+import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
@@ -30,7 +31,7 @@ import org.altervista.growworkinghard.jswmm.dataStructure.options.units.CubicMet
 import org.altervista.growworkinghard.jswmm.dataStructure.options.units.ProjectUnits;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.options.time.TimeSetup;
-import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
+//import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSteadySetup;
 import org.altervista.growworkinghard.jswmm.dataStructure.runoffDS.RunoffSetup;
@@ -142,9 +143,9 @@ public class SWMMobject {
 
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T02:00:00Z");
+        Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
         Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2018-01-01T02:00:00Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T01:00:00Z");
         Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
         Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;
@@ -225,7 +226,7 @@ public class SWMMobject {
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
         //String subcatchmentName = "Sub1";
 
-        Double imperviousPercentage = 0.25;
+        Double imperviousPercentage = 0.75;
         Double imperviousWOstoragePercentage = 0.25;
 
         Double depressionStorageImpervious = 0.00005;
@@ -237,23 +238,26 @@ public class SWMMobject {
         String imperviousTo = "OUTLET";
         Double percentageFromImpervious = 0.0;
 
-        Double roughnessCoefficientPervious = 0.1;
-        Double roughnessCoefficientImpervious = 0.01;
+        Double roughnessCoefficientPervious = 0.1;      //Manning number
+        Double roughnessCoefficientImpervious = 0.01;   //Manning number
 
-        Double characteristicWidth = 100.0;
+        Double characteristicWidth = 100.0;             // [m]
         Double areaSlope = 0.01;
         Double curbLength = 0.0;
 
         String raingageName = "RG1";
         ReceiverRunoff receiverSubcatchment = null;
+        Integer numberOfCurves = 3;
 
-        List<Subarea> subareas = divideAreas(imperviousPercentage, subcatchmentArea,
-                imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
-                roughnessCoefficientPervious, roughnessCoefficientImpervious,
-                perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious);
-
+        HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
+        for (int id = 1; id<=numberOfCurves; id++) {
+            subareas.put(id, divideAreas(imperviousPercentage, subcatchmentArea,
+                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious) );
+        }
         areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
-                characteristicWidth, areaSlope, subareas));
+                characteristicWidth, areaSlope, subareas, projectUnits));
     }
 
     private void setNodes() {
@@ -268,7 +272,18 @@ public class SWMMobject {
         setJunctions("J9", 0.0);
         setJunctions("J10", 0.0);
         setJunctions("J11", 0.0);
-        setOutfalls();
+        /*setJunctions("J1", 8.0);
+        setJunctions("J2", 8.0);
+        setJunctions("J3", 6.0);
+        setJunctions("J4", 4.0);
+        setJunctions("J5", 8.0);
+        setJunctions("J6", 8.0);
+        setJunctions("J7", 6.0);
+        setJunctions("J8", 2.0);
+        setJunctions("J9", 4.0);
+        setJunctions("J10", 4.0);
+        setJunctions("J11", 0.0);*/
+        //setOutfalls();
     }
 
     private void setJunctions(String nodeName, double nodeElevation) {
@@ -334,20 +349,21 @@ public class SWMMobject {
     private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
                             String downName, double downX, double downY, double downZ) {
 
-        Double linkRoughness = 120.0; //Gs coefficient
+        Double linkRoughness = 120.0;
         Double upstreamOffset = 0.0;
         Double downstreamOffset = 0.0;
         //Double initialFlowRate = 0.0;
-        Double fillCoeff = 0.9; // Max flowrate
-        Double diameter = 0.5;
+        //Double maximumFlowRate = 0.0;
+        Double fillCoefficient = 0.9;
+        Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
         //ProjectUnits linkUnits = new CubicMetersperSecond();
 
         OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
-                fillCoeff, upX, upY, upZ);
+                fillCoefficient, upX, upY, upZ);
         OutsideSetup downstreamOutside = new OutsideSetup(downName, downstreamOffset,
-                fillCoeff, downX, downY, downZ);
+                fillCoefficient, downX, downY, downZ);
 
         conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside,
                 linkLength, linkRoughness));
@@ -443,7 +459,7 @@ public class SWMMobject {
     }
 
     private void setSubareasInitialValue(Integer id, String areaName) {
-        for( Subarea subarea : areas.get(areaName).getSubareas() ) {
+        for( Subarea subarea : areas.get(areaName).getSubareas().get(id) ) {
             subarea.setAreaFlowRate(id, timeSetup.getStartDate(), 0.0);
             subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
             subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
@@ -496,32 +512,40 @@ public class SWMMobject {
         LinkedHashMap<Instant, Double> adaptedData = new LinkedHashMap<>();
         Long currentDataTime = initialTime;
 
-        for (Long currentTime = initialTime; currentTime<finalTime; currentTime+=toStepSize) {
+        Long currentTime = initialTime;
+        while (currentTime<finalTime) {
 
-            while(currentDataTime <= currentTime) {
-                currentDataTime += fromStepSize;
+            double currentData;
+            if (currentDataTime.equals(currentTime)) {
+                currentData = HMData.get(Instant.ofEpochSecond(currentTime));
             }
+            else {
+                while(currentDataTime <= currentTime) {
+                    currentDataTime += fromStepSize;
+                }
 
-            Long upperTime = currentDataTime;
-            Double upperRainfallData = 0.0;
-            if(HMData.get(Instant.ofEpochSecond(upperTime)) != null) {
-                upperRainfallData = HMData.get(Instant.ofEpochSecond(upperTime));
+                Long upperTime = currentDataTime;
+
+                Double upperData = HMData.get(Instant.ofEpochSecond(upperTime));
+                if (upperData == null) {
+                    upperData = HMData.get(Instant.ofEpochSecond(finalTime));
+                }
+
+                Long lowerTime = upperTime - fromStepSize;
+                double lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
+
+                currentData = interpolateData(currentTime, lowerTime, lowerData,
+                        upperTime, upperData);
             }
-
-            Long lowerTime = upperTime - fromStepSize;
-            Double lowerData = 0.0;
-            if(HMData.get(Instant.ofEpochSecond(lowerTime)) != null) {
-                lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
-            }
-
-            Double currentData = interpolateData(currentTime, lowerTime, lowerData,
-                    upperTime, upperRainfallData);
-
             adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
+            currentTime+=toStepSize;
         }
-        adaptedData.put(Instant.ofEpochSecond(finalTime), HMData.get(Instant.ofEpochSecond(finalTime)));
+        adaptedData.put(Instant.ofEpochSecond(currentTime), HMData.get(Instant.ofEpochSecond(finalTime)));
 
-        //System.out.println(adaptedRainfallData);
+//        for (Instant time : adaptedData.keySet()) {
+//            System.out.println("Time " + time + " value " + adaptedData.get(time));
+//        }
+
         return adaptedData;
     }
 
@@ -531,13 +555,6 @@ public class SWMMobject {
 
         if( rangeTime == 0 ) { return lowerTimeData; }
         else {
-            if (upperTimeData == null) {
-                upperTimeData = 0.0;
-            }
-            if (lowerTimeData == null) {
-                lowerTimeData = 0.0;
-            }
-
             Double numerator = upperTimeData - lowerTimeData;
 
             return lowerTimeData + numerator / rangeTime * (currentRunoffTime - lowerTime);
@@ -554,8 +571,6 @@ public class SWMMobject {
 
     public void upgradeSubtrees(String outLink, HashMap<Integer, List<Integer>> subtrees) {
 
-        //System.out.println("Part 1");
-
         double downstreamDepthOut = getConduit(outLink).getUpstreamOutside().getWaterDepth();
         double maxDepth = downstreamDepthOut;
         Integer maxId = Integer.parseInt(outLink);
@@ -567,10 +582,9 @@ public class SWMMobject {
                     maxDepth = downstreamDepth;
                     maxId = subtreeId;
                 }
+
             }
         }
-
-        //System.out.println("Part 2");
 
         if (maxId != Integer.parseInt(outLink)) {
             upgradeStream(outLink, downstreamDepthOut - maxDepth);
@@ -579,7 +593,6 @@ public class SWMMobject {
         //System.out.println("Part 3");
 
         for (List<Integer> subtreeList : subtrees.values()) {
-
             String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
 
             //System.out.println("firstSon " + firstSon);
@@ -593,6 +606,7 @@ public class SWMMobject {
 
                     upgradeStream(subtreeList, downstreamDepth - maxDepth);
                 }
+
             }
 
             //System.out.println("END part 3");
@@ -602,16 +616,28 @@ public class SWMMobject {
     private void upgradeStream(List<Integer> subtreeList, double delta) {
         for (Integer subtreeLink : subtreeList) {
             String currentLink = String.valueOf(subtreeLink);
-
-            //System.out.println("Conduit " + subtreeLink);
-
             upgradeStream(currentLink, delta);
-
-            //System.out.println("For loop upgradeStream");
         }
 
         //System.out.println("END For loop upgradeStream");
 
+    }
+
+    private void upgradeStream(String currentLink, double delta) {
+
+            if (getConduit(currentLink) != null) {
+                OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
+                OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
+
+                //System.out.println("upstream " + upstream );
+                upstream.upgradeOffset(delta);
+
+                //System.out.println("downstream " + downstream );
+                //System.out.println("delta " + delta );
+                downstream.upgradeOffset(delta);
+
+                //System.out.println("END UPSTREAM upgrade!");
+            }
     }
 
     private void upgradeStream(String currentLink, double delta) {

@@ -77,7 +77,6 @@ public class RoutingMain {
         routing.dataStructure = data;
         routing.linkName = "L1";
 
-        routing.initialize();
         routing.run();
         //routingDS.test();
     }

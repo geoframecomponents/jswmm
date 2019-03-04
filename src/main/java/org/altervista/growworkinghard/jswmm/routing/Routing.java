@@ -19,6 +19,7 @@ import oms3.annotations.*;
 import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
+import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Lucchese_ca;
 import org.altervista.growworkinghard.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Oppo_pvc;
 import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingSetup;
 
@@ -56,7 +57,7 @@ public class Routing {
     public Conduit conduit;
 
     @In
-    public CommercialPipeSize pipeCompany = new Oppo_pvc();
+    public CommercialPipeSize pipeCompany = new Lucchese_ca();
 
     /**
      * Integration method setup
@@ -77,12 +78,8 @@ public class Routing {
 
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
-
-    @Initialize
-    public void initialize() {
-    }
-
     @Execute
+    
     public void run() {
 
         System.out.println("Routing on " + linkName);
@@ -100,16 +97,15 @@ public class Routing {
 
         //evaluate the maximum flow for each SWMM timestep
         Instant currentTime = initialTime;
-        Double maxDischarge = 0.0;
+        double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
             maxDischarge = conduit.evaluateMaxDischarge(currentTime, maxDischarge);
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
 
-        System.out.println("Q_max " + maxDischarge);
+        System.out.println("Q_MAX " + maxDischarge);
 
         //dimensioning method!!
-        //conduit.evaluateDimension(maxDischarge, pipeCompany);
         conduit.evaluateDimension(maxDischarge, pipeCompany);
 
         //System.out.println("UPGRADING SUBTREES");
@@ -122,26 +118,34 @@ public class Routing {
             conduit.evaluateFlowRate(currentTime);
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
+       conduit.evaluateFlowRate(currentTime);
 
         routingFlowRate = conduit.getDownstreamFlowRate();
+        //routingFlowRate = conduit.getUpstreamFlowRate();
 
+
+        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
+//        for (Integer id : currentFlow.keySet()) {
+//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
+//            //System.out.print("ID " + id);
+//            for (Instant time : flow.keySet()) {
+//                //System.out.print("time " +  time);
+//                System.out.println(currentFlow.get(id).get(time));
+//            }
+//        }
     }
 
-
-    /*
-    TODO RIMETTERE TEST
-    public void test(String fileChecks) {
-        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
-        List<Double> defined = dataStructure.readFileList(fileChecks);
-
-        int i = 0;
-        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
-            //TODO check a method to do it better - not always is ordered
-            assertEquals(data.getValue(), defined.get(i), 0.85);
-            //System.out.println(data.getValue());
-            //System.out.println(defined.get(i));
-            i = i + 1;
-        }
-    }
-    */
+//    public void test(String fileChecks) {
+//        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
+//        List<Double> defined = dataStructure.readFileList(fileChecks);
+//
+//        int i = 0;
+//        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
+//            //TODO check a method to do it better - not always is ordered
+//            assertEquals(data.getValue(), defined.get(i), 0.85);
+//            //System.out.println(data.getValue());
+//            //System.out.println(defined.get(i));
+//            i = i + 1;
+//        }
+//    }
 }

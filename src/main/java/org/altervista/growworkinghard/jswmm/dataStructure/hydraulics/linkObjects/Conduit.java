@@ -25,6 +25,7 @@ import org.geotools.graph.util.geom.Coordinate2D;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 
 public class Conduit extends AbstractLink {
@@ -60,16 +61,27 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
+    public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
+        upstreamOutside.setFlowRate(id, time, flowRate);
+    }
+
+    @Override
+    public void setInitialUpWetArea(Integer id, Instant time, double flowRate) {
+        upstreamOutside.setWetArea(id, time, flowRate);
+    }
+
+    @Override
     public void evaluateFlowRate(Instant currentTime) {
 
-        //System.out.println("START evaluateFlowRate");
+        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
+        for (Integer id : currentFlow.keySet()) {
 
-        for (Integer id : upstreamOutside.getStreamFlowRate().keySet()) {
-            RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamOutside,
+            HashMap<Integer, LinkedHashMap<Instant, Double>> flow = upstreamOutside.getStreamFlowRate();
+            LinkedHashMap<Instant, Double> upstreamFlow = flow.get(id);
+
+            RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
                     downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType);
-
-            downstreamOutside.setStreamFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
-            //downstreamOutside.setStreamFlowRate(id, currentTime, 0.0);
+            downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
         }
 
         //System.out.println("END evaluateFlowRate");
@@ -79,6 +91,7 @@ public class Conduit extends AbstractLink {
     public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
+
         for (Integer id : flowUpstreamNode.keySet()) {
 
             double currentFlow = flowUpstreamNode.get(id).get(currentTime);
@@ -118,11 +131,10 @@ public class Conduit extends AbstractLink {
         downstreamOutside.setHeights(excavation);
 
         double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
-        upstreamOutside.setWaterDepth(waterDepth);
-        downstreamOutside.setWaterDepth(waterDepth);
+        getUpstreamOutside().setWaterDepth(waterDepth);
+        getDownstreamOutside().setWaterDepth(waterDepth);
 
-        //System.out.println("fillAngle " + fillAngleMax);
-        //System.out.println("diameter" + diameters[1]);
+        System.out.println("D " + diameters[0]);
     }
 
     private double evaluateFillAngle(double innerSize, double slope, double discharge) {
@@ -237,6 +249,10 @@ public class Conduit extends AbstractLink {
         if( fillAngle == 0.0 ) {
             fillAngle = 0.001;
         }
+
+        System.out.println("fillCoeff " + fillCoeff);
+        System.out.println("fillAngle " + fillAngle);
+        System.out.println("slope " + slope);
 
         final double pow1 = 3.0 / 8;
         double coeff = Math.pow(2, 13.0/3);
