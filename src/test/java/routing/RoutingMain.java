@@ -15,10 +15,10 @@
 
 package routing;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
-import org.altervista.growworkinghard.jswmm.routing.Routing;
-import org.altervista.growworkinghard.jswmm.runoff.PreRunoff;
-import org.altervista.growworkinghard.jswmm.runoff.Runoff;
+import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.routing.Routing;
+import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
+import com.github.geoframecomponents.jswmm.runoff.Runoff;
 import org.junit.Before;
 import org.junit.Test;
 

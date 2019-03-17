@@ -15,14 +15,11 @@
 
 package runoff;
 
-import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
-import org.altervista.growworkinghard.jswmm.runoff.PreRunoff;
-import org.altervista.growworkinghard.jswmm.runoff.Runoff;
+import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
+import com.github.geoframecomponents.jswmm.runoff.Runoff;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.time.Instant;
 
 public class RunoffMain {
 
