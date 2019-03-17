@@ -20,8 +20,10 @@ import com.github.geoframecomponents.jswmm.routing.Routing;
 import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
 import com.github.geoframecomponents.jswmm.runoff.Runoff;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class RoutingMain {
 
     SWMMobject data;
@@ -78,6 +80,6 @@ public class RoutingMain {
         routing.linkName = "L1";
 
         routing.run();
-        //routingDS.test();
+        //routingDS.DummyTest();
     }
 }
