@@ -13,15 +13,6 @@ buildscript {
 
 }
 
-group 'org.altervista.growworkinghard.jswmm'
-archivesBaseName = "GEOframeUtils"
-
-def projectName = "GEOframeUtils"
-def projectDescription = "Utilities for GEOframe developers"
-
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-sourceCompatibility = 1.8
-
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'eclipse'
@@ -29,6 +20,15 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'gitsemver'
+
+group "com.github.geoframecomponents"
+archivesBaseName = "jswmm"
+
+def projectName = "jswmm"
+def projectDescription = "java version of jswmm"
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = 1.8
 
 // to get project version from command line, just type
 // $ gradle -PprojVersion=<version_number> build
