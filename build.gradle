@@ -1,9 +1,52 @@
+// include the BinTray repository
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "http://dl.bintray.com/palantir/releases" }
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
+        classpath 'com.palantir:gradle-gitsemver:0.7.0'
+    }
+
+}
+
 group 'org.altervista.growworkinghard.jswmm'
-version '0.1'
+archivesBaseName = "GEOframeUtils"
+
+def projectName = "GEOframeUtils"
+def projectDescription = "Utilities for GEOframe developers"
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = 1.8
 
 apply plugin: 'java'
+apply plugin: 'java-library'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'com.bmuschko.nexus'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'gitsemver'
 
-sourceCompatibility = 1.8
+// to get project version from command line, just type
+// $ gradle -PprojVersion=<version_number> build
+// default is na
+if (project.hasProperty('projVersion')) {
+      project.version = project.projVersion
+} else {
+      project.version = 'na'
+}
+
+// name with versioning of the jar file
+jar {
+    baseName = projectName
+    manifest {
+        attributes 'Implementation-Title' : projectName,
+                   'Implementation-Version': version
+    }
+}
 
 repositories {
     maven {
@@ -28,4 +71,107 @@ dependencies {
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile 'junit:junit:4.12'
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// custom tasks for creating source/javadoc jars
+task sJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task jJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sJar, jJar
+}
+
+def pomConfig = {
+    scm {
+      connection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+      developerConnection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+      url 'https://github.com/geoframecomponents/jswmm'
+    }
+
+    licenses {
+      license {
+        name 'General Public License V.3 (GPL3)'
+        url 'http://www.gnu.org/licenses/gpl.html'
+      }
+    }
+
+    developers {
+      developer {
+        id 'ftt01'
+        name 'Daniele Dalla Torre'
+        email 'dallatorre.daniele@gmail.com'
+      }
+    }
+}
+
+nexus {
+    sign = false
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sJar
+            artifact jJar
+            groupId 'com.github.geoframecomponents'
+            artifactId 'jswmm'
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'java version of SWMM')
+                root.appendNode('name', 'jswmm')
+                root.appendNode('url', 'https://github.com/geoframecomponents/jswmm')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+// bintray sync
+if (hasProperty('bintrayUsername') ||
+    System.getenv().containsKey('BINTRAY_USER')) {
+    // Used by the bintray plugin
+    bintray {
+        user = System.getenv().getOrDefault('BINTRAY_USER', bintrayUsername)
+        key = System.getenv().getOrDefault('BINTRAY_KEY', bintrayApiKey)
+        publish = true
+        publications = ['MyPublication']
+
+        pkg {
+            repo = 'geoframecomponents'
+            name = projectName
+            licenses = ['GPL-3.0']
+            vcsUrl = 'https://github.com/geoframecomponents/jswmm.git'
+
+            version {
+                name = project.version
+                desc = projectDescription
+                released = new Date()
+
+                gpg {
+                    sign = true
+                    passphrase = System.getenv().getOrDefault('PASSPHRASE',
+                                                              bintrayPassphrase)
+                }
+
+                mavenCentralSync {
+                    user = System.getenv().getOrDefault('SONATYPE_USER',
+                                                        nexusUsername)
+                    password = System.getenv().getOrDefault('SONATYPE_PASSWORD',
+                                                            nexusPassword)
+                }
+            }
+        }
+
+        configurations = ['archives']
+    }
 }
