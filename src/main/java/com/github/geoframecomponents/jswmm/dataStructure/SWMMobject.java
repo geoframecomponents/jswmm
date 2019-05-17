@@ -45,8 +45,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SWMMobject {
+public class SWMMobject extends dataReader {
 
+    private ProjectUnits projectUnits;
     private TimeSetup timeSetup;
     private RunoffSetup runoffSetup;
     private RoutingSetup routingSetup;
@@ -56,8 +57,13 @@ public class SWMMobject {
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
     private LinkedHashMap<Instant, Double> downstreamFlowRate;
-    private ProjectUnits projectUnits;
 
+
+    /**
+     * Build the data structure starting from the inp file
+     * TODO create the INPparser and import it
+     * @param inpFileName
+     */
     public SWMMobject(String inpFileName) {
         setTime();
         setRunoff();
@@ -132,15 +138,20 @@ public class SWMMobject {
         return conduit.get(conduitName);
     }
 
-
-    private void setUnits() {
-        String units = "CMS";
-
-        if (units == "CMS") {
+    /**
+     * Set the units of the project (CMS or..)
+     * TODO introduce all units of SWMM
+     */
+    private void setUnits(String units) {
+        if (units.equals("CMS")) {
             this.projectUnits = new CubicMetersperSecond();
+        }
+        else {
+            throw new NullPointerException("System units not permitted");
         }
     }
 
+    
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
