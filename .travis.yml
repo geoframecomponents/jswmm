@@ -18,7 +18,7 @@ before_deploy:
 - export RELEASE_PKG_FILE="${GRADLE_BUILD_DIR}/jswmm-${MOD_TAG}.jar"
 - export FAT_PKG_FILE="${GRADLE_BUILD_DIR}/jswmm-${MOD_TAG}-all.jar"
 - echo "building $FAT_PKG_FILE fat jar"
-- gradle fatJar
+- gradle shadowJar
 - docker build -t "ftt01/jswmm:$MOD_TAG" .
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker push ftt01/jswmm:$MOD_TAG
