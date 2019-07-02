@@ -3,13 +3,13 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public class GIUHsetup implements RaingageSetup {
+public class LPPsetup implements RaingageSetup {
 
     Long rainfallStepSize;
 
     //Double snowpack; TODO where is used?
 
-    public GIUHsetup(Long rainfallStepSize) {
+    public LPPsetup(Long rainfallStepSize) {
         this.rainfallStepSize = rainfallStepSize;
     }
 

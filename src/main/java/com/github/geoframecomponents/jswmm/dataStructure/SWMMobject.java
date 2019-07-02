@@ -23,9 +23,8 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.GIUHsetup;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.LPPsetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.*;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.CubicMetersperSecond;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
@@ -212,7 +211,7 @@ public class SWMMobject {
         //Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
         //Double snowpack = 0.0;
 
-        raingageSetup.put(raingageName, new GIUHsetup(rainfallStepSize));
+        raingageSetup.put(raingageName, new LPPsetup(rainfallStepSize));
     }
 
     private void setSubcatchments() {
