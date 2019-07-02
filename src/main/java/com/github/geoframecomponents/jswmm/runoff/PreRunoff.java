@@ -61,8 +61,8 @@ public class PreRunoff {
     @In
     public Integer numberOfCurves = 3;
 
-    @In
-    public Long stormwaterInterval = null;
+    //@In
+    //public Long stormwaterInterval = null;
 
     @InNode
     @Out
@@ -122,19 +122,20 @@ public class PreRunoff {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData = new HashMap<>();
 
-        Long rainfallTimeInterval;
+        /*Long rainfallTimeInterval;
         if (stormwaterInterval == null) {
             rainfallTimeInterval = ( totalTime.getEpochSecond() - initialTime.getEpochSecond() ) / numberOfCurves;
         }
         else {
             rainfallTimeInterval = stormwaterInterval / numberOfCurves;
         }
+         */
 
-        Instant finalRainfallTime = initialTime;
+        //Instant finalRainfallTime = initialTime;
         //System.out.println("Number of rainfall times: " + numberOfCurves);
         for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
 
-            finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
+            //finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
 
             LinkedHashMap<Instant, Double> rainfallValues = new LinkedHashMap<>();
 
