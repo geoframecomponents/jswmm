@@ -22,6 +22,12 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.Rain
 import java.time.Instant;
 import java.util.*;
 
+
+/**
+ * PreRunoff
+ */
+
+
 public class PreRunoff {
 
     @In
@@ -31,10 +37,19 @@ public class PreRunoff {
 
     private Long rainfallStepSize;
 
+    /**
+     * Define the starting data/time simulation
+     */
     private Instant initialTime;
 
+    /**
+     * Define the ending date/time simulation
+     */
     private Instant totalTime;
 
+    /**
+     * Set of rainfall data over time
+     */
     private LinkedHashMap<Instant, Double> rainfallData;
 
     @In
@@ -74,7 +89,7 @@ public class PreRunoff {
 
             //this.dataStructure = dataStructure;
 
-            //TODO ocio al raingage
+            //TODO raingage must be setup with the right name
             RaingageSetup raingage = dataStructure.getRaingage("RG1");
 
             this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
