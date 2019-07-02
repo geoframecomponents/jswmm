@@ -45,7 +45,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SWMMobject extends dataReader {
+public class SWMMobject {
 
     private ProjectUnits projectUnits;
     private TimeSetup timeSetup;
@@ -75,7 +75,7 @@ public class SWMMobject extends dataReader {
     }
 
     public SWMMobject() {
-        setUnits();
+        setUnits("CMS");
         setTime();
         setRunoff();
         setRouting();
