@@ -30,11 +30,20 @@ import java.util.*;
 
 public class PreRunoff {
 
+    /**
+     * Name of the area for the runoff process
+     */
     @In
     public String areaName = null;
 
+    /**
+     * Step size used by runoff evaluator
+     */
     private Long runoffStepSize;
 
+    /**
+     * Step size of the rainfall data
+     */
     private Long rainfallStepSize;
 
     /**
@@ -52,12 +61,22 @@ public class PreRunoff {
      */
     private LinkedHashMap<Instant, Double> rainfallData;
 
+    /**
+     * Coefficient $$a$$ of the equation $$I=a*tp^(n-1)$$
+     */
     @In
     public Double aLPP = 60.4;
 
+    /**
+     * Coefficient $$n$$ of the equation $$I=a*tp^(n-1)$$
+     */
     @In
     public Double nLPP = 0.61;
 
+    /**
+     * Number of curves to design the network
+     * TODO must be global otherwise it crash? Please verify.
+     */
     @In
     public Integer numberOfCurves = 3;
 
@@ -68,9 +87,15 @@ public class PreRunoff {
     @Out
     public SWMMobject dataStructure;
 
+    /**
+     * Rainfall data adapted over the runoff step size
+     */
     @Out
     public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData = new HashMap<>();
 
+    /**
+     * Infiltration data adapted over the runoff step size
+     */
     @Out
     public LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
@@ -118,6 +143,10 @@ public class PreRunoff {
         //adaptInfiltrationData();
     }
 
+    /**
+     * Method to generate the curves to design from IDFs curves
+     * @return HM with the ID of the curve as key and the HM of the design storm as value
+     */
     private HashMap<Integer, LinkedHashMap<Instant, Double>> generateRainfall() {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData = new HashMap<>();
@@ -178,6 +207,12 @@ public class PreRunoff {
         return rainfallData;
     }
 
+    /**
+     * Method to generate the constant intensity from IDFs curves
+     * @param finalRainfallTime
+     * @param currentTime
+     * @return IDF related value of rainfall time
+     */
     private Double constantRainfallData(Instant finalRainfallTime, Instant currentTime) {
 
         Double rainfallValue = 0.0;
