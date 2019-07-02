@@ -517,6 +517,15 @@ public class SWMMobject {
         return testingValues;
     }
 
+    /**
+     * Method that adapts data to a defined step size and over the period between initialTime and finalTime
+     * @param toStepSize
+     * @param fromStepSize
+     * @param finalTime
+     * @param initialTime
+     * @param HMData
+     * @return the HM of data over data/time
+     */
     public LinkedHashMap<Instant, Double> adaptDataSeries(Long toStepSize, Long fromStepSize, Long finalTime,
                                                            Long initialTime, LinkedHashMap<Instant, Double> HMData) {
 
