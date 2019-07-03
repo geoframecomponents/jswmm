@@ -31,6 +31,9 @@ public class FlowRateDispatcher {
     @Out
     public SWMMobject dataStructure;
 
+    /**
+     * HM of the flowrate to the node
+     */
     @InNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate1;
 
@@ -146,6 +149,14 @@ public class FlowRateDispatcher {
 
     }
 
+    /**
+     * Method to sum all flow rate to the node, upgrading the flow rate into the node and the related output stream.
+     * @param routingStepSize
+     * @param flowRateStepSize
+     * @param totalTime
+     * @param initialTime
+     * @param flowRate
+     */
     private void dispatchFlow(Long routingStepSize, Long flowRateStepSize, long totalTime, long initialTime,
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
 
