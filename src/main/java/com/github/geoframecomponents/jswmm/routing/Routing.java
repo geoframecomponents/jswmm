@@ -93,7 +93,10 @@ public class Routing {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-        //evaluate the maximum flow for each SWMM timestep
+        /**
+         * Evaluate the maximum discharge over all the response curves
+         * TODO move everything inside the evaluateMaxDischarge method
+         */
         Instant currentTime = initialTime;
         double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
@@ -103,7 +106,9 @@ public class Routing {
 
         System.out.println("Q_MAX " + maxDischarge);
 
-        //dimensioning method!!
+        /**
+         * Dimensioning main method
+         */
         conduit.evaluateDimension(maxDischarge, pipeCompany);
 
         //System.out.println("UPGRADING SUBTREES");
@@ -116,7 +121,7 @@ public class Routing {
             conduit.evaluateFlowRate(currentTime);
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
-       conduit.evaluateFlowRate(currentTime);
+        conduit.evaluateFlowRate(currentTime);
 
         routingFlowRate = conduit.getDownstreamFlowRate();
         //routingFlowRate = conduit.getUpstreamFlowRate();
