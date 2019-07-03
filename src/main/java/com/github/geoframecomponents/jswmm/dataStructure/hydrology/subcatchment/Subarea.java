@@ -102,8 +102,23 @@ public abstract class Subarea {
                 subareaSlope, characteristicWidth);
     }
 
+
+    /**
+     * Method to evaluate the totalDepth, the runoffDepth and the flowRate at the node.
+     * It takes into account the type of Subarea through override.
+     */
     abstract void evaluateNextStep(Integer identifier, Instant currentTime, RunoffSetup runoffSetup, Double rainfall,
                                    Double evaporation, Double subareaArea, Double characteristicWidth);
+
+    /**
+     * Evaluate the flowrate into the node from currentDepth and area properties
+     *
+     * @param subareaSlope
+     * @param characteristicWidth
+     * @param currentDepth
+     * @return the evaluated flow rate
+     */
+    abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);
 
     void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, RunoffSetup runoffSetup) {
         double[] inputValues = new double[1];
@@ -119,7 +134,6 @@ public abstract class Subarea {
                 finalTime, outputValues);
 
         setRunoffDepth(id, nextTime, outputValues[0]);
-        setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + (outputValues[0]-inputValues[0]));
+        setTotalDepth(id, nextTime, totalDepth.get(id).get(currentTime) + (outputValues[0] - inputValues[0]));
     }
-
-    abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);}
+}
