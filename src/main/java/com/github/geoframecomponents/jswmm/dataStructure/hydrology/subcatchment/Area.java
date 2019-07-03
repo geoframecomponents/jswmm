@@ -77,6 +77,10 @@ public class Area extends AbstractSubcatchment {
         return totalAreaFlowRate.get(id);
     }
 
+    /**
+     * Not used.
+     * @return
+     */
     public List<ReceiverRunoff> getReceivers() {
         return receivers;
     }
