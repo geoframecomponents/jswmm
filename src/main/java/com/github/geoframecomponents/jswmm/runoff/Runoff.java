@@ -95,7 +95,7 @@ public class Runoff {
 
         //System.out.println("Processing area " + areaName);
         if (dataStructure == null) {
-            System.out.println("Data structure null");
+            System.out.println("Data structure is null");
         }
         if (dataStructure != null && areaName != null) {
 
@@ -109,7 +109,7 @@ public class Runoff {
             this.totalTime = timeSetup.getEndDate();
         }
         else {
-            throw new NullPointerException("Nothing implemented yet");
+            throw new NullPointerException("Runoff over" + areaName + "fails setup.");
         }
 
         /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
