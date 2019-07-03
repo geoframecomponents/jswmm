@@ -129,13 +129,13 @@ public class OutsideSetup {
 
     public void upgradeOffset(double delta) {
         if (this.offset < Math.abs(delta)) {
-            this.offset -= delta;
-            this.height -= delta;
-            this.baseElevation += delta;
+            this.offset = 0.0;
+            this.height += delta;
+            this.baseElevation -= delta;
             checkMaxExcavation(height);
         }
         else{
-            this.offset += delta;
+            this.offset -= delta;
         }
     }
 
