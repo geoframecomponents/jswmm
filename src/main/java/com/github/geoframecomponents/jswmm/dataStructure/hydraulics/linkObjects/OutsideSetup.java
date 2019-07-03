@@ -30,6 +30,7 @@ public class OutsideSetup {
     private double baseElevation;
     private double offset;
     private double height;
+    private double excavation;
     private double fillCoeff;
     private double waterDepth;
 
