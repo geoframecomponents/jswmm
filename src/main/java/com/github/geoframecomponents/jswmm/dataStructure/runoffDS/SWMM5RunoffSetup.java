@@ -15,8 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import com.github.geoframecomponents.jswmm.runoff.RunoffODE;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.runoff.RunoffODE;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
@@ -25,11 +25,10 @@ import java.time.Instant;
 
 public class SWMM5RunoffSetup implements RunoffSetup {
 
-    private ProjectUnits units;
-
     private Instant initialTime;
-
     private Instant totalTime;
+
+    private ProjectUnits units;
 
     private Long runoffStepSize;
 
