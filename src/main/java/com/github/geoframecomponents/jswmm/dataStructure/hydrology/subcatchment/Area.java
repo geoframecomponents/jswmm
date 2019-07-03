@@ -53,11 +53,11 @@ public class Area extends AbstractSubcatchment {
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {
-        //check if totalarea contain the rainfallTimeId
+        //check if totalArea contain the rainfallTimeId
         if (!totalAreaFlowRate.containsKey(id)) {
             totalAreaFlowRate.put(id, new LinkedHashMap<>());
         }
-        //sum the volume of each subarea as product of the flowrate and the subarea's area
+        //sum the volume of each subarea as product of the flowRate and the subarea's area
         for(Subarea subarea : subareas.get(id)) {
 
             LinkedHashMap<Instant, Double> subareaFlowRate = subarea.getFlowRate().get(id);
@@ -92,7 +92,6 @@ public class Area extends AbstractSubcatchment {
 
             double rainfall = adaptedRainfallData.get(identifier).get(currentTime);
 
-            adaptedRainfallData.get(identifier).get(currentTime);
             for (Subarea subarea : subareas.get(identifier)) {
                 subarea.setDepthFactor(areaSlope, characteristicWidth);
                 subarea.evaluateFlowRate(identifier, rainfall, 0.0,
