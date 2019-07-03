@@ -102,35 +102,47 @@ public class Conduit extends AbstractLink {
         return maxDischarge;
     }
 
+    /**
+     * Method to evaluate commercial diameter from maximum discharge, it takes into account the slope
+     * TODO generalize to different crossSections
+     * @param discharge
+     * @param pipeCompany
+     */
     @Override
     public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
         linkSlope = computeNaturalSlope();
 
-        // @TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
+        // TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
         double diameter = getDimension(discharge, linkSlope);
 
         double[] diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
         double thicknessPipe = diameters[1] - diameters[0];
 
+        double deltaSlope = 0.0;
         Double minSlope = computeMinSlope(diameters[0]);
         //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
         if (linkSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
+            deltaSlope = minSlope - linkSlope;
             linkSlope = minSlope;
         }
         crossSectionType.setDimensions(diameters[0], diameters[1]);
         double fillAngleMax = evaluateFillAngle(diameters[0], linkSlope, discharge);
         double maxQDepth = diameters[0] / 2 * ( 1 + Math.cos(Math.PI - fillAngleMax / 2) );
 
-        double excavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
-        upstreamOutside.setHeights(excavation, 0.0);
-        downstreamOutside.setHeights(excavation);
+        double upstreamExcavation = GEOconstants.MINIMUMEXCAVATION + diameters[1];
+        double downstreamExcavation = upstreamExcavation;
+        if (deltaSlope > 0.0) {
+            downstreamExcavation += linkLength*deltaSlope;
+        }
+        upstreamOutside.setHeights(upstreamExcavation, 0.0);
+        downstreamOutside.setHeights(downstreamExcavation);
 
         double waterDepth = GEOconstants.MINIMUMEXCAVATION + ( thicknessPipe + diameters[0] - maxQDepth );
-        getUpstreamOutside().setWaterDepth(waterDepth);
+        getUpstreamOutside().setWaterDepth(waterDepth + linkLength*deltaSlope);
         getDownstreamOutside().setWaterDepth(waterDepth);
 
         System.out.println("D " + diameters[0]);
@@ -241,6 +253,13 @@ public class Conduit extends AbstractLink {
                 / (GEOconstants.WSPECIFICWEIGHT * hydraulicRadius);
     }
 
+    /**
+     * Evaluate the dimension for a given discharge and slope, just for the Circular
+     * TODO extend to all crossSectionTypes
+     * @param discharge
+     * @param slope
+     * @return
+     */
     private Double getDimension(Double discharge, Double slope) {
         
         Double fillCoeff = getUpstreamOutside().getFillCoeff();
