@@ -623,7 +623,7 @@ public class SWMMobject {
                     //System.out.println("subtreeList " + subtreeList );
                     //System.out.println("downstreamDepth - maxDepth " + (downstreamDepth - maxDepth) );
 
-                    upgradeStream(subtreeList, downstreamDepth - maxDepth);
+                    upgradeStream(subtreeList, maxDepth - downstreamDepth);
                 }
 
             }
