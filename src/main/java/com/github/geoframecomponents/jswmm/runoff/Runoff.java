@@ -34,34 +34,37 @@ public class Runoff {
     @In
     public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData; // [mm/hour]
 
-    private LinkedHashMap<Instant, Double> evaporationData = null; // [mm/hour]
+    private LinkedHashMap<Instant, Double> adaptedEvaporationData = null; // [mm/hour]
 
     /**
-     * Time setup of the simulation
+     * Start date/time of the runoff simulation
      */
     private Instant initialTime;
 
+    /**
+     * End date/time of the runoff simulation
+     */
     private Instant totalTime;
 
     /**
-     * Simulation node fields
+     * Name of the area of current simulation
      */
     @In
     public String areaName = null;
 
+    /**
+     * Name of the node where area drains in the current simulation
+     */
     @In
     public String nodeName = null;
 
     /**
-     * Area characteristics
+     * Area properties
      */
     private Area area;
-
-    private List<Subarea> subareas;
-
-    private Double slopeArea;
-
-    private Double characteristicWidth;
+    //private List<Subarea> subareas;
+    //private Double slopeArea;
+    //private Double characteristicWidth;
 
     /**
      * Integration method setup
@@ -76,6 +79,10 @@ public class Runoff {
     @In
     public SWMMobject dataStructure;
 
+    /**
+     * HM of the flowrate over time that drains into the node,
+     * ID of the rainfall curve is the key and the resulting runoff are the values
+     */
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> runoffFlowRate = new HashMap<>();
 
@@ -92,7 +99,7 @@ public class Runoff {
         }
         if (dataStructure != null && areaName != null) {
 
-            //TODO evaporation!!
+            //TODO add evaporation
             this.runoffSetup = dataStructure.getRunoffSetup();
             this.runoffStepSize = runoffSetup.getRunoffStepSize();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
