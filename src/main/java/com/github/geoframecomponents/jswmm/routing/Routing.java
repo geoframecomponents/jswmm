@@ -113,6 +113,9 @@ public class Routing {
 
         //System.out.println("UPGRADING SUBTREES");
 
+        /**
+         * Alignment of water table of all links of the node
+         */
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
@@ -127,7 +130,7 @@ public class Routing {
         //routingFlowRate = conduit.getUpstreamFlowRate();
 
 
-        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
+//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
 //        for (Integer id : currentFlow.keySet()) {
 //            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
 //            //System.out.print("ID " + id);
