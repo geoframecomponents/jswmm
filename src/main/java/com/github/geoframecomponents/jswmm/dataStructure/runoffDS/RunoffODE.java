@@ -13,7 +13,29 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.runoff;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-abstract class AbstractInfiltrationMethod {
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
+import org.apache.commons.math3.util.FastMath;
+
+public class RunoffODE implements FirstOrderDifferentialEquations {
+
+    private double precipitation;
+    private double alpha;
+
+    public RunoffODE() {}
+
+    public RunoffODE(double precipitation, double alpha) {
+        this.precipitation = precipitation;
+        this.alpha = alpha;
+    }
+
+    public int getDimension() {
+        return 1;
+    }
+
+    public void computeDerivatives(double t, double[] y, double[] yDot) {
+        yDot[0] = precipitation - alpha*FastMath.pow(y[0],5.0/3.0);
+    }
+
 }

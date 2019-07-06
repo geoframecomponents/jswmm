@@ -18,7 +18,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -90,7 +90,7 @@ public class Area extends AbstractSubcatchment {
     }
 
     public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData,
-                                       RunoffSetup runoffSetup, Instant currentTime) {
+                                       AbstractRunoffSolver runoffSolver, Instant currentTime) {
 
         for (Integer identifier : adaptedRainfallData.keySet()) {
 
@@ -99,7 +99,7 @@ public class Area extends AbstractSubcatchment {
             for (Subarea subarea : subareas.get(identifier)) {
                 subarea.setDepthFactor(areaSlope, characteristicWidth);
                 subarea.evaluateFlowRate(identifier, rainfall, 0.0,
-                        currentTime, runoffSetup, areaSlope, characteristicWidth); //TODO evaporation!!
+                        currentTime, runoffSolver, areaSlope, characteristicWidth); //TODO evaporation!!
             }
         }
     }

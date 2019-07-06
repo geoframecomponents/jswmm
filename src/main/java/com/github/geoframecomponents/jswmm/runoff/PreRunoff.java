@@ -118,7 +118,7 @@ public class PreRunoff {
             //TODO raingage must be setup with the right name
             RaingageSetup raingage = dataStructure.getRaingage("RG1");
 
-            this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
+            this.runoffStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();
             this.rainfallStepSize = raingage.getRainfallStepSize();
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();

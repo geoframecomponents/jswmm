@@ -13,9 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.runoff;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-public abstract class AbstractRunoffMethod {
-    abstract double[] integrate(Double initialTime,double[] inputValues,
-                                Double finalTime, double[] outputValues);
+abstract class AbstractInfiltrationSolver {
 }

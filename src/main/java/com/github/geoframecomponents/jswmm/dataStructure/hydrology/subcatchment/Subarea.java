@@ -16,7 +16,7 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.*;
@@ -86,19 +86,19 @@ public abstract class Subarea {
     abstract Double getWeightedFlowRate(Integer identifier, Instant currentTime);
 
     public void evaluateFlowRate(Integer identifier, Double rainfall, Double evaporation, Instant currentTime,
-                                 RunoffSetup runoffSetup, Double subareaSlope, Double characteristicWidth) {
+                                 AbstractRunoffSolver runoffSolver, Double subareaSlope, Double characteristicWidth) {
         Double tempPrecipitation = rainfall;
         if (subareaConnections != null) {
             tempPrecipitation = null;
             for (Subarea connections : subareaConnections) {
                 connections.evaluateFlowRate(identifier, rainfall, evaporation, currentTime,
-                        runoffSetup, subareaSlope, characteristicWidth);
+                        runoffSolver, subareaSlope, characteristicWidth);
                 tempPrecipitation += connections.getWeightedFlowRate(identifier, currentTime);
                 //infiltration
             }
             tempPrecipitation /= subareaArea;
         }
-        evaluateNextStep(identifier, currentTime, runoffSetup, tempPrecipitation, evaporation,
+        evaluateNextStep(identifier, currentTime, runoffSolver, tempPrecipitation, evaporation,
                 subareaSlope, characteristicWidth);
     }
 
@@ -107,7 +107,7 @@ public abstract class Subarea {
      * Method to evaluate the totalDepth, the runoffDepth and the flowRate at the node.
      * It takes into account the type of Subarea through override.
      */
-    abstract void evaluateNextStep(Integer identifier, Instant currentTime, RunoffSetup runoffSetup, Double rainfall,
+    abstract void evaluateNextStep(Integer identifier, Instant currentTime, AbstractRunoffSolver runoffSolver, Double rainfall,
                                    Double evaporation, Double subareaArea, Double characteristicWidth);
 
     /**
@@ -120,7 +120,7 @@ public abstract class Subarea {
      */
     abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);
 
-    void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, RunoffSetup runoffSetup) {
+    void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, AbstractRunoffSolver runoffSolver) {
         double[] inputValues = new double[1];
         inputValues[0] = runoffDepth.get(id).get(currentTime);
         double[] outputValues = new double[1];
@@ -128,9 +128,9 @@ public abstract class Subarea {
         Double initialTime = (double) currentTime.getEpochSecond();
         Double finalTime = (double) nextTime.getEpochSecond();
 
-        runoffSetup.setOde(rainfall, depthFactor);
+        runoffSolver.setOde(rainfall, depthFactor);
 
-        runoffSetup.getFirstOrderIntegrator().integrate(runoffSetup.getOde(), initialTime, inputValues,
+        runoffSolver.getFirstOrderIntegrator().integrate(runoffSolver.getOde(), initialTime, inputValues,
                 finalTime, outputValues);
 
         setRunoffDepth(id, nextTime, outputValues[0]);

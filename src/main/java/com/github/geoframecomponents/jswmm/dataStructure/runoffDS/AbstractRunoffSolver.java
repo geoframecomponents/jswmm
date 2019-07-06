@@ -19,23 +19,40 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUn
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
-import java.time.Instant;
+public abstract class AbstractRunoffSolver {
 
-public interface RunoffSetup {
+    public ProjectUnits units;
 
-    public Long getRunoffStepSize();
+    public Long runoffStepSize;
 
-    public FirstOrderIntegrator getFirstOrderIntegrator();
+    public Double minimumStepSize;
+    public Double maximumStepSize;
+    public Double absoluteRunoffTolerance;
+    public Double relativeRunoffTolerance;
 
-    public FirstOrderDifferentialEquations getOde();
+    public Long getRunoffStepSize() {
+        return runoffStepSize;
+    }
 
-    public void setOde(Double rainfall, Double depthFactor);
-    
-    public Double getMinimumStepSize();
+    public Double getMinimumStepSize() {
+        return minimumStepSize;
+    }
 
-    public Double getMaximumStepSize();
+    public Double getMaximumStepSize() {
+        return maximumStepSize;
+    }
 
-    public Double getAbsoluteRunoffTolerance();
+    public Double getAbsoluteRunoffTolerance() {
+        return absoluteRunoffTolerance;
+    }
 
-    public Double getRelativeRunoffTolerance();
+    public Double getRelativeRunoffTolerance() {
+        return relativeRunoffTolerance;
+    }
+
+    public abstract FirstOrderIntegrator getFirstOrderIntegrator();
+
+    public abstract FirstOrderDifferentialEquations getOde();
+
+    public abstract void setOde(Double rainfall, Double depthFactor);
 }

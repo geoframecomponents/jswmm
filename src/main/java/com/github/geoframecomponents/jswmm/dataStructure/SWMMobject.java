@@ -33,8 +33,8 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
 //import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSteadySetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.SWMM5RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.SWMM5runoffSolver;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -48,7 +48,7 @@ public class SWMMobject {
 
     private ProjectUnits projectUnits;
     private TimeSetup timeSetup;
-    private RunoffSetup runoffSetup;
+    private AbstractRunoffSolver runoffSolver;
     private RoutingSetup routingSetup;
     private HashMap<String, RaingageSetup> raingageSetup = new HashMap<>();
     private HashMap<String, Area> areas = new HashMap<>();
@@ -119,8 +119,8 @@ public class SWMMobject {
         return timeSetup;
     }
 
-    public RunoffSetup getRunoffSetup() {
-        return runoffSetup;
+    public AbstractRunoffSolver getRunoffSolver() {
+        return runoffSolver;
     }
 
     public RoutingSetup getRoutingSetup() { return routingSetup; }
@@ -175,8 +175,8 @@ public class SWMMobject {
         Instant initialTime = timeSetup.getStartDate();
         Instant totalTime = timeSetup.getEndDate();
 
-        this.runoffSetup = new SWMM5RunoffSetup(initialTime, totalTime, runoffStepSize,
-                minimumStepSize, maximumStepSize, absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
+        this.runoffSolver = new SWMM5runoffSolver(runoffStepSize, minimumStepSize, maximumStepSize,
+                absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
     }
 
     private void setRouting() {

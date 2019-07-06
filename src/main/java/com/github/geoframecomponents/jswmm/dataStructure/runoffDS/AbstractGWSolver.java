@@ -13,8 +13,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.runoff;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-public enum OdeMethod {
-    DP54
+abstract class AbstractGWSolver {
+
 }

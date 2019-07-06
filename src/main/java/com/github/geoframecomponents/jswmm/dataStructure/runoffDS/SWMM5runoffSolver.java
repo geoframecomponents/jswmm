@@ -16,55 +16,22 @@
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.runoff.RunoffODE;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 
-import java.time.Instant;
-
-public class SWMM5RunoffSetup implements RunoffSetup {
-
-    private ProjectUnits units;
-
-    private Long runoffStepSize;
-
-    private Double minimumStepSize;
-    private Double maximumStepSize;
-    private Double absoluteRunoffTolerance;
-    private Double relativeRunoffTolerance;
+public class SWMM5runoffSolver extends AbstractRunoffSolver {
 
     private FirstOrderDifferentialEquations ode = new RunoffODE();
 
-    public SWMM5RunoffSetup(Long runoffStepSize, Double minimumStepSize, Double maximumStepSize,
-                            Double absoluteRunoffTolerance, Double relativeRunoffTolerance, ProjectUnits units) {
+    public SWMM5runoffSolver(Long runoffStepSize, Double minimumStepSize, Double maximumStepSize,
+                             Double absoluteRunoffTolerance, Double relativeRunoffTolerance, ProjectUnits units) {
         this.runoffStepSize = runoffStepSize;
         this.minimumStepSize = minimumStepSize;
         this.maximumStepSize = maximumStepSize;
         this.absoluteRunoffTolerance = absoluteRunoffTolerance;
         this.relativeRunoffTolerance = relativeRunoffTolerance;
         this.units = units;
-    }
-
-    @Override
-    public Long getRunoffStepSize() {
-        return runoffStepSize;
-    }
-
-    public Double getMinimumStepSize() {
-        return minimumStepSize;
-    }
-
-    public Double getMaximumStepSize() {
-        return maximumStepSize;
-    }
-
-    public Double getAbsoluteRunoffTolerance() {
-        return absoluteRunoffTolerance;
-    }
-
-    public Double getRelativeRunoffTolerance() {
-        return relativeRunoffTolerance;
     }
 
     @Override

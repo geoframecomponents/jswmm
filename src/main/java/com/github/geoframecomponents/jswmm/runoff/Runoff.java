@@ -18,14 +18,12 @@ package com.github.geoframecomponents.jswmm.runoff;
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Area;
 import oms3.annotations.*;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Subarea;
 import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -71,7 +69,7 @@ public class Runoff {
      */
     private Long runoffStepSize;
 
-    private RunoffSetup runoffSetup;
+    private AbstractRunoffSolver runoffSolver;
 
     /**
      * Data structure
@@ -100,8 +98,8 @@ public class Runoff {
         if (dataStructure != null && areaName != null) {
 
             //TODO add evaporation
-            this.runoffSetup = dataStructure.getRunoffSetup();
-            this.runoffStepSize = runoffSetup.getRunoffStepSize();
+            this.runoffSolver = dataStructure.getRunoffSolver();
+            this.runoffStepSize = runoffSolver.getRunoffStepSize();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
             this.area = dataStructure.getAreas(areaName);
 
@@ -124,7 +122,7 @@ public class Runoff {
         while (currentTime.isBefore(totalTime)) {
 
             //check snownelt - snowaccumulation TODO build a new component
-            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSetup, currentTime);
+            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSolver, currentTime);
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
 
