@@ -23,10 +23,6 @@ import java.time.Instant;
 
 public interface RunoffSetup {
 
-    public Instant getInitialTime();
-
-    public Instant getTotalTime();
-
     public Long getRunoffStepSize();
 
     public FirstOrderIntegrator getFirstOrderIntegrator();
@@ -34,7 +30,7 @@ public interface RunoffSetup {
     public FirstOrderDifferentialEquations getOde();
 
     public void setOde(Double rainfall, Double depthFactor);
-
+    
     public Double getMinimumStepSize();
 
     public Double getMaximumStepSize();
