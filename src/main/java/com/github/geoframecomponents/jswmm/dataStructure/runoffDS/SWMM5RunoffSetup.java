@@ -25,9 +25,6 @@ import java.time.Instant;
 
 public class SWMM5RunoffSetup implements RunoffSetup {
 
-    private Instant initialTime;
-    private Instant totalTime;
-
     private ProjectUnits units;
 
     private Long runoffStepSize;
@@ -39,27 +36,14 @@ public class SWMM5RunoffSetup implements RunoffSetup {
 
     private FirstOrderDifferentialEquations ode = new RunoffODE();
 
-    public SWMM5RunoffSetup(Instant initialTime, Instant totalTime, Long runoffStepSize, Double minimumStepSize,
-                            Double maximumStepSize, Double absoluteRunoffTolerance, Double relativeRunoffTolerance,
-                            ProjectUnits units) {
-        this.initialTime = initialTime;
-        this.totalTime = totalTime;
+    public SWMM5RunoffSetup(Long runoffStepSize, Double minimumStepSize, Double maximumStepSize,
+                            Double absoluteRunoffTolerance, Double relativeRunoffTolerance, ProjectUnits units) {
         this.runoffStepSize = runoffStepSize;
         this.minimumStepSize = minimumStepSize;
         this.maximumStepSize = maximumStepSize;
         this.absoluteRunoffTolerance = absoluteRunoffTolerance;
         this.relativeRunoffTolerance = relativeRunoffTolerance;
         this.units = units;
-    }
-
-    @Override
-    public Instant getInitialTime() {
-        return initialTime;
-    }
-
-    @Override
-    public Instant getTotalTime() {
-        return totalTime;
     }
 
     @Override
