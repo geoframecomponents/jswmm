@@ -80,6 +80,7 @@ public class Conduit extends AbstractLink {
 
             RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
                     downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType);
+
             downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
         }
 

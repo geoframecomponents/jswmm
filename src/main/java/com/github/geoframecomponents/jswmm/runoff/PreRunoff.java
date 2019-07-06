@@ -32,6 +32,7 @@ public class PreRunoff {
 
     /**
      * Name of the area for the runoff process
+     * TODO use name of the area to select the raingage
      */
     @In
     public String areaName = null;
