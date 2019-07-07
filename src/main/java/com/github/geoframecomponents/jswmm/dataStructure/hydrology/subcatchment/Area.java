@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class Area extends AbstractSubcatchment {
 
-    RaingageSetup raingageSetup;
+    DataCollector raingageSetup;
     List<ReceiverRunoff> receivers;
 
     //Double imperviousPercentage; //TODO evaluate from subareas
@@ -40,7 +40,7 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
-    public Area(Double subcatchmentArea, RaingageSetup raingageSetup, Double characteristicWidth, Double areaSlope,
+    public Area(Double subcatchmentArea, DataCollector raingageSetup, Double characteristicWidth, Double areaSlope,
                 HashMap<Integer, List<Subarea>> subareas, ProjectUnits projectUnits) {
         this.subcatchmentArea = subcatchmentArea;
         this.raingageSetup = raingageSetup;

@@ -16,8 +16,8 @@
 package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import oms3.annotations.*;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
 import java.time.Instant;
 import java.util.*;
@@ -115,17 +115,16 @@ public class PreRunoff {
 
             //this.dataStructure = dataStructure;
 
-            //TODO raingage must be setup with the right name
-            RaingageSetup raingage = dataStructure.getRaingage("RG1");
+            DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
 
             this.runoffStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();
-            this.rainfallStepSize = raingage.getRainfallStepSize();
+            this.rainfallStepSize = raingage.getDatasetStepSize();
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
 
             if(aLPP == null && nLPP == null) {
-                String stationRaingage = raingage.getStationName();
-                this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
+                String stationRaingage = raingage.getDatasetName();
+                this.rainfallData = raingage.getDatasetData().get(stationRaingage);
                 adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize,
                         totalTime.getEpochSecond(), initialTime.getEpochSecond(), rainfallData) );
             }

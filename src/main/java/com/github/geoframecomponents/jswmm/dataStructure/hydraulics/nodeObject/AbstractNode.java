@@ -15,8 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 
 import java.time.Instant;
@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractNode {
 
-    ReadDataFromFile readDataFromFile;
+    DataCollector dataCollector;
     WriteDataToFile writeDataToFile;
     ExternalInflow dryWeatherInflow;
     ExternalInflow rainfallDependentInfiltrationInflow;

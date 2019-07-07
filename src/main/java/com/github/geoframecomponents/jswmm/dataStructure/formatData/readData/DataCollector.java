@@ -15,11 +15,19 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.formatData.readData;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public interface ReadDataFromFile {
-    LinkedHashMap<String, LinkedHashMap<Instant, Double>> getData();
+public interface DataCollector {
+
+    public void setDatasetName(String stationName);
+    public void setDatasetStepSize(Long rainfallStepSize);
+
+    public Long getDatasetStepSize();
+    public File getDataSourceName();
+    public String getDatasetName();
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getDatasetData();
 }
 
 
