@@ -15,10 +15,10 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ import java.util.List;
 
 public class Area extends AbstractSubcatchment {
 
-    RaingageSetup raingageSetup;
+    DataCollector raingageSetup;
     List<ReceiverRunoff> receivers;
 
     //Double imperviousPercentage; //TODO evaluate from subareas
@@ -40,7 +40,7 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
-    public Area(Double subcatchmentArea, RaingageSetup raingageSetup, Double characteristicWidth, Double areaSlope,
+    public Area(Double subcatchmentArea, DataCollector raingageSetup, Double characteristicWidth, Double areaSlope,
                 HashMap<Integer, List<Subarea>> subareas, ProjectUnits projectUnits) {
         this.subcatchmentArea = subcatchmentArea;
         this.raingageSetup = raingageSetup;
@@ -53,11 +53,11 @@ public class Area extends AbstractSubcatchment {
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {
-        //check if totalarea contain the rainfallTimeId
+        //check if totalArea contain the rainfallTimeId
         if (!totalAreaFlowRate.containsKey(id)) {
             totalAreaFlowRate.put(id, new LinkedHashMap<>());
         }
-        //sum the volume of each subarea as product of the flowrate and the subarea's area
+        //sum the volume of each subarea as product of the flowRate and the subarea's area
         for(Subarea subarea : subareas.get(id)) {
 
             LinkedHashMap<Instant, Double> subareaFlowRate = subarea.getFlowRate().get(id);
@@ -77,6 +77,10 @@ public class Area extends AbstractSubcatchment {
         return totalAreaFlowRate.get(id);
     }
 
+    /**
+     * Not used.
+     * @return
+     */
     public List<ReceiverRunoff> getReceivers() {
         return receivers;
     }
@@ -86,17 +90,16 @@ public class Area extends AbstractSubcatchment {
     }
 
     public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData,
-                                       RunoffSetup runoffSetup, Instant currentTime) {
+                                       AbstractRunoffSolver runoffSolver, Instant currentTime) {
 
         for (Integer identifier : adaptedRainfallData.keySet()) {
 
             double rainfall = adaptedRainfallData.get(identifier).get(currentTime);
 
-            adaptedRainfallData.get(identifier).get(currentTime);
             for (Subarea subarea : subareas.get(identifier)) {
                 subarea.setDepthFactor(areaSlope, characteristicWidth);
                 subarea.evaluateFlowRate(identifier, rainfall, 0.0,
-                        currentTime, runoffSetup, areaSlope, characteristicWidth); //TODO evaporation!!
+                        currentTime, runoffSolver, areaSlope, characteristicWidth); //TODO evaporation!!
             }
         }
     }

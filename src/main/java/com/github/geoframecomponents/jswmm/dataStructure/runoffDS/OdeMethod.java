@@ -13,20 +13,8 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import java.time.Instant;
-import java.util.LinkedHashMap;
-
-public interface RaingageSetup {
-
-    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getReadDataFromFile();
-
-    //public ProjectUnits getRaingageUnits();
-    public String getDataSourceName();
-
-    public String getStationName();
-
-    public Long getRainfallStepSize();
-
+public enum OdeMethod {
+    DP54
 }

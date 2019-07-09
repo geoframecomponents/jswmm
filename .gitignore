@@ -6,3 +6,5 @@ gradlew.bat
 
 out/
 build/
+patches/
+data/OMSprj

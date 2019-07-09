@@ -16,29 +16,26 @@
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
-import org.apache.commons.math3.ode.FirstOrderIntegrator;
+import org.apache.commons.math3.util.FastMath;
 
-import java.time.Instant;
+public class RunoffODE implements FirstOrderDifferentialEquations {
 
-public interface RunoffSetup {
+    private double precipitation;
+    private double alpha;
 
-    public Instant getInitialTime();
+    public RunoffODE() {}
 
-    public Instant getTotalTime();
+    public RunoffODE(double precipitation, double alpha) {
+        this.precipitation = precipitation;
+        this.alpha = alpha;
+    }
 
-    public Long getRunoffStepSize();
+    public int getDimension() {
+        return 1;
+    }
 
-    public FirstOrderIntegrator getFirstOrderIntegrator();
+    public void computeDerivatives(double t, double[] y, double[] yDot) {
+        yDot[0] = precipitation - alpha*FastMath.pow(y[0],5.0/3.0);
+    }
 
-    public FirstOrderDifferentialEquations getOde();
-
-    public void setOde(Double rainfall, Double depthFactor);
-
-    public Double getMinimumStepSize();
-
-    public Double getMaximumStepSize();
-
-    public Double getAbsoluteRunoffTolerance();
-
-    public Double getRelativeRunoffTolerance();
 }

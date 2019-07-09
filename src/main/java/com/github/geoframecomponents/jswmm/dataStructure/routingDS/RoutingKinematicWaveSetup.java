@@ -1,4 +1,4 @@
-/*
+package com.github.geoframecomponents.jswmm.dataStructure.routingDS;/*
  * This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
@@ -25,7 +25,28 @@
 //import java.util.LinkedList;
 //import java.util.List;
 
-//public class RoutingKinematicWaveSetup implements RoutingSetup {
+import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutedFlow;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
+
+import java.time.Instant;
+
+public class RoutingKinematicWaveSetup implements RoutingSetup {
+    @Override
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType) {
+        return null;
+    }
+
+    @Override
+    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
+        return null;
+    }
+
+    @Override
+    public Long getRoutingStepSize() {
+        return null;
+    }
 //
 //    private final Long routingStepSize;
 //
@@ -292,4 +313,4 @@
 //
 //        return tempTheta;
 //    }
-//}
+}

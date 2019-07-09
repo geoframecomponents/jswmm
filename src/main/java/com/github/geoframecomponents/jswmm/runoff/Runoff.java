@@ -18,14 +18,12 @@ package com.github.geoframecomponents.jswmm.runoff;
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Area;
 import oms3.annotations.*;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Subarea;
 import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -34,41 +32,44 @@ public class Runoff {
     @In
     public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData; // [mm/hour]
 
-    private LinkedHashMap<Instant, Double> evaporationData = null; // [mm/hour]
+    private LinkedHashMap<Instant, Double> adaptedEvaporationData = null; // [mm/hour]
 
     /**
-     * Time setup of the simulation
+     * Start date/time of the runoff simulation
      */
     private Instant initialTime;
 
+    /**
+     * End date/time of the runoff simulation
+     */
     private Instant totalTime;
 
     /**
-     * Simulation node fields
+     * Name of the area of current simulation
      */
     @In
     public String areaName = null;
 
+    /**
+     * Name of the node where area drains in the current simulation
+     */
     @In
     public String nodeName = null;
 
     /**
-     * Area characteristics
+     * Area properties
      */
     private Area area;
-
-    private List<Subarea> subareas;
-
-    private Double slopeArea;
-
-    private Double characteristicWidth;
+    //private List<Subarea> subareas;
+    //private Double slopeArea;
+    //private Double characteristicWidth;
 
     /**
      * Integration method setup
      */
     private Long runoffStepSize;
 
-    private RunoffSetup runoffSetup;
+    private AbstractRunoffSolver runoffSolver;
 
     /**
      * Data structure
@@ -76,6 +77,10 @@ public class Runoff {
     @In
     public SWMMobject dataStructure;
 
+    /**
+     * HM of the flowrate over time that drains into the node,
+     * ID of the rainfall curve is the key and the resulting runoff are the values
+     */
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> runoffFlowRate = new HashMap<>();
 
@@ -88,13 +93,13 @@ public class Runoff {
 
         //System.out.println("Processing area " + areaName);
         if (dataStructure == null) {
-            System.out.println("Data structure null");
+            System.out.println("Data structure is null");
         }
         if (dataStructure != null && areaName != null) {
 
-            //TODO evaporation!!
-            this.runoffSetup = dataStructure.getRunoffSetup();
-            this.runoffStepSize = runoffSetup.getRunoffStepSize();
+            //TODO add evaporation
+            this.runoffSolver = dataStructure.getRunoffSolver();
+            this.runoffStepSize = runoffSolver.getRunoffStepSize();
             TimeSetup timeSetup = dataStructure.getTimeSetup();
             this.area = dataStructure.getAreas(areaName);
 
@@ -102,7 +107,7 @@ public class Runoff {
             this.totalTime = timeSetup.getEndDate();
         }
         else {
-            throw new NullPointerException("Nothing implemented yet");
+            throw new NullPointerException("Runoff over" + areaName + "fails setup.");
         }
 
         /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : adaptedRainfallData.entrySet()) {
@@ -117,7 +122,7 @@ public class Runoff {
         while (currentTime.isBefore(totalTime)) {
 
             //check snownelt - snowaccumulation TODO build a new component
-            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSetup, currentTime);
+            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSolver, currentTime);
             currentTime = currentTime.plusSeconds(runoffStepSize);
         }
 

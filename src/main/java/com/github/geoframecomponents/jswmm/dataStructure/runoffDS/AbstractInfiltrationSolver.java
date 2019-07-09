@@ -13,13 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.formatData.readData;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import java.time.Instant;
-import java.util.LinkedHashMap;
-
-public interface ReadDataFromFile {
-    LinkedHashMap<String, LinkedHashMap<Instant, Double>> getData();
+abstract class AbstractInfiltrationSolver {
 }
-
-

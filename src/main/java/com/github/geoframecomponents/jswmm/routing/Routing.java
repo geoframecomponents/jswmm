@@ -93,7 +93,10 @@ public class Routing {
             throw new NullPointerException("Nothing implemented yet");
         }
 
-        //evaluate the maximum flow for each SWMM timestep
+        /**
+         * Evaluate the maximum discharge over all the response curves
+         * TODO move everything inside the evaluateMaxDischarge method
+         */
         Instant currentTime = initialTime;
         double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
@@ -103,11 +106,16 @@ public class Routing {
 
         System.out.println("Q_MAX " + maxDischarge);
 
-        //dimensioning method!!
+        /**
+         * Dimensioning main method
+         */
         conduit.evaluateDimension(maxDischarge, pipeCompany);
 
         //System.out.println("UPGRADING SUBTREES");
 
+        /**
+         * Alignment of water table of all links of the node
+         */
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
@@ -116,13 +124,13 @@ public class Routing {
             conduit.evaluateFlowRate(currentTime);
             currentTime = currentTime.plusSeconds(routingStepSize);
         }
-       conduit.evaluateFlowRate(currentTime);
+        conduit.evaluateFlowRate(currentTime);
 
         routingFlowRate = conduit.getDownstreamFlowRate();
         //routingFlowRate = conduit.getUpstreamFlowRate();
 
 
-        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
+//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
 //        for (Integer id : currentFlow.keySet()) {
 //            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
 //            //System.out.print("ID " + id);

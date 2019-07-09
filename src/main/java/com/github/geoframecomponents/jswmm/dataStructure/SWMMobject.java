@@ -15,17 +15,14 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure;
 
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.*;
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.ReadDataFromFile;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.GIUHsetup;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.*;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.CubicMetersperSecond;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
@@ -34,8 +31,8 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
 //import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSteadySetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.SWMM5RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.SWMM5runoffSolver;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -47,17 +44,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SWMMobject {
 
+    private ProjectUnits projectUnits;
     private TimeSetup timeSetup;
-    private RunoffSetup runoffSetup;
+    private AbstractRunoffSolver runoffSolver;
     private RoutingSetup routingSetup;
-    private HashMap<String, RaingageSetup> raingageSetup = new HashMap<>();
+    private DataCollector raingageData;
     private HashMap<String, Area> areas = new HashMap<>();
     private Map<String, Junction> junctions = new ConcurrentHashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
-    private LinkedHashMap<Instant, Double> downstreamFlowRate;
-    private ProjectUnits projectUnits;
 
+
+    /**
+     * Build the data structure starting from the inp file
+     * TODO create the INPparser and import it
+     * @param inpFileName
+     */
     public SWMMobject(String inpFileName) {
         setTime();
         setRunoff();
@@ -69,7 +71,7 @@ public class SWMMobject {
     }
 
     public SWMMobject() {
-        setUnits();
+        setUnits("CMS");
         setTime();
         setRunoff();
         setRouting();
@@ -114,15 +116,11 @@ public class SWMMobject {
         return timeSetup;
     }
 
-    public RunoffSetup getRunoffSetup() {
-        return runoffSetup;
+    public AbstractRunoffSolver getRunoffSolver() {
+        return runoffSolver;
     }
 
     public RoutingSetup getRoutingSetup() { return routingSetup; }
-
-    public RaingageSetup getRaingage(String raingageName) {
-        return raingageSetup.get(raingageName);
-    }
 
     public Area getAreas(String areaName) {
         return areas.get(areaName);
@@ -132,15 +130,20 @@ public class SWMMobject {
         return conduit.get(conduitName);
     }
 
-
-    private void setUnits() {
-        String units = "CMS";
-
-        if (units == "CMS") {
+    /**
+     * Set the units of the project (CMS or..)
+     * TODO introduce all units of SWMM
+     */
+    private void setUnits(String units) {
+        if (units.equals("CMS")) {
             this.projectUnits = new CubicMetersperSecond();
+        }
+        else {
+            throw new NullPointerException("System units not permitted");
         }
     }
 
+    
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
@@ -165,8 +168,8 @@ public class SWMMobject {
         Instant initialTime = timeSetup.getStartDate();
         Instant totalTime = timeSetup.getEndDate();
 
-        this.runoffSetup = new SWMM5RunoffSetup(initialTime, totalTime, runoffStepSize,
-                minimumStepSize, maximumStepSize, absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
+        this.runoffSolver = new SWMM5runoffSolver(runoffStepSize, minimumStepSize, maximumStepSize,
+                absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
     }
 
     private void setRouting() {
@@ -183,10 +186,10 @@ public class SWMMobject {
         //for (each raingage)
 
 
-        ReadDataFromFile readDataFromFile = null;
+        DataCollector dataCollector = null;
         /*TODO check if a and n or data
         try {
-            readDataFromFile = new ReadSWMM5RainfallFile("./data/rainfallNetwork.txt");
+            dataCollector = new SWMM5RainfallFile("./data/rainfallNetwork.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }*/
@@ -201,7 +204,8 @@ public class SWMMobject {
         //Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
         //Double snowpack = 0.0;
 
-        raingageSetup.put(raingageName, new GIUHsetup(rainfallStepSize));
+        raingageData.setDatasetName(raingageName);
+        raingageData.setDatasetStepSize(rainfallStepSize);
     }
 
     private void setSubcatchments() {
@@ -220,7 +224,7 @@ public class SWMMobject {
     }
 
     private void setAreas(String areaName, double subcatchmentArea) {
-        //ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //DataCollector subcatchmentReadDataFromFile = new SWMM5RainfallFile("ciao");
         //AcquiferSetup acquiferSetup = new Acquifer();
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
         //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
@@ -247,7 +251,7 @@ public class SWMMobject {
 
         String raingageName = "RG1";
         ReceiverRunoff receiverSubcatchment = null;
-        Integer numberOfCurves = 3;
+        int numberOfCurves = 3;
 
         HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
         for (int id = 1; id<=numberOfCurves; id++) {
@@ -256,8 +260,8 @@ public class SWMMobject {
                     roughnessCoefficientPervious, roughnessCoefficientImpervious,
                     perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious) );
         }
-        areas.put(areaName, new Area(subcatchmentArea, raingageSetup.get(areaName),
-                characteristicWidth, areaSlope, subareas, projectUnits));
+        areas.put(areaName, new Area(subcatchmentArea, raingageData, characteristicWidth, areaSlope,
+                subareas, projectUnits));
     }
 
     private void setNodes() {
@@ -288,7 +292,7 @@ public class SWMMobject {
 
     private void setJunctions(String nodeName, double nodeElevation) {
         //for (each junction)
-        //ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //DataCollector junctionReadDataFromFile = new SWMM5RainfallFile("ciao");
         //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
@@ -305,7 +309,7 @@ public class SWMMobject {
 
     private void setOutfalls() {
         //for (each outfall)
-        //ReadDataFromFile outfallReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
+        //DataCollector outfallReadDataFromFile = new SWMM5RainfallFile("ciao");
         //WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
@@ -506,6 +510,15 @@ public class SWMMobject {
         return testingValues;
     }
 
+    /**
+     * Method that adapts data to a defined step size and over the period between initialTime and finalTime
+     * @param toStepSize
+     * @param fromStepSize
+     * @param finalTime
+     * @param initialTime
+     * @param HMData
+     * @return the HM of data over data/time
+     */
     public LinkedHashMap<Instant, Double> adaptDataSeries(Long toStepSize, Long fromStepSize, Long finalTime,
                                                            Long initialTime, LinkedHashMap<Instant, Double> HMData) {
 
@@ -604,7 +617,7 @@ public class SWMMobject {
                     //System.out.println("subtreeList " + subtreeList );
                     //System.out.println("downstreamDepth - maxDepth " + (downstreamDepth - maxDepth) );
 
-                    upgradeStream(subtreeList, downstreamDepth - maxDepth);
+                    upgradeStream(subtreeList, maxDepth - downstreamDepth);
                 }
 
             }

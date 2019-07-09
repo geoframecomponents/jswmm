@@ -15,12 +15,39 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.formatData.readData;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-class CumulativeRainfall implements ReadDataFromFile {
+class CumulativeRainfall implements DataCollector {
+
     @Override
-    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getData() {
-        return null;
+    public void setDatasetName(String stationName) {
+        throw new NullPointerException("Nothing implemented yet.");
+    }
+
+    @Override
+    public void setDatasetStepSize(Long rainfallStepSize) {
+        throw new NullPointerException("Nothing implemented yet.");
+    }
+
+    @Override
+    public Long getDatasetStepSize() {
+        throw new NullPointerException("Nothing implemented yet.");
+    }
+
+    @Override
+    public File getDataSourceName() {
+        throw new NullPointerException("Nothing implemented yet.");
+    }
+
+    @Override
+    public String getDatasetName() {
+        throw new NullPointerException("Nothing implemented yet.");
+    }
+
+    @Override
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getDatasetData() {
+        throw new NullPointerException("Nothing implemented yet.");
     }
 }
