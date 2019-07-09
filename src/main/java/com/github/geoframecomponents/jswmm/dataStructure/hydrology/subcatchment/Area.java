@@ -27,7 +27,7 @@ import java.util.List;
 
 public class Area extends AbstractSubcatchment {
 
-    DataCollector raingageSetup;
+    DataCollector raingageDataset;
     List<ReceiverRunoff> receivers;
 
     //Double imperviousPercentage; //TODO evaluate from subareas
@@ -40,10 +40,10 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
-    public Area(Double subcatchmentArea, DataCollector raingageSetup, Double characteristicWidth, Double areaSlope,
+    public Area(Double subcatchmentArea, DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
                 HashMap<Integer, List<Subarea>> subareas, ProjectUnits projectUnits) {
         this.subcatchmentArea = subcatchmentArea;
-        this.raingageSetup = raingageSetup;
+        this.raingageDataset = raingageDataset;
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
         this.subareas = subareas;
