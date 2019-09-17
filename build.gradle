@@ -27,7 +27,7 @@ group = "com.github.geoframecomponents"
 archivesBaseName = "jswmm"
 
 def projectName = "jswmm"
-def projectDescription = "java version of jswmm"
+def projectDescription = "Java version of SWMM"
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 sourceCompatibility = '1.8'
