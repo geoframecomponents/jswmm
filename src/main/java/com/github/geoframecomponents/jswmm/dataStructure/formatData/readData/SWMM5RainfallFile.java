@@ -28,18 +28,53 @@ import java.util.LinkedHashMap;
  * STA01      2004     6     12     00      00      0.12
  */
 
-public class ReadSWMM5RainfallFile implements ReadDataFromFile {
+public class SWMM5RainfallFile implements DataCollector {
 
-    File fileName;
-    LinkedHashMap<String, LinkedHashMap<Instant, Double>> fileRead;
+    public File dataSourceName;
+    public String stationName;
+    public Long rainfallStepSize;
 
-    public ReadSWMM5RainfallFile(String fileName) throws IOException {
-        this.fileName = new File(fileName);
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> fileRead;
+
+    public SWMM5RainfallFile(String dataSourceName, String objectName, Long stepSizeData) throws IOException {
+        this.dataSourceName = new File(dataSourceName);
         try {
-            this.fileRead = readDataFile(this.fileName);
+            this.fileRead = readDataFile(this.dataSourceName);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.stationName = objectName;
+        this.rainfallStepSize = stepSizeData;
+    }
+
+    @Override
+    public Long getDatasetStepSize() {
+        return rainfallStepSize;
+    }
+
+    @Override
+    public File getDataSourceName() {
+        return dataSourceName;
+    }
+
+    @Override
+    public String getDatasetName() {
+        return stationName;
+    }
+
+    @Override
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getDatasetData() {
+        return fileRead;
+    }
+
+    @Override
+    public void setDatasetName(String stationName) {
+        this.stationName = stationName;
+    }
+
+    @Override
+    public void setDatasetStepSize(Long rainfallStepSize) {
+        this.rainfallStepSize = rainfallStepSize;
     }
 
     LinkedHashMap<String, LinkedHashMap<Instant, Double>> readDataFile(File file)
@@ -84,11 +119,5 @@ public class ReadSWMM5RainfallFile implements ReadDataFromFile {
 
         //2007-12-03T10:15:30.00Z
         return Instant.parse(year + "-" + month + "-" + day + "T" + hour + ":" + minutes + ":" + seconds + ".00Z");
-    }
-
-
-    @Override
-    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getData() {
-        return fileRead;
     }
 }

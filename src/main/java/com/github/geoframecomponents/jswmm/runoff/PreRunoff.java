@@ -16,46 +16,87 @@
 package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import oms3.annotations.*;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData.RaingageSetup;
 
 import java.time.Instant;
 import java.util.*;
 
+
+/**
+ * PreRunoff
+ */
+
+
 public class PreRunoff {
 
+    /**
+     * Name of the area for the runoff process
+     * TODO use name of the area to select the raingage
+     */
     @In
     public String areaName = null;
 
+    /**
+     * Step size used by runoff evaluator
+     */
     private Long runoffStepSize;
 
+    /**
+     * Step size of the rainfall data
+     */
     private Long rainfallStepSize;
 
+    /**
+     * Define the starting data/time simulation
+     */
     private Instant initialTime;
 
+    /**
+     * Define the ending date/time simulation
+     */
     private Instant totalTime;
 
+    /**
+     * Set of rainfall data over time
+     */
     private LinkedHashMap<Instant, Double> rainfallData;
 
+    /**
+     * Coefficient $$a$$ of the equation $$I=a*tp^(n-1)$$
+     */
     @In
     public Double aLPP = 60.4;
 
+    /**
+     * Coefficient $$n$$ of the equation $$I=a*tp^(n-1)$$
+     */
     @In
     public Double nLPP = 0.61;
 
+    /**
+     * Number of curves to design the network
+     * TODO must be global otherwise it crash? Please verify.
+     */
     @In
     public Integer numberOfCurves = 3;
 
-    @In
-    public Long stormwaterInterval = null;
+    //@In
+    //public Long stormwaterInterval = null;
 
     @InNode
     @Out
     public SWMMobject dataStructure;
 
+    /**
+     * Rainfall data adapted over the runoff step size
+     */
     @Out
     public HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData = new HashMap<>();
 
+    /**
+     * Infiltration data adapted over the runoff step size
+     */
     @Out
     public LinkedHashMap<Instant, Double> adaptedInfiltrationData;
 
@@ -74,17 +115,16 @@ public class PreRunoff {
 
             //this.dataStructure = dataStructure;
 
-            //TODO ocio al raingage
-            RaingageSetup raingage = dataStructure.getRaingage("RG1");
+            DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
 
-            this.runoffStepSize = dataStructure.getRunoffSetup().getRunoffStepSize();
-            this.rainfallStepSize = raingage.getRainfallStepSize();
+            this.runoffStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();
+            this.rainfallStepSize = raingage.getDatasetStepSize();
             this.initialTime = dataStructure.getTimeSetup().getStartDate();
             this.totalTime = dataStructure.getTimeSetup().getEndDate();
 
             if(aLPP == null && nLPP == null) {
-                String stationRaingage = raingage.getStationName();
-                this.rainfallData = raingage.getReadDataFromFile().get(stationRaingage);
+                String stationRaingage = raingage.getDatasetName();
+                this.rainfallData = raingage.getDatasetData().get(stationRaingage);
                 adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize,
                         totalTime.getEpochSecond(), initialTime.getEpochSecond(), rainfallData) );
             }
@@ -103,23 +143,28 @@ public class PreRunoff {
         //adaptInfiltrationData();
     }
 
+    /**
+     * Method to generate the curves to design from IDFs curves
+     * @return HM with the ID of the curve as key and the HM of the design storm as value
+     */
     private HashMap<Integer, LinkedHashMap<Instant, Double>> generateRainfall() {
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData = new HashMap<>();
 
-        Long rainfallTimeInterval;
+        /*Long rainfallTimeInterval;
         if (stormwaterInterval == null) {
             rainfallTimeInterval = ( totalTime.getEpochSecond() - initialTime.getEpochSecond() ) / numberOfCurves;
         }
         else {
             rainfallTimeInterval = stormwaterInterval / numberOfCurves;
         }
+         */
 
-        Instant finalRainfallTime = initialTime;
+        //Instant finalRainfallTime = initialTime;
         //System.out.println("Number of rainfall times: " + numberOfCurves);
         for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
 
-            finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
+            //finalRainfallTime = finalRainfallTime.plusSeconds( rainfallTimeInterval );
 
             LinkedHashMap<Instant, Double> rainfallValues = new LinkedHashMap<>();
 
@@ -162,6 +207,12 @@ public class PreRunoff {
         return rainfallData;
     }
 
+    /**
+     * Method to generate the constant intensity from IDFs curves
+     * @param finalRainfallTime
+     * @param currentTime
+     * @return IDF related value of rainfall time
+     */
     private Double constantRainfallData(Instant finalRainfallTime, Instant currentTime) {
 
         Double rainfallValue = 0.0;

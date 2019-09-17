@@ -13,8 +13,21 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.runoff;
+package com.github.geoframecomponents.jswmm.dataStructure.formatData.readData;
 
-public enum OdeMethod {
-    DP54
+import java.io.File;
+import java.time.Instant;
+import java.util.LinkedHashMap;
+
+public interface DataCollector {
+
+    public void setDatasetName(String stationName);
+    public void setDatasetStepSize(Long rainfallStepSize);
+
+    public Long getDatasetStepSize();
+    public File getDataSourceName();
+    public String getDatasetName();
+    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getDatasetData();
 }
+
+

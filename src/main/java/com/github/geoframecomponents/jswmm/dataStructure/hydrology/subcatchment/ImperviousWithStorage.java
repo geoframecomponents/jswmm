@@ -17,7 +17,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.UnitsSWMM;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -85,10 +85,10 @@ public class ImperviousWithStorage extends Subarea {
     }
 
     @Override
-    void evaluateNextStep(Integer id, Instant currentTime, RunoffSetup runoffSetup, Double rainfall,
+    void evaluateNextStep(Integer id, Instant currentTime, AbstractRunoffSolver runoffSolver, Double rainfall,
                           Double evaporation, Double subareaSlope, Double characteristicWidth) {
 
-        Long runoffStepSize = runoffSetup.getRunoffStepSize();
+        Long runoffStepSize = runoffSolver.getRunoffStepSize();
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
         double totalDepthCurrent = totalDepth.get(id).get(currentTime);
@@ -116,7 +116,7 @@ public class ImperviousWithStorage extends Subarea {
                 setRunoffDepth(id, nextTime, runoffDepth.get(id).get(currentTime) + 0.0);
                 setAreaFlowRate(id, nextTime, getFlowRate().get(id).get(currentTime) + 0.0);
             } else {
-                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSetup);
+                runoffODEsolver(id, currentTime, nextTime, getExcessRainfall(id), runoffSolver);
                 setAreaFlowRate(id, nextTime, evaluateNextFlowRate(subareaSlope, characteristicWidth,
                         runoffDepth.get(id).get(nextTime)));
             }

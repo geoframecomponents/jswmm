@@ -15,30 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
-import org.apache.commons.math3.ode.FirstOrderIntegrator;
-
-import java.time.Instant;
-
-public interface RunoffSetup {
-
-    public Instant getInitialTime();
-
-    public Instant getTotalTime();
-
-    public Long getRunoffStepSize();
-
-    public FirstOrderIntegrator getFirstOrderIntegrator();
-
-    public FirstOrderDifferentialEquations getOde();
-
-    public void setOde(Double rainfall, Double depthFactor);
-
-    public Double getMinimumStepSize();
-
-    public Double getMaximumStepSize();
-
-    public Double getAbsoluteRunoffTolerance();
-
-    public Double getRelativeRunoffTolerance();
+//TODO this is the FirstOrderIntegrator!!!!
+public interface RunoffSolverMethod {
+    double[] integrate(Double initialTime,double[] inputValues,
+                       Double finalTime, double[] outputValues);
 }

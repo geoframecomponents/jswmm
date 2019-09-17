@@ -13,7 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.runoff;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
 import oms3.annotations.*;
 
@@ -26,7 +26,9 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 @Status(Status.DRAFT)
 @License("GPL3.0")
 
-public class DormandPrince54 extends AbstractRunoffMethod {
+//TODO implement the FirstOrderIntegrator not a local version RunoffSolverMethod!!!!
+
+public class DormandPrince54 implements RunoffSolverMethod {
 
     @Description("Precipitation data")
     @In
@@ -71,7 +73,7 @@ public class DormandPrince54 extends AbstractRunoffMethod {
                 absoluteTolerance, relativeTolerance);
     }
 
-    double[] integrate(Double initialTime, double[] inputValues,
+    public double[] integrate(Double initialTime, double[] inputValues,
                        Double finalTime, double[] outputValues){
 
         dp54.integrate(ode, initialTime, inputValues, finalTime, outputValues);

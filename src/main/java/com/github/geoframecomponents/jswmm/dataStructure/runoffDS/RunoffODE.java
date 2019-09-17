@@ -13,20 +13,29 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.rainData;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import java.time.Instant;
-import java.util.LinkedHashMap;
+import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
+import org.apache.commons.math3.util.FastMath;
 
-public interface RaingageSetup {
+public class RunoffODE implements FirstOrderDifferentialEquations {
 
-    public LinkedHashMap<String, LinkedHashMap<Instant, Double>> getReadDataFromFile();
+    private double precipitation;
+    private double alpha;
 
-    //public ProjectUnits getRaingageUnits();
-    public String getDataSourceName();
+    public RunoffODE() {}
 
-    public String getStationName();
+    public RunoffODE(double precipitation, double alpha) {
+        this.precipitation = precipitation;
+        this.alpha = alpha;
+    }
 
-    public Long getRainfallStepSize();
+    public int getDimension() {
+        return 1;
+    }
+
+    public void computeDerivatives(double t, double[] y, double[] yDot) {
+        yDot[0] = precipitation - alpha*FastMath.pow(y[0],5.0/3.0);
+    }
 
 }

@@ -19,11 +19,11 @@ import com.github.geoframecomponents.jswmm.dataStructure.infiltration.Infiltrati
 import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 public class AbstractOptions {
 
-     RunoffSetup runoffSetup;
+     AbstractRunoffSolver runoffSolver;
     RoutingSetup routingSetup;
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
@@ -47,8 +47,8 @@ public class AbstractOptions {
     Integer numberOfThreads;
     String tempDirectory;
 
-    public RunoffSetup getRunoffSetup() {
-        return runoffSetup;
+    public AbstractRunoffSolver getRunoffSolver() {
+        return runoffSolver;
     }
 
     public RoutingSetup getRoutingSetup() {

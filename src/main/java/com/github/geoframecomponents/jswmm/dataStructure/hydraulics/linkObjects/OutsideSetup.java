@@ -28,8 +28,7 @@ public class OutsideSetup {
     private Coordinate2D nodeCoordinates;
     private double terrainElevation;
     private double baseElevation;
-    private double downOffset;
-    private double upOffset;
+    private double offset;
     private double height;
     private double excavation;
     private double fillCoeff;
@@ -40,7 +39,7 @@ public class OutsideSetup {
 
     public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff, Double x, Double y, double terrainElevation) {
         this.nodeName = nodeName;
-        this.downOffset = downOffset;
+        this.offset = downOffset;
         this.fillCoeff = fillCoeff;
         this.nodeCoordinates = new Coordinate2D(x, y);
         this.terrainElevation = terrainElevation;
@@ -116,14 +115,6 @@ public class OutsideSetup {
         return baseElevation;
     }
 
-    private void setHeight(double height) {
-        this.height = height;
-    }
-
-    private void setBaseElevation(double height) {
-        this.baseElevation = terrainElevation - height ;
-    }
-
     public double getWaterDepth() {
         return waterDepth;
     }
@@ -137,35 +128,44 @@ public class OutsideSetup {
     }
 
     public void upgradeOffset(double delta) {
-        this.upOffset += delta;
-        //System.out.println(upOffset);
-        this.height += delta;
-        //System.out.println(upOffset);
-        this.baseElevation += delta;
-        //System.out.println(upOffset);
-
-        //System.out.println(upOffset);
-        checkMaxExcavation(height);//TODO
+        if (this.offset < Math.abs(delta)) {
+            this.offset = 0.0;
+            this.height += delta;
+            this.baseElevation -= delta;
+            checkMaxExcavation(height);
+        }
+        else{
+            this.offset -= delta;
+        }
     }
 
     private void checkMaxExcavation(double escavation) {
         if (escavation > GEOconstants.MAXIMUMEXCAVATION) {
-            //TODO warning
+            //TODO warning and save the escavation difference
             System.out.println("over MAXIMUMEXCAVATION");
         }
     }
 
+    /**
+     * Set the heights for the node inlet/outlet changing the offset
+     * @param excavation
+     * @param offset
+     */
     public void setHeights(double excavation, double offset) {
-        this.downOffset = offset;
-        setHeight(excavation + downOffset);
-        setBaseElevation( height );
+        this.offset = offset;
+        this.height = excavation + this.offset;
+        this.baseElevation = terrainElevation - height;
         this.excavation = excavation;
         checkMaxExcavation(excavation);
     }
 
+    /**
+     * Set the heights for the node inlet/outlet without changing the offset
+     * @param excavation
+     */
     public void setHeights(double excavation) {
-        setHeight(excavation + downOffset);
-        setBaseElevation( height );
+        this.height = excavation + this.offset;
+        this.baseElevation = terrainElevation - height;
         this.excavation = excavation;
         checkMaxExcavation(excavation);
     }
