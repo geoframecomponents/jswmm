@@ -100,7 +100,7 @@ task jJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sJar, jJar
 }
-/*
+
 
 publishing {
     publications {
@@ -194,4 +194,3 @@ shadowJar {
 nexus {
     sign = false
 }
-*/

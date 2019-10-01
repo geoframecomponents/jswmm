@@ -20,12 +20,16 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.bmuschko.nexus'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'gitsemver'
+apply plugin: 'maven'
 
 group = "com.github.geoframecomponents"
 archivesBaseName = "jswmm"
 
 def projectName = "jswmm"
 def projectDescription = "java version of jswmm"
+
+// artifactId is taken by default, from folder name
+version = '0.1-SNAPSHOT'
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 sourceCompatibility = '1.8'
@@ -34,9 +38,9 @@ sourceCompatibility = '1.8'
 // $ gradle -PprojVersion=<version_number> build
 // default is na
 if (project.hasProperty('projVersion')) {
-    project.version = project.projVersion
+      project.version = project.projVersion
 } else {
-    project.version = 'na'
+      project.version = 'na'
 }
 
 // name with versioning of the jar file
@@ -44,7 +48,7 @@ jar {
     baseName = projectName
     manifest {
         attributes 'Implementation-Title' : projectName,
-                'Implementation-Version': version
+                   'Implementation-Version': version
     }
 }
 
@@ -67,6 +71,7 @@ dependencies {
     compile name: 'oms-all'
     compile name: 'gt-graph-14.0'
 
+    compile 'commons-lang:commons-lang:2.3'
     compile 'com.github.geoframecomponents:GEOframeUtils:0.3.27'
     compile 'org.apache.commons:commons-math3:3.6.1'
     compile 'junit:junit:4.12'
@@ -91,24 +96,24 @@ artifacts {
 
 def pomConfig = {
     scm {
-        connection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
-        developerConnection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
-        url 'https://github.com/geoframecomponents/jswmm'
+      connection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+      developerConnection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+      url 'https://github.com/geoframecomponents/jswmm'
     }
 
     licenses {
-        license {
-            name 'General Public License V.3 (GPL3)'
-            url 'http://www.gnu.org/licenses/gpl.html'
-        }
+      license {
+        name 'General Public License V.3 (GPL3)'
+        url 'http://www.gnu.org/licenses/gpl.html'
+      }
     }
 
     developers {
-        developer {
-            id 'ftt01'
-            name 'Daniele Dalla Torre'
-            email 'dallatorre.daniele@gmail.com'
-        }
+      developer {
+        id 'ftt01'
+        name 'Daniele Dalla Torre'
+        email 'dallatorre.daniele@gmail.com'
+      }
     }
 }
 
@@ -138,7 +143,7 @@ publishing {
 
 // bintray sync
 if (hasProperty('bintrayUsername') ||
-        System.getenv().containsKey('BINTRAY_USER')) {
+    System.getenv().containsKey('BINTRAY_USER')) {
     // Used by the bintray plugin
     bintray {
         user = System.getenv().getOrDefault('BINTRAY_USER', bintrayUsername)
@@ -160,14 +165,14 @@ if (hasProperty('bintrayUsername') ||
                 gpg {
                     sign = true
                     passphrase = System.getenv().getOrDefault('PASSPHRASE',
-                            bintrayPassphrase)
+                                                              bintrayPassphrase)
                 }
 
                 mavenCentralSync {
                     user = System.getenv().getOrDefault('SONATYPE_USER',
-                            nexusUsername)
+                                                        nexusUsername)
                     password = System.getenv().getOrDefault('SONATYPE_PASSWORD',
-                            nexusPassword)
+                                                            nexusPassword)
                 }
             }
         }
