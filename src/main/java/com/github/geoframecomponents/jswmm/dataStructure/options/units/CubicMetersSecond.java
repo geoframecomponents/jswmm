@@ -15,12 +15,15 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
-public class CubicMetersperSecond implements ProjectUnits {
-    //TODO implement a method to check if is equal for the full SWMMobj
+/**
+ * Implementation of SWMM unit measurements convention CMS
+ */
+
+public class CubicMetersSecond implements ProjectUnits {
 
     private UnitsSWMM projectUnits;
 
-    public CubicMetersperSecond() {
+    public CubicMetersSecond() {
         this.projectUnits = UnitsSWMM.CMS;
     }
 
@@ -31,6 +34,11 @@ public class CubicMetersperSecond implements ProjectUnits {
 
     @Override
     public UnitsSWMM getProjectUnits() {
-        return projectUnits;
+        if (projectUnits != null) {
+            return projectUnits;
+        }
+        else{
+            throw new NullPointerException("System units not defined");
+        }
     }
 }
