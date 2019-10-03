@@ -71,7 +71,7 @@ public class SWMMobject {
     }
 
     public SWMMobject() {
-        setUnits("CMS");
+        /*setUnits("CMS");
         setTime();
         setRunoff();
         setRouting();
@@ -82,7 +82,7 @@ public class SWMMobject {
         setInitialValues(1);
         setInitialValues(2);
         setInitialValues(3);
-        /*setInitialValues(4);
+        setInitialValues(4);
         setInitialValues(5);
         setInitialValues(6);
         setInitialValues(7);
