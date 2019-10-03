@@ -1,4 +1,4 @@
-/home/daniele/git/github/geoframecomponents/jswmm// include the BinTray repository
+// include the BinTray repository
 buildscript {
     repositories {
         jcenter()
