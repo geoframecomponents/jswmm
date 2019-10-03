@@ -1,7 +1,7 @@
 // Gradle file configuration
 // September 2019
 // Gradle version 5.6.2
-// author: ftt01
+// author: ftt01, sidereus
 
 buildscript {
     repositories {
@@ -155,6 +155,11 @@ def pomConfig = {
             id 'ftt01'
             name 'Daniele Dalla Torre'
             email 'dallatorre.daniele@gmail.com'
+        }
+        developer {
+            id 'sidereus'
+            name 'Francesco Serafin'
+            email 'francesco.serafin.3@gmail.com'
         }
     }
 }
