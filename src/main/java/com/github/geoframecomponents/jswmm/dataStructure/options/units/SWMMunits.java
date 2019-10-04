@@ -16,15 +16,26 @@
 package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
 /**
- * Implementation of SWMM unit measurements convention CMS
+ * Implementation of SWMM unit measurements conventions
  */
 
-public class CubicMetersSecond implements ProjectUnits {
+enum UnitsSWMM {
+    CMS,
+    CFS
+}
+
+public class SWMMunits implements ProjectUnits {
 
     private UnitsSWMM projectUnits;
 
-    public CubicMetersSecond() {
-        this.projectUnits = UnitsSWMM.CMS;
+    public SWMMunits(String units) {
+        if (units.equals("CMS")) {
+            this.projectUnits = UnitsSWMM.CMS;
+        } else if (units.equals("CFS")) {
+            this.projectUnits = UnitsSWMM.CFS;
+        } else {
+            throw new NullPointerException("System units not defined");
+        }
     }
 
     @Override
