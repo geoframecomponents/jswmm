@@ -75,8 +75,8 @@ public class FlowRateDispatcher {
 
         Long routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
         Long flowRateStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();//TODO must be generalized
-        Instant initialTime = dataStructure.getTimeSetup().getStartDate();
-        Instant totalTime = dataStructure.getTimeSetup().getEndDate();
+        Instant initialTime = dataStructure.getProjectTime().getStartDate();
+        Instant totalTime = dataStructure.getProjectTime().getEndDate();
 
         if (flowRate1 != null) {
             System.out.println("Processing flowrate1");

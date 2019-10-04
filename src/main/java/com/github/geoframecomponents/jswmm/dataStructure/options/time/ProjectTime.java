@@ -15,21 +15,9 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.time;
 
-import java.time.Instant;
+public interface ProjectTime {
 
-public interface TimeSetup {
+    public void setProjectTime();
+    public void getProjectTime();
 
-    public Instant getStartDate();
-
-    public Instant getEndDate();
-
-    public Instant getReportStartDate();
-
-    public Instant getReportEndDate();
-
-    public Instant getSweepStart();
-
-    public Instant getSweepEnd();
-
-    public Integer getDryDays();
 }

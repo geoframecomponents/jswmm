@@ -82,8 +82,8 @@ public class Routing {
 
         System.out.println("Routing on " + linkName);
         if (dataStructure != null && linkName != null) {
-            this.initialTime = dataStructure.getTimeSetup().getStartDate();
-            this.totalTime = dataStructure.getTimeSetup().getEndDate();
+            this.initialTime = dataStructure.getProjectTime().getStartDate();
+            this.totalTime = dataStructure.getProjectTime().getEndDate();
 
             this.routingSetup = dataStructure.getRoutingSetup();
             this.routingStepSize = routingSetup.getRoutingStepSize();

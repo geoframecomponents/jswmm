@@ -17,7 +17,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.options.time;
 
 import java.time.Instant;
 
-public class GlobalTimeSetup implements TimeSetup {
+public class SWMMtimeConvention implements ProjectTime {
 
     private Instant startDate;
     private Instant endDate;
@@ -27,8 +27,8 @@ public class GlobalTimeSetup implements TimeSetup {
     private Instant sweepEnd;
     private Integer dryDays;
 
-    public GlobalTimeSetup(Instant startDate, Instant endDate, Instant reportStartDate, Instant reportEndDate,
-                           Instant sweepStart, Instant sweepEnd, Integer dryDays) {
+    public SWMMtimeConvention(Instant startDate, Instant endDate, Instant reportStartDate, Instant reportEndDate,
+                              Instant sweepStart, Instant sweepEnd, Integer dryDays) {
 
         this.startDate = startDate;
         this.endDate = endDate;
@@ -63,5 +63,13 @@ public class GlobalTimeSetup implements TimeSetup {
 
     public Integer getDryDays() {
         return dryDays;
+    }
+
+    @Override
+    public void setProjectTime() {
+    }
+
+    @Override
+    public void getProjectTime() {
     }
 }

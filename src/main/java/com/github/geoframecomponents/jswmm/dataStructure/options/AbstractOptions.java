@@ -16,7 +16,7 @@
 package com.github.geoframecomponents.jswmm.dataStructure.options;
 
 import com.github.geoframecomponents.jswmm.dataStructure.infiltration.InfiltrationSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.options.time.ProjectTime;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
@@ -28,7 +28,7 @@ public class AbstractOptions {
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
     ProjectUnits projectUnits;
-    TimeSetup timeSetup;
+    ProjectTime projectTime;
     ReportSetup reportSetup;
 
     public enum OffsetConvention {
@@ -67,8 +67,8 @@ public class AbstractOptions {
         return projectUnits;
     }
 
-    public TimeSetup getTimeSetup() {
-        return timeSetup;
+    public ProjectTime getProjectTime() {
+        return projectTime;
     }
 
     public ReportSetup getReportSetup() {
