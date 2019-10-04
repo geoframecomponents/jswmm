@@ -24,10 +24,10 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.CubicMetersSecond;
+import com.github.geoframecomponents.jswmm.dataStructure.options.time.ProjectTime;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.time.GlobalTimeSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.options.time.SWMMtimeConvention;
 //import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSteadySetup;
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SWMMobject {
 
     private ProjectUnits projectUnits;
-    private TimeSetup timeSetup;
+    private ProjectTime projectTime;
     private AbstractRunoffSolver runoffSolver;
     private RoutingSetup routingSetup;
     private DataCollector raingageData;
@@ -53,7 +53,6 @@ public class SWMMobject {
     private Map<String, Junction> junctions = new ConcurrentHashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
     private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
-
 
     /**
      * Build the data structure starting from the inp file
@@ -112,8 +111,8 @@ public class SWMMobject {
 
     }
 
-    public TimeSetup getTimeSetup() {
-        return timeSetup;
+    public ProjectTime getProjectTime() {
+        return projectTime;
     }
 
     public AbstractRunoffSolver getRunoffSolver() {
@@ -136,7 +135,7 @@ public class SWMMobject {
      */
     private void setUnits(String units) {
         if (units.equals("CMS")) {
-            this.projectUnits = new CubicMetersSecond();
+            this.projectUnits = new SWMMunits();
         }
         else {
             throw new NullPointerException("System units not permitted");
@@ -153,7 +152,7 @@ public class SWMMobject {
         Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
         Integer dryDays = 0;
 
-        this.timeSetup = new GlobalTimeSetup(startDate, endDate, reportStartDate, reportEndDate,
+        this.projectTime = new SWMMtimeConvention(startDate, endDate, reportStartDate, reportEndDate,
                 sweepStart, sweepEnd, dryDays);
     }
 
@@ -165,8 +164,8 @@ public class SWMMobject {
         Double absoluteRunoffTolerance = 1.0e-5;
         Double relativeRunoffTolerance = 1.0e-5;
 
-        Instant initialTime = timeSetup.getStartDate();
-        Instant totalTime = timeSetup.getEndDate();
+        Instant initialTime = projectTime.getStartDate();
+        Instant totalTime = projectTime.getEndDate();
 
         this.runoffSolver = new SWMM5runoffSolver(runoffStepSize, minimumStepSize, maximumStepSize,
                 absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
@@ -194,7 +193,7 @@ public class SWMMobject {
             e.printStackTrace();
         }*/
 
-        //ProjectUnits raingageUnits = new CubicMetersSecond();
+        //ProjectUnits raingageUnits = new SWMMunits();
         String raingageName = "RG1";
         String dataSourceName = "rainfallNetwork.txt";
         String stationName = "RG1";
@@ -227,7 +226,7 @@ public class SWMMobject {
         //DataCollector subcatchmentReadDataFromFile = new SWMM5RainfallFile("ciao");
         //AcquiferSetup acquiferSetup = new Acquifer();
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        //ProjectUnits subcatchmentUnits = new CubicMetersSecond();
+        //ProjectUnits subcatchmentUnits = new SWMMunits();
         //String subcatchmentName = "Sub1";
 
         Double imperviousPercentage = 0.75;
@@ -296,7 +295,7 @@ public class SWMMobject {
         //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits nodeUnits = new CubicMetersSecond();
+        ProjectUnits nodeUnits = new SWMMunits();
 
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
@@ -313,7 +312,7 @@ public class SWMMobject {
         //WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
-        //ProjectUnits outfallNodeUnits = new CubicMetersSecond();
+        //ProjectUnits outfallNodeUnits = new SWMMunits();
 //        String nodeName = "Out1";
 //        Double nodeElevation = 0.0;
 //        Double fixedStage = 0.0;
@@ -362,7 +361,7 @@ public class SWMMobject {
         Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
-        ProjectUnits linkUnits = new CubicMetersSecond();
+        ProjectUnits linkUnits = new SWMMunits();
 
         OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
                 fillCoefficient, upX, upY, upZ);
@@ -464,15 +463,15 @@ public class SWMMobject {
 
     private void setSubareasInitialValue(Integer id, String areaName) {
         for( Subarea subarea : areas.get(areaName).getSubareas().get(id) ) {
-            subarea.setAreaFlowRate(id, timeSetup.getStartDate(), 0.0);
-            subarea.setRunoffDepth(id, timeSetup.getStartDate(), 0.0);
-            subarea.setTotalDepth(id, timeSetup.getStartDate(), 0.0);
+            subarea.setAreaFlowRate(id, projectTime.getStartDate(), 0.0);
+            subarea.setRunoffDepth(id, projectTime.getStartDate(), 0.0);
+            subarea.setTotalDepth(id, projectTime.getStartDate(), 0.0);
         }
     }
 
     private void setInitialTime(Integer id, String linkName) {
-        Instant time = timeSetup.getStartDate();
-        while (time.isBefore(timeSetup.getEndDate())) {
+        Instant time = projectTime.getStartDate();
+        while (time.isBefore(projectTime.getEndDate())) {
             conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
             conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());
