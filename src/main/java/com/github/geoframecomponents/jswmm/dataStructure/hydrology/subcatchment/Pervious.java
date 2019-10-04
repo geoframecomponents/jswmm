@@ -36,6 +36,7 @@ public class Pervious extends Subarea {
     public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient,
                     Double percentageRouted, List<Subarea> connections, ProjectUnits projectUnits) {
 
+        super(projectUnits);
         this.subareaArea = subareaArea;
         this.depressionStorage = depressionStoragePervious;
         this.roughnessCoefficient = roughnessCoefficient;
@@ -46,8 +47,6 @@ public class Pervious extends Subarea {
         this.runoffDepth = new HashMap<>();
         this.flowRate = new HashMap<>();
         this.excessRainfall = new HashMap<>();
-
-        this.projectUnits = projectUnits;
     }
 
     @Override
@@ -64,7 +63,7 @@ public class Pervious extends Subarea {
             depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * subareaArea);
         }
 
-        if ( projectUnits.getProjectUnits() == UnitsSWMM.CMS ) {
+        if ( super.getUnits().equals(UnitsSWMM.CMS) ) {
             this.depthFactor = 1E-6 * depthFactor; // [ mm^(-2/3)/s ]
         }
     }
@@ -121,7 +120,7 @@ public class Pervious extends Subarea {
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
         double unitsFactor = 1.0;
-        if (projectUnits.getProjectUnits() == UnitsSWMM.CMS) {
+        if (super.getUnits().equals(UnitsSWMM.CMS) ) {
             unitsFactor = 1E-6; //[mm/s]
         }
         return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *

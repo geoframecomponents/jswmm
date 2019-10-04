@@ -15,13 +15,14 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
+import com.github.geoframecomponents.jswmm.dataStructure.Coordinates;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutedFlow;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
-import org.geotools.graph.util.geom.Coordinate2D;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -36,7 +37,8 @@ public class Conduit extends AbstractLink {
     Double linkSlope;
 
     public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
-                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness) {
+                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, ProjectUnits units) {
+        super(units);
         this.routingSetup = routingSetup;
         this.crossSectionType = crossSectionType;
         this.upstreamOutside = upstreamOutside;
@@ -234,7 +236,7 @@ public class Conduit extends AbstractLink {
     }
 
     private Double computeNaturalSlope() {
-        Coordinate2D upstream = getUpstreamOutside().getNodeCoordinates();
+        Coordinates upstream = getUpstreamOutside().getNodeCoordinates();
         if ( upstreamOutside.getTerrainElevation().equals(downstreamOutside.getTerrainElevation()) ) {
             return 0.001;//TODO is there a better method?
         }

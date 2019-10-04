@@ -15,11 +15,18 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Storage extends AbstractNode {
+
+    public Storage(ProjectUnits units) {
+        super(units);
+    }
+
     @Override
     public void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
         throw new NullPointerException("Nothing implemented yet");

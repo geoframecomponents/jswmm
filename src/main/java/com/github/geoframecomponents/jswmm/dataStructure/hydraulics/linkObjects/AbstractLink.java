@@ -15,6 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
+import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
@@ -23,16 +24,16 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractLink {
-
-    ProjectUnits linkUnits;
-
-    String linkName;
+public abstract class AbstractLink extends Unitable {
 
     RoutingSetup routingSetup;
 
     OutsideSetup upstreamOutside;
     OutsideSetup downstreamOutside;
+
+    public AbstractLink(ProjectUnits units) {
+        super(units);
+    }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getDownstreamFlowRate() {
         return downstreamOutside.streamFlowRate;
