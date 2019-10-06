@@ -15,15 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
-/**
- * Implementation of SWMM unit measurements conventions
- */
-
-enum UnitsSWMM {
-    CMS,
-    CFS
-}
-
 public class SWMMunits implements ProjectUnits {
 
     private UnitsSWMM projectUnits;

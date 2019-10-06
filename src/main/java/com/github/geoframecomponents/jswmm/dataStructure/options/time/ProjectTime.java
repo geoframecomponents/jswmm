@@ -15,9 +15,11 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.time;
 
+import java.time.Instant;
+
 public interface ProjectTime {
 
     public void setProjectTime();
-    public void getProjectTime();
+    public Instant getProjectTime(String type);
 
 }

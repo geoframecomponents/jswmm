@@ -70,6 +70,14 @@ public class SWMMtimeConvention implements ProjectTime {
     }
 
     @Override
-    public void getProjectTime() {
+    public Instant getProjectTime(String type) {
+        switch (type) {
+            case "initial":
+                return this.startDate;
+            case "final":
+                return this.endDate;
+            default:
+                throw new IllegalArgumentException(type);
+        }
     }
 }

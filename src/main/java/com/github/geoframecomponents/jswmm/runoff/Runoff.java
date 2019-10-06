@@ -103,8 +103,8 @@ public class Runoff {
             ProjectTime projectTime = dataStructure.getProjectTime();
             this.area = dataStructure.getAreas(areaName);
 
-            this.initialTime = projectTime.getStartDate();
-            this.totalTime = projectTime.getEndDate();
+            this.initialTime = projectTime.getProjectTime("initial");
+            this.totalTime = projectTime.getProjectTime("final");
         }
         else {
             throw new NullPointerException("Runoff over" + areaName + "fails setup.");

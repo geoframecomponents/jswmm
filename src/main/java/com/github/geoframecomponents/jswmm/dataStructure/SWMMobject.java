@@ -46,6 +46,7 @@ public class SWMMobject {
 
     private ProjectUnits projectUnits;
     private ProjectTime projectTime;
+
     private AbstractRunoffSolver runoffSolver;
     private RoutingSetup routingSetup;
     private DataCollector raingageData;
@@ -135,7 +136,7 @@ public class SWMMobject {
      */
     private void setUnits(String units) {
         if (units.equals("CMS")) {
-            this.projectUnits = new SWMMunits();
+            this.projectUnits = new SWMMunits("CMS");
         }
         else {
             throw new NullPointerException("System units not permitted");
@@ -164,8 +165,8 @@ public class SWMMobject {
         Double absoluteRunoffTolerance = 1.0e-5;
         Double relativeRunoffTolerance = 1.0e-5;
 
-        Instant initialTime = projectTime.getStartDate();
-        Instant totalTime = projectTime.getEndDate();
+        Instant initialTime = projectTime.getProjectTime("initial");
+        Instant totalTime = projectTime.getProjectTime("final");
 
         this.runoffSolver = new SWMM5runoffSolver(runoffStepSize, minimumStepSize, maximumStepSize,
                 absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
@@ -295,7 +296,7 @@ public class SWMMobject {
         //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        ProjectUnits nodeUnits = new SWMMunits();
+        ProjectUnits nodeUnits = new SWMMunits("CMS");
 
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
@@ -361,7 +362,7 @@ public class SWMMobject {
         Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
-        ProjectUnits linkUnits = new SWMMunits();
+        ProjectUnits linkUnits = new SWMMunits("CMS");
 
         OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
                 fillCoefficient, upX, upY, upZ);
@@ -463,15 +464,15 @@ public class SWMMobject {
 
     private void setSubareasInitialValue(Integer id, String areaName) {
         for( Subarea subarea : areas.get(areaName).getSubareas().get(id) ) {
-            subarea.setAreaFlowRate(id, projectTime.getStartDate(), 0.0);
-            subarea.setRunoffDepth(id, projectTime.getStartDate(), 0.0);
-            subarea.setTotalDepth(id, projectTime.getStartDate(), 0.0);
+            subarea.setAreaFlowRate(id, projectTime.getProjectTime("initial"), 0.0);
+            subarea.setRunoffDepth(id, projectTime.getProjectTime("initial"), 0.0);
+            subarea.setTotalDepth(id, projectTime.getProjectTime("initial"), 0.0);
         }
     }
 
     private void setInitialTime(Integer id, String linkName) {
-        Instant time = projectTime.getStartDate();
-        while (time.isBefore(projectTime.getEndDate())) {
+        Instant time = projectTime.getProjectTime("initial");
+        while (time.isBefore(projectTime.getProjectTime("final"))) {
             conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
             conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
             time = time.plusSeconds(routingSetup.getRoutingStepSize());

@@ -119,8 +119,8 @@ public class PreRunoff {
 
             this.runoffStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();
             this.rainfallStepSize = raingage.getDatasetStepSize();
-            this.initialTime = dataStructure.getProjectTime().getStartDate();
-            this.totalTime = dataStructure.getProjectTime().getEndDate();
+            this.initialTime = dataStructure.getProjectTime().getProjectTime("initial");
+            this.totalTime = dataStructure.getProjectTime().getProjectTime("final");
 
             if(aLPP == null && nLPP == null) {
                 String stationRaingage = raingage.getDatasetName();
