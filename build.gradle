@@ -13,6 +13,10 @@ buildscript {
 
 }
 
+plugins {
+    id 'com.palantir.git-version' version '0.11.0'
+}
+
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'eclipse'
@@ -40,7 +44,7 @@ sourceCompatibility = '1.8'
 if (project.hasProperty('projVersion')) {
       project.version = project.projVersion
 } else {
-      project.version = 'na'
+      project.version = gitVersion()
 }
 
 // name with versioning of the jar file
