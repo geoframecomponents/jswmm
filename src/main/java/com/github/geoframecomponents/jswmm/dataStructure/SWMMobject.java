@@ -24,7 +24,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.CubicMetersperSecond;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.CubicMetersSecond;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.time.GlobalTimeSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.options.time.TimeSetup;
@@ -71,7 +71,7 @@ public class SWMMobject {
     }
 
     public SWMMobject() {
-        setUnits("CMS");
+        /*setUnits("CMS");
         setTime();
         setRunoff();
         setRouting();
@@ -82,7 +82,7 @@ public class SWMMobject {
         setInitialValues(1);
         setInitialValues(2);
         setInitialValues(3);
-        /*setInitialValues(4);
+        setInitialValues(4);
         setInitialValues(5);
         setInitialValues(6);
         setInitialValues(7);
@@ -136,7 +136,7 @@ public class SWMMobject {
      */
     private void setUnits(String units) {
         if (units.equals("CMS")) {
-            this.projectUnits = new CubicMetersperSecond();
+            this.projectUnits = new CubicMetersSecond();
         }
         else {
             throw new NullPointerException("System units not permitted");
@@ -194,7 +194,7 @@ public class SWMMobject {
             e.printStackTrace();
         }*/
 
-        //ProjectUnits raingageUnits = new CubicMetersperSecond();
+        //ProjectUnits raingageUnits = new CubicMetersSecond();
         String raingageName = "RG1";
         String dataSourceName = "rainfallNetwork.txt";
         String stationName = "RG1";
@@ -227,7 +227,7 @@ public class SWMMobject {
         //DataCollector subcatchmentReadDataFromFile = new SWMM5RainfallFile("ciao");
         //AcquiferSetup acquiferSetup = new Acquifer();
         //SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
+        //ProjectUnits subcatchmentUnits = new CubicMetersSecond();
         //String subcatchmentName = "Sub1";
 
         Double imperviousPercentage = 0.75;
@@ -296,7 +296,7 @@ public class SWMMobject {
         //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        //ProjectUnits nodeUnits = new CubicMetersperSecond();
+        ProjectUnits nodeUnits = new CubicMetersSecond();
 
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
@@ -304,7 +304,7 @@ public class SWMMobject {
         Double nodePondingArea = 200.0;
 
         junctions.put(nodeName, new Junction(nodeElevation, maximumDepthNode, initialDepthNode,
-                maximumDepthSurcharge, nodePondingArea));
+                maximumDepthSurcharge, nodePondingArea, nodeUnits));
     }
 
     private void setOutfalls() {
@@ -313,7 +313,7 @@ public class SWMMobject {
         //WriteDataToFile outfallWriteDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow outfallDryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow outfallRDII = new RainfallDependentInfiltrationInflow();
-        //ProjectUnits outfallNodeUnits = new CubicMetersperSecond();
+        //ProjectUnits outfallNodeUnits = new CubicMetersSecond();
 //        String nodeName = "Out1";
 //        Double nodeElevation = 0.0;
 //        Double fixedStage = 0.0;
@@ -362,7 +362,7 @@ public class SWMMobject {
         Double diameter = 1.0;
 
         CrossSectionType crossSectionType = new Circular(diameter);
-        //ProjectUnits linkUnits = new CubicMetersperSecond();
+        ProjectUnits linkUnits = new CubicMetersSecond();
 
         OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
                 fillCoefficient, upX, upY, upZ);
@@ -370,7 +370,7 @@ public class SWMMobject {
                 fillCoefficient, downX, downY, downZ);
 
         conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside,
-                linkLength, linkRoughness));
+                linkLength, linkRoughness, linkUnits));
     }
 
     private List<Subarea> divideAreas(Double imperviousPercentage, Double subcatchmentArea,

@@ -1,0 +1,215 @@
+// Gradle file configuration
+// September 2019
+// Gradle version 5.6.2
+// author: ftt01, sidereus
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url "http://dl.bintray.com/palantir/releases" }
+    }
+
+    dependencies {
+        classpath 'com.palantir:gradle-gitsemver:0.7.0'
+    }
+
+}
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'maven'
+    id 'maven-publish'
+    id "com.bmuschko.nexus" version "2.3.1"
+    id "com.jfrog.bintray" version "1.8.4"
+    id "com.github.johnrengelman.shadow" version "4.0.1"
+}
+
+apply plugin: 'gitsemver'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = '1.8'
+
+def projectName = "jswmm"
+def projectDescription = "Java version of SWMM"
+
+// to get project version from command line, just type
+// $ gradle -PprojVersion=<version_number> build
+// default is na
+if (project.hasProperty('projVersion')) {
+    project.version = project.projVersion
+} else {
+    project.version = 'na'
+}
+
+archivesBaseName = 'jswmm'
+group = 'com.github.geoframecomponents'
+
+// artifactId is taken by default, from folder name
+version = '0.1-SNAPSHOT'
+
+sourceSets {
+    main {
+        java {
+        }
+    }
+}
+
+// name with versioning of the jar file
+jar {
+    manifest {
+        attributes 'Implementation-Title' : project.name,
+                    'Implementation-Version': project.version
+    }
+}
+
+repositories {
+    maven {
+        // geotools
+        url 'http://download.osgeo.org/webdav/geotools/'
+    }
+
+    maven {
+        url 'https://dl.bintray.com/geoframe/geoframecomponents/'
+    }
+
+    jcenter()
+    mavenCentral()
+
+    flatDir {
+        dirs 'lib'
+    }
+}
+
+configurations {
+    externalLibs
+}
+
+dependencies {
+    implementation name: 'oms-all'
+
+    implementation group: 'org.geotools', name: 'gt-graph', version: '21.1'
+    implementation 'com.github.geoframecomponents:GEOframeUtils:0.4'
+    implementation 'org.apache.commons:commons-math3:3.6.1'
+    implementation 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+
+    implementation 'junit:junit:4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+
+    externalLibs files('lib/oms-all.jar')
+}
+
+// custom tasks for creating source/javadoc jars
+task sJar(type: Jar, dependsOn: classes) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task jJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sJar, jJar
+}
+
+
+publishing {
+    publications {
+        myPublication(MavenPublication) {
+            from components.java
+            artifact sJar
+            artifact jJar
+            groupId project.group
+            artifactId project.name
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', projectDescription)
+                root.appendNode('name', projectName)
+                root.appendNode('url', 'https://github.com/geoframecomponents/jswmm')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+def pomConfig = {
+    scm {
+        connection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+        developerConnection 'scm:git:https://github.com/geoframecomponents/jswmm.git'
+        url 'https://github.com/geoframecomponents/jswmm'
+    }
+
+    licenses {
+        license {
+            name 'General Public License V.3 (GPL3)'
+            url 'http://www.gnu.org/licenses/gpl.html'
+        }
+    }
+
+    developers {
+        developer {
+            id 'ftt01'
+            name 'Daniele Dalla Torre'
+            email 'dallatorre.daniele@gmail.com'
+        }
+        developer {
+            id 'sidereus'
+            name 'Francesco Serafin'
+            email 'francesco.serafin.3@gmail.com'
+        }
+    }
+}
+
+// bintray sync
+if (hasProperty('bintrayUsername') ||
+        System.getenv().containsKey('BINTRAY_USER')) {
+    // Used by the bintray plugin
+    bintray {
+        user = System.getenv().getOrDefault('BINTRAY_USER', bintrayUsername)
+        key = System.getenv().getOrDefault('BINTRAY_KEY', bintrayApiKey)
+        publish = true
+        publications = ['MyPublication']
+
+        pkg {
+            repo = 'geoframecomponents'
+            name = projectName
+            licenses = ['GPL-3.0']
+            vcsUrl = 'https://github.com/geoframecomponents/jswmm.git'
+
+            version {
+                name = project.version
+                desc = projectDescription
+                released = new Date()
+
+                gpg {
+                    sign = true
+                    passphrase = System.getenv().getOrDefault('PASSPHRASE',
+                            bintrayPassphrase)
+                }
+
+                mavenCentralSync {
+                    user = System.getenv().getOrDefault('SONATYPE_USER',
+                            nexusUsername)
+                    password = System.getenv().getOrDefault('SONATYPE_PASSWORD',
+                            nexusPassword)
+                }
+            }
+        }
+
+        configurations = ['archives']
+    }
+
+}
+
+shadowJar {
+    mergeServiceFiles()
+    archiveName = project.name + "-" + project.version + "-all.jar"
+}
+
+nexus {
+    sign = false
+}

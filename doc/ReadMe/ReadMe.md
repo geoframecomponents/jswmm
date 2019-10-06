@@ -12,3 +12,5 @@
 To build the ReadMe file from markdown to rst
 
     pandoc doc/ReadMe/ReadMe.md -o ReadMe.rst
+    
+To build the project as Gradle Project with version 5+ of Gradle, use the build_v5.gradle file.

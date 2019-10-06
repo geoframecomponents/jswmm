@@ -15,8 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.UnitsSWMM;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.UnitsSWMM;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
@@ -36,6 +36,7 @@ public class ImperviousWithoutStorage extends Subarea {
     public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
                                     Double roughnessCoefficient, Double percentageRouted,
                                     List<Subarea> connections, ProjectUnits projectUnits) {
+        super(projectUnits);
         this.subareaArea = imperviousWOStorageArea;
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
         this.roughnessCoefficient = roughnessCoefficient;
@@ -47,8 +48,6 @@ public class ImperviousWithoutStorage extends Subarea {
         this.flowRate = new HashMap<>();
         this.excessRainfall = new HashMap<>();
         this.depressionStorage = 0.0;
-
-        this.projectUnits = projectUnits;
     }
 
     @Override
@@ -67,7 +66,7 @@ public class ImperviousWithoutStorage extends Subarea {
             depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * totalImperviousArea);
         }
 
-        if ( projectUnits.getProjectUnits() == UnitsSWMM.CMS ) {
+        if ( super.getUnits().equals(UnitsSWMM.CMS) ){
             double CMSdepthFactor = 1E-6;
             this.depthFactor = CMSdepthFactor * depthFactor; // [ mm^(-2/3)/s ]
         }
@@ -110,7 +109,7 @@ public class ImperviousWithoutStorage extends Subarea {
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
         double unitsFactor = 1.0;
-        if (projectUnits.getProjectUnits() == UnitsSWMM.CMS) {
+        if (super.getUnits().equals(UnitsSWMM.CMS) ){
             unitsFactor = 1E-6; //[mm/s]
         }
         return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *

@@ -15,9 +15,17 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff;
 
+import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractReceiver {
+public abstract class AbstractReceiver extends Unitable {
+
+    public AbstractReceiver(ProjectUnits units) {
+        super(units);
+    }
+
     public abstract LinkedHashMap<Instant, Double> getRunoffInflow();
 }

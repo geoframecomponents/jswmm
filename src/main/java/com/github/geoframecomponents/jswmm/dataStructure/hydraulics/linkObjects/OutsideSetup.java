@@ -19,13 +19,13 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.github.geoframecomponents.jswmm.dataStructure.Coordinates;
 import it.blogspot.geoframe.utils.GEOconstants;
-import org.geotools.graph.util.geom.Coordinate2D;
 
 public class OutsideSetup {
 
     String nodeName;
-    private Coordinate2D nodeCoordinates;
+    private Coordinates nodeCoordinates;
     private double terrainElevation;
     private double baseElevation;
     private double offset;
@@ -37,11 +37,12 @@ public class OutsideSetup {
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamWetArea = new HashMap<>();
     HashMap<Integer, LinkedHashMap<Instant, Double>> streamFlowRate = new HashMap<>();
 
-    public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff, Double x, Double y, double terrainElevation) {
+    public OutsideSetup(String nodeName, Double downOffset, Double fillCoeff,
+                        Double x, Double y, double terrainElevation) {
         this.nodeName = nodeName;
         this.offset = downOffset;
         this.fillCoeff = fillCoeff;
-        this.nodeCoordinates = new Coordinate2D(x, y);
+        this.nodeCoordinates = new Coordinates(x, y);
         this.terrainElevation = terrainElevation;
     }
 
@@ -103,7 +104,7 @@ public class OutsideSetup {
         return fillCoeff;
     }
 
-    public Coordinate2D getNodeCoordinates() {
+    public Coordinates getNodeCoordinates() {
         return nodeCoordinates;
     }
 

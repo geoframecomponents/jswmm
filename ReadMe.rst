@@ -15,6 +15,9 @@ To build the ReadMe file from markdown to rst
 
    pandoc doc/ReadMe/ReadMe.md -o ReadMe.rst
 
+To build the project as Gradle Project with version 5+ of Gradle, use
+the build_v5.gradle file.
+
 .. |Build Status| image:: https://travis-ci.org/geoframecomponents/jswmm.svg
    :target: https://travis-ci.org/geoframecomponents/jswmm
 .. |Maven Central| image:: https://img.shields.io/maven-central/v/com.github.geoframecomponents/jswmm.svg?label=Maven%20Central

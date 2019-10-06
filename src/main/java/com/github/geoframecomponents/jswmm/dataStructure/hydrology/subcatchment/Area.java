@@ -42,14 +42,13 @@ public class Area extends AbstractSubcatchment {
 
     public Area(Double subcatchmentArea, DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
                 HashMap<Integer, List<Subarea>> subareas, ProjectUnits projectUnits) {
+        super(projectUnits);
         this.subcatchmentArea = subcatchmentArea;
         this.raingageDataset = raingageDataset;
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
         this.subareas = subareas;
         this.totalAreaFlowRate = new LinkedHashMap<>();
-
-        setProjectUnits(projectUnits);
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {

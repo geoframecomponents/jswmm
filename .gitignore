@@ -1,6 +1,6 @@
 .idea/
 .gradle/
-gradle/
+gradle/*
 gradlew
 gradlew.bat
 
@@ -8,3 +8,4 @@ out/
 build/
 patches/
 data/OMSprj
+xrsc/
