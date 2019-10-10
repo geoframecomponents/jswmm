@@ -4,17 +4,17 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUn
 
 public abstract class Unitable {
 
-    ProjectUnits units;
+    String units;
 
-    public Unitable(ProjectUnits units) {
+    public Unitable(String units) {
         this.units = units;
     }
 
-    public ProjectUnits getUnits() {
+    public String getUnits() {
         return units;
     }
 
-    public void setUnits(ProjectUnits units) {
+    public void setUnits(String units) {
         this.units = units;
     }
 }

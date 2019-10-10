@@ -15,32 +15,47 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
+import static com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits.*;
+
+enum AvailableUnits {
+    CMS,
+    CFS;
+}
+
 public class SWMMunits implements ProjectUnits {
 
-    private UnitsSWMM projectUnits;
+    private AvailableUnits projectUnits;
 
     public SWMMunits(String units) {
-        if (units.equals("CMS")) {
-            this.projectUnits = UnitsSWMM.CMS;
-        } else if (units.equals("CFS")) {
-            this.projectUnits = UnitsSWMM.CFS;
-        } else {
-            throw new NullPointerException("System units not defined");
+        setProjectUnits(units);
+    }
+
+    @Override
+    public void setProjectUnits(String type) {
+        switch (type) {
+            case "CMS":
+                this.projectUnits = CMS;
+            case "CFS":
+                this.projectUnits = CFS;
+            default:
+                throw new IllegalArgumentException(type);
         }
     }
 
     @Override
-    public void setProjectUnits() {
-        this.projectUnits = UnitsSWMM.CMS;
-    }
-
-    @Override
-    public UnitsSWMM getProjectUnits() {
+    public String getProjectUnits() {
         if (projectUnits != null) {
-            return projectUnits;
+            switch (projectUnits) {
+                case CMS:
+                    return "CMS";
+                case CFS:
+                    return "CFS";
+                default:
+                    throw new IllegalArgumentException("Wrong definition of units");
+            }
         }
-        else{
-            throw new NullPointerException("System units not defined");
+        else {
+            throw new NullPointerException("Units not defined.");
         }
     }
 }
