@@ -17,7 +17,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
 public interface ProjectUnits {
 
-    public void setProjectUnits();
-    public UnitsSWMM getProjectUnits();
+    void setProjectUnits(String type);
+    public String getProjectUnits();
 
 }

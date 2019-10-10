@@ -16,7 +16,6 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.UnitsSWMM;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
