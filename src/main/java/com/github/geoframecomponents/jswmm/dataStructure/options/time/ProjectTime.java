@@ -15,11 +15,19 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.time;
 
-import java.time.Instant;
+enum DateTypes {
+    startSimDate,
+    endSimDate,
+    rptStartDate,
+    rptEndDate,
+    sweepStartDate,
+    sweepEndDate,
+    nmbOfDryDays
+}
 
 public interface ProjectTime {
 
-    public void setProjectTime();
-    public Instant getProjectTime(String type);
+    <T> void setProjectTime(DateTypes type, T field);
+    <T> T getProjectTime(DateTypes type);
 
 }
