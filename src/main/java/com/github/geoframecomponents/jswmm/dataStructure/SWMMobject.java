@@ -42,7 +42,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SWMMobject {
+public class SWMMobject{
 
     private ProjectUnits projectUnits;
     private ProjectTime projectTime;
@@ -61,6 +61,7 @@ public class SWMMobject {
      * @param inpFileName
      */
     public SWMMobject(String inpFileName) {
+        projectUnits = new SWMMunits("CMS");
         setTime();
         setRunoff();
         setRouting();
@@ -71,6 +72,7 @@ public class SWMMobject {
     }
 
     public SWMMobject() {
+        projectUnits = new SWMMunits("CMS");
         /*setUnits("CMS");
         setTime();
         setRunoff();
@@ -130,20 +132,6 @@ public class SWMMobject {
         return conduit.get(conduitName);
     }
 
-    /**
-     * Set the units of the project (CMS or..)
-     * TODO introduce all units of SWMM
-     */
-    private void setUnits(String units) {
-        if (units.equals("CMS")) {
-            this.projectUnits = new SWMMunits("CMS");
-        }
-        else {
-            throw new NullPointerException("System units not permitted");
-        }
-    }
-
-    
     private void setTime() {
         Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
         Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
