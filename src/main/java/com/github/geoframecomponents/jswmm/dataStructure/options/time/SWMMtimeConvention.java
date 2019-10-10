@@ -39,7 +39,7 @@ public class SWMMtimeConvention implements ProjectTime {
         this.dryDays = dryDays;
     }
 
-    public <T> void setProjectTime(DateTypes type, T field) {
+    public <T> void setProjectDate(DateTypes type, T field) {
         switch (type) {
             case startSimDate:
                 this.startDate = (Instant) field;
@@ -62,7 +62,7 @@ public class SWMMtimeConvention implements ProjectTime {
     }
 
     @Override
-    public <T> T getProjectTime(DateTypes type) {
+    public <T> T getProjectDate(DateTypes type) {
         switch (type) {
             case startSimDate:
                 return (T) this.startDate;

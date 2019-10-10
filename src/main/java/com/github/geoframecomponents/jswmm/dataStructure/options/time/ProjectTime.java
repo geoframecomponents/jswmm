@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options.time;
 
-enum DateTypes {
+public enum DateTypes {
     startSimDate,
     endSimDate,
     rptStartDate,
@@ -27,7 +27,7 @@ enum DateTypes {
 
 public interface ProjectTime {
 
-    <T> void setProjectTime(DateTypes type, T field);
-    <T> T getProjectTime(DateTypes type);
+    <T> void setProjectDate(DateTypes type, T field);
+    <T> T getProjectDate(DateTypes type);
 
 }
