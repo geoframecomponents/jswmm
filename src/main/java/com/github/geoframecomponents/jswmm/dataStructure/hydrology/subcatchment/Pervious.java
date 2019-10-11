@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
@@ -27,13 +27,13 @@ public class Pervious extends Subarea {
     Double infiltration = 0.0; //TODO temporary 0.0
 
     public Pervious(Double subareaArea, Double depressionStoragePervious,
-                    Double roughnessCoefficient, ProjectUnits projectUnits) {
+                    Double roughnessCoefficient, Unitable projectUnits) {
         this(subareaArea, depressionStoragePervious, roughnessCoefficient, null, null,
                 projectUnits);
     }
 
     public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient,
-                    Double percentageRouted, List<Subarea> connections, ProjectUnits projectUnits) {
+                    Double percentageRouted, List<Subarea> connections, Unitable projectUnits) {
 
         super(projectUnits);
         this.subareaArea = subareaArea;

@@ -15,23 +15,22 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractNode extends Unitable {
+public abstract class AbstractNode {
 
     DataCollector dataCollector;
     WriteDataToFile writeDataToFile;
     ExternalInflow dryWeatherInflow;
     ExternalInflow rainfallDependentInfiltrationInflow;
 
-    ProjectUnits nodeUnits;
+    Unitable nodeUnits;
 
     String nodeName;
     Double nodeElevation;
@@ -39,7 +38,7 @@ public abstract class AbstractNode extends Unitable {
     HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate = new HashMap<>();
     LinkedHashMap<Instant, Double> nodeDepth;
 
-    public AbstractNode(ProjectUnits units) {
+    public AbstractNode(Unitable units) {
         super(units);
     }
 

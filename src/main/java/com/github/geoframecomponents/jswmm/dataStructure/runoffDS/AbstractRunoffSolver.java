@@ -15,13 +15,13 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 
 public abstract class AbstractRunoffSolver {
 
-    public ProjectUnits units;
+    public Unitable units;
 
     public Long runoffStepSize;
 

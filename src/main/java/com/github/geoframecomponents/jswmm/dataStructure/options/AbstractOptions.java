@@ -15,20 +15,20 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options;
 
-import com.github.geoframecomponents.jswmm.dataStructure.infiltration.InfiltrationSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.options.time.ProjectTime;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
-public class AbstractOptions {
+public abstract class AbstractOptions implements Unitable, Datetimeable {
 
+    /*
     AbstractRunoffSolver runoffSolver;
     RoutingSetup routingSetup;
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
-    ProjectUnits projectUnits;
-    ProjectTime projectTime;
+    Unitable projectUnits;
+    Unitable datetimeable;
     ReportSetup reportSetup;
 
     public enum OffsetConvention {
@@ -63,12 +63,12 @@ public class AbstractOptions {
         return steadyStateSetup;
     }
 
-    public ProjectUnits getProjectUnits() {
+    public Unitable getProjectUnits() {
         return projectUnits;
     }
 
-    public ProjectTime getProjectTime() {
-        return projectTime;
+    public Unitable getDatetimeable() {
+        return datetimeable;
     }
 
     public ReportSetup getReportSetup() {
@@ -109,5 +109,5 @@ public class AbstractOptions {
 
     public String getTempDirectory() {
         return tempDirectory;
-    }
+    }*/
 }

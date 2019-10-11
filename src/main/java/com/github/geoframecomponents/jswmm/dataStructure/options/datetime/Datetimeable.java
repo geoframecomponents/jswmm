@@ -13,21 +13,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.options.time;
+package com.github.geoframecomponents.jswmm.dataStructure.options.datetime;
 
-public enum DateTypes {
-    startSimDate,
-    endSimDate,
-    rptStartDate,
-    rptEndDate,
-    sweepStartDate,
-    sweepEndDate,
-    nmbOfDryDays
-}
+public interface Datetimeable {
 
-public interface ProjectTime {
-
-    <T> void setProjectDate(DateTypes type, T field);
-    <T> T getProjectDate(DateTypes type);
+    <T> void setDateTime(AvailableDateTypes type, T field);
+    <T> T getDateTime(AvailableDateTypes type);
 
 }

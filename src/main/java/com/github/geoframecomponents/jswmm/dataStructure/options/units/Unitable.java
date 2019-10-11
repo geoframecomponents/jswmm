@@ -13,7 +13,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.options;
+package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
-public class GlobalOptions extends AbstractOptions {
+public interface Unitable {
+
+    <T> T getUnits();
+    <T> void setUnits(AvailableUnits units);
+
 }

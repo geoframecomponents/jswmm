@@ -1,23 +1,11 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+package com.github.geoframecomponents.jswmm.dataStructure.options;
 
-package com.github.geoframecomponents.jswmm.dataStructure.options.time;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
 
 import java.time.Instant;
 
-public class SWMMtimeConvention implements ProjectTime {
+public class SWMMoptions extends AbstractOptions {
 
     private Instant startDate;
     private Instant endDate;
@@ -27,19 +15,10 @@ public class SWMMtimeConvention implements ProjectTime {
     private Instant sweepEnd;
     private Integer dryDays;
 
-    public SWMMtimeConvention(Instant startDate, Instant endDate, Instant reportStartDate, Instant reportEndDate,
-                              Instant sweepStart, Instant sweepEnd, Integer dryDays) {
+    private AvailableUnits projectUnits;
 
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.reportStartDate = reportStartDate;
-        this.reportEndDate = reportEndDate;
-        this.sweepStart = sweepStart;
-        this.sweepEnd = sweepEnd;
-        this.dryDays = dryDays;
-    }
-
-    public <T> void setProjectDate(DateTypes type, T field) {
+    @Override
+    public <T> void setDateTime(AvailableDateTypes type, T field) {
         switch (type) {
             case startSimDate:
                 this.startDate = (Instant) field;
@@ -62,7 +41,7 @@ public class SWMMtimeConvention implements ProjectTime {
     }
 
     @Override
-    public <T> T getProjectDate(DateTypes type) {
+    public <T> T getDateTime(AvailableDateTypes type) {
         switch (type) {
             case startSimDate:
                 return (T) this.startDate;
@@ -81,5 +60,36 @@ public class SWMMtimeConvention implements ProjectTime {
             default:
                 throw new IllegalArgumentException("Not a defined DataType");
         }
+    }
+
+    @Override
+    public <T> T getUnits() {
+        if (projectUnits != null) {
+            switch (projectUnits) {
+                case CMS:
+                    return (T) AvailableUnits.CMS;
+                case CFS:
+                    return (T) AvailableUnits.CFS;
+                default:
+                    throw new IllegalArgumentException("Wrong definition of units");
+            }
+        }
+        else {
+            throw new NullPointerException("Units not defined.");
+        }
+    }
+
+    @Override
+    public <T> void setUnits(AvailableUnits units) {
+
+        switch (units) {
+            case CMS:
+                this.projectUnits = AvailableUnits.CMS;
+            case CFS:
+                this.projectUnits = AvailableUnits.CFS;
+            default:
+                throw new IllegalArgumentException("Not a recognized units");
+        }
+
     }
 }

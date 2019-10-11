@@ -15,15 +15,14 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff;
 
-import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractReceiver extends Unitable {
+public abstract class AbstractReceiver {
 
-    public AbstractReceiver(ProjectUnits units) {
+    public AbstractReceiver(Unitable units) {
         super(units);
     }
 

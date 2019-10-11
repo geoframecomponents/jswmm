@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
@@ -25,7 +25,7 @@ public class SWMM5runoffSolver extends AbstractRunoffSolver {
     private FirstOrderDifferentialEquations ode = new RunoffODE();
 
     public SWMM5runoffSolver(Long runoffStepSize, Double minimumStepSize, Double maximumStepSize,
-                             Double absoluteRunoffTolerance, Double relativeRunoffTolerance, ProjectUnits units) {
+                             Double absoluteRunoffTolerance, Double relativeRunoffTolerance, Unitable units) {
         this.runoffStepSize = runoffStepSize;
         this.minimumStepSize = minimumStepSize;
         this.maximumStepSize = maximumStepSize;

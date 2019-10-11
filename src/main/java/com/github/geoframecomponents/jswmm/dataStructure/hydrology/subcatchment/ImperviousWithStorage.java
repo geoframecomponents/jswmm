@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
@@ -28,14 +28,14 @@ public class ImperviousWithStorage extends Subarea {
 
     public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
                                  Double depressionStorageImpervious, Double roughnessCoefficient,
-                                 ProjectUnits projectUnits) {
+                                 Unitable projectUnits) {
         this(imperviousWStorageArea, imperviousWOStorageArea, depressionStorageImpervious,
                 roughnessCoefficient, null, null, projectUnits);
     }
 
     public ImperviousWithStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
                                  Double depressionStorageImpervious, Double roughnessCoefficient,
-                                 Double percentageRouted, List<Subarea> connections, ProjectUnits projectUnits) {
+                                 Double percentageRouted, List<Subarea> connections, Unitable projectUnits) {
 
         super(projectUnits);
         this.subareaArea = imperviousWStorageArea;

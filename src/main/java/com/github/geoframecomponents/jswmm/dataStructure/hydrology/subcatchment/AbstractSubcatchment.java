@@ -15,21 +15,20 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractSubcatchment extends Unitable {
+public abstract class AbstractSubcatchment {
 
-    ProjectUnits projectUnits;
+    Unitable projectUnits;
 
     AcquiferSetup acquiferSetup;
     SnowPackSetup snowpack;
-    ProjectUnits subcatchmentUnits;
+    Unitable subcatchmentUnits;
 
     DataCollector dataFromFile;
 
@@ -38,11 +37,11 @@ public abstract class AbstractSubcatchment extends Unitable {
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData;
 
-    public AbstractSubcatchment(ProjectUnits units) {
+    public AbstractSubcatchment(Unitable units) {
         super(units);
     }
 
-    public abstract void setProjectUnits(ProjectUnits projectUnits);
+    public abstract void setProjectUnits(Unitable projectUnits);
 
     public DataCollector getDataFromFile() {
         return dataFromFile;

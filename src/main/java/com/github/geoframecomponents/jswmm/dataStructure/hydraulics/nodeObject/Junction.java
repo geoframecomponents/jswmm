@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ public class Junction extends AbstractNode {
     Double pondingArea;
 
     public Junction(Double nodeElevation, Double maximumDepthNode, Double initialDepthnode,
-                    Double maximumDepthSurcharge, Double pondingArea, ProjectUnits units) {
+                    Double maximumDepthSurcharge, Double pondingArea, Unitable units) {
         super(units);
         this.nodeElevation = nodeElevation;
         this.maximumDepthNode = maximumDepthNode;

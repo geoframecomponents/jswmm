@@ -18,7 +18,7 @@ package com.github.geoframecomponents.jswmm.runoff;
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Area;
 import oms3.annotations.*;
-import com.github.geoframecomponents.jswmm.dataStructure.options.time.ProjectTime;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
@@ -100,11 +100,11 @@ public class Runoff {
             //TODO add evaporation
             this.runoffSolver = dataStructure.getRunoffSolver();
             this.runoffStepSize = runoffSolver.getRunoffStepSize();
-            ProjectTime projectTime = dataStructure.getProjectTime();
+            Datetimeable datetimeable = dataStructure.getDatetimeable();
             this.area = dataStructure.getAreas(areaName);
 
-            this.initialTime = projectTime.getProjectTime("initial");
-            this.totalTime = projectTime.getProjectTime("final");
+            this.initialTime = datetimeable.getProjectDate("initial");
+            this.totalTime = datetimeable.getProjectDate("final");
         }
         else {
             throw new NullPointerException("Runoff over" + areaName + "fails setup.");

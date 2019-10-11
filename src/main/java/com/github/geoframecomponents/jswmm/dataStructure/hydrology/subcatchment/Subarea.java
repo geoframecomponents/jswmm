@@ -15,14 +15,13 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
 import java.util.*;
 
-public abstract class Subarea extends Unitable {
+public abstract class Subarea {
 
     Double subareaArea;
     Double depthFactor;
@@ -37,7 +36,7 @@ public abstract class Subarea extends Unitable {
     HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;      //[mm/s]
     HashMap<Integer, Double> excessRainfall;
 
-    public Subarea(ProjectUnits units) {
+    public Subarea(Unitable units) {
         super(units);
     }
 

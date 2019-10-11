@@ -16,7 +16,7 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
 import com.github.geoframecomponents.jswmm.dataStructure.Coordinates;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
@@ -37,7 +37,7 @@ public class Conduit extends AbstractLink {
     Double linkSlope;
 
     public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
-                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, ProjectUnits units) {
+                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Unitable units) {
         super(units);
         this.routingSetup = routingSetup;
         this.crossSectionType = crossSectionType;

@@ -17,7 +17,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment
 
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
 
 import java.time.Instant;
@@ -41,7 +41,7 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
     public Area(Double subcatchmentArea, DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
-                HashMap<Integer, List<Subarea>> subareas, ProjectUnits projectUnits) {
+                HashMap<Integer, List<Subarea>> subareas, Unitable projectUnits) {
         super(projectUnits);
         this.subcatchmentArea = subcatchmentArea;
         this.raingageDataset = raingageDataset;
@@ -104,7 +104,7 @@ public class Area extends AbstractSubcatchment {
     }
 
     @Override
-    public void setProjectUnits(ProjectUnits projectUnits) {
+    public void setProjectUnits(Unitable projectUnits) {
         this.projectUnits = projectUnits;
     }
 }

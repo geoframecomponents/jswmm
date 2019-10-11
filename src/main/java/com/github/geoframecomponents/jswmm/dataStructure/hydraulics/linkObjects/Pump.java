@@ -16,13 +16,13 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.ProjectUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
 
 class Pump extends AbstractLink {
 
-    public Pump(ProjectUnits units) {
+    public Pump(Unitable units) {
         super(units);
     }
 
