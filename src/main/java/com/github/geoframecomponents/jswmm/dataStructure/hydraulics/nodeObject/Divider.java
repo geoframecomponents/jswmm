@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -23,7 +23,8 @@ import java.util.LinkedHashMap;
 
 public class Divider extends AbstractNode {
 
-    public Divider() {
+    public Divider(AvailableUnits nodeUnits) {
+        super(nodeUnits);
     }
 
     @Override

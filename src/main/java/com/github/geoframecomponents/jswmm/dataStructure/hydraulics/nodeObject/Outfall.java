@@ -15,6 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
@@ -32,7 +33,7 @@ public class Outfall extends AbstractNode {
     //TODO solve the conflict with tidal/timeseries
 
     public Outfall(Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
-                   LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo, Unitable units) {
+                   LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo, AvailableUnits units) {
         super(units);
         this.nodeElevation = nodeElevation;
 

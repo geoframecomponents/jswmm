@@ -22,13 +22,11 @@ import java.time.Instant;
 
 class Pump extends AbstractLink {
 
-    public Pump(Unitable units) {
-        super(units);
-    }
 
     @Override
     public OutsideSetup getUpstreamOutside() {
         throw new NullPointerException("Nothing implemented yet");
+
     }
 
     @Override
@@ -39,25 +37,28 @@ class Pump extends AbstractLink {
     @Override
     public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
         throw new NullPointerException("Nothing implemented yet");
+
     }
 
     @Override
     public void setInitialUpWetArea(Integer id, Instant startDate, double flowRate) {
         throw new NullPointerException("Nothing implemented yet");
+
     }
 
     @Override
-    public void evaluateFlowRate(Instant currentTime) {
+    public void evaluateFlowRate() {
         throw new NullPointerException("Nothing implemented yet");
     }
 
     @Override
-    public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
+    public double evaluateMaxDischarge() {
         throw new NullPointerException("Nothing implemented yet");
     }
 
     @Override
     public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
         throw new NullPointerException("Nothing implemented yet");
+
     }
 }
