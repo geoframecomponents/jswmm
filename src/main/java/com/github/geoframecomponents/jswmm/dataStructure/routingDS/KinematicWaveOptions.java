@@ -15,39 +15,23 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.routingDS;
 
-//package org.altervista.growworkinghard.jswmm.dataStructure.routingDS;
-//
-//import OutsideSetup;
-//import CrossSectionType;
-//import org.apache.commons.math3.analysis.interpolation.LinearInterpolator;
-//import org.apache.commons.math3.analysis.polynomials.PolynomialSplineFunction;
-//
-//import java.time.Instant;
-//import java.util.LinkedHashMap;
-//import java.util.LinkedList;
-//import java.util.List;
-
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
 
-public class RoutingKinematicWaveOptions implements RoutingOptions {
+public class KinematicWaveOptions implements RoutingSolver {
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType) {
-        return null;
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType, double routingStep) {
+        throw new NullPointerException("Nothing implemented yet.");
     }
 
     @Override
-    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
-        return null;
+    public double adaptTimeDelay(double routingStepSize, double timeDelay) {
+        throw new NullPointerException("Nothing implemented yet.");
     }
 
-    @Override
-    public Long getRoutingStepSize() {
-        return null;
-    }
 //
 //    private final Long routingStepSize;
 //
@@ -61,7 +45,7 @@ public class RoutingKinematicWaveOptions implements RoutingOptions {
 //    private Double lowerBound;
 //    private Double upperBound;
 //
-//    public RoutingKinematicWaveOptions(Long routingStepSize, Integer referenceTableLength, Double iota,
+//    public KinematicWaveOptions(Long routingStepSize, Integer referenceTableLength, Double iota,
 //                                     Double phi, Double tolerance) {
 //        this.routingStepSize = routingStepSize;
 //        this.referenceTableLength = referenceTableLength;
@@ -71,7 +55,7 @@ public class RoutingKinematicWaveOptions implements RoutingOptions {
 //        fillTables();
 //    }
 //
-//    public RoutingKinematicWaveOptions(Long routingStepSize, Double tolerance) {
+//    public KinematicWaveOptions(Long routingStepSize, Double tolerance) {
 //        this.routingStepSize = routingStepSize;
 //        this.referenceTableLength = 180;
 //        this.tolerance = tolerance;

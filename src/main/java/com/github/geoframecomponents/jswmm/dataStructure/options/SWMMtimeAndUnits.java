@@ -15,16 +15,21 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.SWMMtime;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Period;
 
-public abstract class SWMMoptions extends SWMMtime {
+import java.time.Instant;
 
-    private Boolean report;
+public abstract class SWMMtimeAndUnits extends Period {
 
+    public SWMMtimeAndUnits(Instant startDate, Instant endDate) {
+        super(startDate, endDate);
+    }
+
+}
 
     /*
-    AbstractRunoffSolver runoffSolver;
-    RoutingOptions routingSetup;
+    RunoffSolver runoffSolver;
+    RoutingSolver routingSetup;
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
     Unitable projectUnits;
@@ -47,11 +52,11 @@ public abstract class SWMMoptions extends SWMMtime {
     Integer numberOfThreads;
     String tempDirectory;
 
-    public AbstractRunoffSolver getRunoffSolver() {
+    public RunoffSolver getRunoffSolver() {
         return runoffSolver;
     }
 
-    public RoutingOptions getRoutingOptions() {
+    public RoutingSolver getRoutingOptions() {
         return routingSetup;
     }
 
@@ -110,4 +115,3 @@ public abstract class SWMMoptions extends SWMMtime {
     public String getTempDirectory() {
         return tempDirectory;
     }*/
-}

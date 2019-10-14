@@ -17,10 +17,10 @@ package com.github.geoframecomponents.jswmm.routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
 import oms3.annotations.*;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Lucchese_ca;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class Routing {
      */
     private Long routingStepSize;
 
-    private RoutingSetup routingSetup;
+    private RoutingSolver routingOptions;
 
     /**
      * Data structure
@@ -82,28 +82,16 @@ public class Routing {
 
         System.out.println("Routing on " + linkName);
         if (dataStructure != null && linkName != null) {
-            this.initialTime = dataStructure.getDatetimeable().getProjectDate("initial");
-            this.totalTime = dataStructure.getDatetimeable().getProjectDate("final");
-
-            this.routingSetup = dataStructure.getRoutingSetup();
-            this.routingStepSize = routingSetup.getRoutingStepSize();
-
             this.conduit = dataStructure.getConduit(linkName);
         } else {
-            throw new NullPointerException("Nothing implemented yet");
+            throw new NullPointerException("Data structure is null");
         }
 
         /**
          * Evaluate the maximum discharge over all the response curves
          * TODO move everything inside the evaluateMaxDischarge method
          */
-        Instant currentTime = initialTime;
-        double maxDischarge = 0.0;
-        while (currentTime.isBefore(totalTime)) {
-            maxDischarge = conduit.evaluateMaxDischarge(currentTime, maxDischarge);
-            currentTime = currentTime.plusSeconds(routingStepSize);
-        }
-
+        double maxDischarge = conduit.evaluateMaxDischarge();
         System.out.println("Q_MAX " + maxDischarge);
 
         /**
@@ -119,12 +107,7 @@ public class Routing {
         dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
-        currentTime = initialTime;
-        while (currentTime.isBefore(totalTime)) {
-            conduit.evaluateFlowRate(currentTime);
-            currentTime = currentTime.plusSeconds(routingStepSize);
-        }
-        conduit.evaluateFlowRate(currentTime);
+        conduit.evaluateFlowRate();
 
         routingFlowRate = conduit.getDownstreamFlowRate();
         //routingFlowRate = conduit.getUpstreamFlowRate();

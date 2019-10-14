@@ -15,6 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS;
 
-public enum ODEmethods {
+public enum AvailableODEmethods {
     DP54
 }

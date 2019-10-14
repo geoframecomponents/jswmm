@@ -13,10 +13,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea.Subarea;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff.ReceiverRunoff;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;

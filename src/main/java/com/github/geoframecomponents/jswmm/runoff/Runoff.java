@@ -17,9 +17,10 @@ package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.Area;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import oms3.annotations.*;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,13 +36,9 @@ public class Runoff {
     private LinkedHashMap<Instant, Double> adaptedEvaporationData = null; // [mm/hour]
 
     /**
-     * Start date/time of the runoff simulation
+     * Time setup
      */
     private Instant initialTime;
-
-    /**
-     * End date/time of the runoff simulation
-     */
     private Instant totalTime;
 
     /**
@@ -65,13 +62,6 @@ public class Runoff {
     //private Double characteristicWidth;
 
     /**
-     * Integration method setup
-     */
-    private Long runoffStepSize;
-
-    private AbstractRunoffSolver runoffSolver;
-
-    /**
      * Data structure
      */
     @In
@@ -92,19 +82,9 @@ public class Runoff {
     public void run() {
 
         //System.out.println("Processing area " + areaName);
-        if (dataStructure == null) {
-            System.out.println("Data structure is null");
-        }
         if (dataStructure != null && areaName != null) {
-
             //TODO add evaporation
-            this.runoffSolver = dataStructure.getRunoffSolver();
-            this.runoffStepSize = runoffSolver.getRunoffStepSize();
-            Datetimeable datetimeable = dataStructure.getDatetimeable();
             this.area = dataStructure.getAreas(areaName);
-
-            this.initialTime = datetimeable.getProjectDate("initial");
-            this.totalTime = datetimeable.getProjectDate("final");
         }
         else {
             throw new NullPointerException("Runoff over" + areaName + "fails setup.");
@@ -118,16 +98,11 @@ public class Runoff {
             }
         }*/
 
-        Instant currentTime = initialTime;
-        while (currentTime.isBefore(totalTime)) {
+        //check snownelt - snowaccumulation TODO build a new component
+        area.evaluateRunoffFlowRate(adaptedRainfallData);
 
-            //check snownelt - snowaccumulation TODO build a new component
-            area.evaluateRunoffFlowRate(adaptedRainfallData, runoffSolver, currentTime);
-            currentTime = currentTime.plusSeconds(runoffStepSize);
-        }
-
-        for (Integer identifier : adaptedRainfallData.keySet()) {
-            runoffFlowRate.put(identifier, area.evaluateTotalFlowRate(identifier)); //[m^3/s]
+        for (Integer curveId : adaptedRainfallData.keySet()) {
+            runoffFlowRate.put(curveId, area.evaluateTotalFlowRate(curveId)); //[m^3/s]
         }
 
         /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : runoffFlowRate.entrySet()) {

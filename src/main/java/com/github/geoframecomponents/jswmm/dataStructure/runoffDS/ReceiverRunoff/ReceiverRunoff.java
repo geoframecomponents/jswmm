@@ -13,9 +13,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.ReceiverRunoff;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff;
 
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area.AbstractSubcatchment;
 
 public interface ReceiverRunoff {
     public enum ReceiverType {

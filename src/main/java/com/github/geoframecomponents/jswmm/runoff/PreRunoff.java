@@ -117,7 +117,7 @@ public class PreRunoff {
 
             DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
 
-            this.runoffStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();
+            this.runoffStepSize = dataStructure.getRunoffOptions().getRunoffStepSize();
             this.rainfallStepSize = raingage.getDatasetStepSize();
             this.initialTime = dataStructure.getDatetimeable().getProjectDate("initial");
             this.totalTime = dataStructure.getDatetimeable().getProjectDate("final");

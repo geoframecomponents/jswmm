@@ -13,7 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
@@ -35,7 +35,6 @@ public class ImperviousWithoutStorage extends Subarea {
     public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
                                     Double roughnessCoefficient, Double percentageRouted,
                                     List<Subarea> connections, Unitable projectUnits) {
-        super(projectUnits);
         this.subareaArea = imperviousWOStorageArea;
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
         this.roughnessCoefficient = roughnessCoefficient;

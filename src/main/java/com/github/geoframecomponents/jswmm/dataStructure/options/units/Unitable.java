@@ -17,7 +17,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.options.units;
 
 public interface Unitable {
 
-    <T> T getUnits();
-    <T> void setUnits(AvailableUnits units);
+    AvailableUnits getUnits();
+    <T> void setUnits(T units);
 
 }

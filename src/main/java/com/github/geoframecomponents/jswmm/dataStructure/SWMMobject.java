@@ -16,20 +16,25 @@
 package com.github.geoframecomponents.jswmm.dataStructure;
 
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.*;
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.SWMM5RainfallFile;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
-import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
-import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea.ImperviousWithStorage;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea.ImperviousWithoutStorage;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea.Pervious;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Period;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.PeriodStep;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
-//import org.altervista.growworkinghard.jswmm.dataStructure.routingDS.RoutingKinematicWaveSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSteadySetup;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.SWMM5runoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingDateTime;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.SteadyOptions;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.DormandPrince54;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffDateTime;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -39,20 +44,160 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes.*;
+/**
+ * Main class to setup the simulation
+ */
 
 public class SWMMobject{
 
     private Unitable projectUnits;
-    private com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable datetimeable;
+    private Datetimeable projectDateTime;
 
-    private AbstractRunoffSolver runoffSolver;
-    private RoutingSetup routingSetup;
+    private Datetimeable reportDateTime;
+
+    private Datetimeable linksDateTime;
+    private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
+    private RoutingSolver routingSolver;
+
     private DataCollector raingageData;
+
+    private Datetimeable areasDateTime;
     private HashMap<String, Area> areas = new HashMap<>();
+    private RunoffSolver runoffSolver;
+
+    private int numberOfCurves;
+
+    public Datetimeable getProjectDateTime() {
+        return projectDateTime;
+    }
+
+    public Datetimeable getLinksDateTime() {
+        return linksDateTime;
+    }
+
+    public Conduit getConduit(String conduitName) {
+        return conduit.get(conduitName);
+    }
+
+    public Area getAreas(String areaName) {
+        return areas.get(areaName);
+    }
+
+    public SWMMobject() {
+
+        //Setup units
+        String units = "CMS";
+        projectUnits = new SWMMunits(units);
+
+        //Setup simulation dates
+        Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
+        Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
+        projectDateTime = new Period(startDate, endDate);
+
+        //Setup simulation options
+        numberOfCurves = 3;
+
+        //Setup report
+        Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
+        Instant reportEndDate = Instant.parse("2018-01-01T01:00:00Z");
+        double reportStep = 30L;
+        reportDateTime = new PeriodStep(reportStartDate, reportEndDate, reportStep);
+
+        //Setup junctions
+
+
+        //Setup conduits
+        double routingStep = 30L;
+        double routingTol = 0.0015;
+        linksDateTime = new RoutingDateTime(startDate, endDate, routingStep, routingTol);
+        routingSolver = new SteadyOptions();
+
+        double linkRoughness = 120.0;
+        double upstreamOffset = 0.0;
+        double downstreamOffset = 0.0;
+        double fillCoefficient = 0.9;
+        double diameter = 1.0;
+
+        String linkName = "11";
+        double linkLength = 100.0;
+        String upName = "J1";
+        String downName = "J1";
+        double upX = -239.0;
+        double upY = 197.0;
+        double upZ = 0.0;
+        double downX = -119.0;
+        double downY = 197.0;
+        double downZ = 0.0;
+
+        CrossSectionType crossSectionType = new Circular(diameter);
+
+        OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
+                fillCoefficient, upX, upY, upZ);
+        OutsideSetup downstreamOutside = new OutsideSetup(downName, downstreamOffset,
+                fillCoefficient, downX, downY, downZ);
+
+        for (int curveId=1; curveId<=numberOfCurves; curveId++) {
+            conduit.put(linkName, new Conduit(curveId, projectUnits, linksDateTime, routingSolver, crossSectionType, upstreamOutside,
+                    downstreamOutside, linkLength, linkRoughness, true));
+        }
+
+        //Setup raingage
+
+        DataCollector junctionReadDataFromFile = new SWMM5RainfallFile("ciao");
+
+        String raingageName = "RG1";
+        Long rainfallStepSize = 60L;
+
+        raingageData.setDatasetName(raingageName);
+        raingageData.setDatasetStepSize(rainfallStepSize);
+
+        //Setup areas
+        double runoffStep = 30L;
+        double minStepSize = 1.0e-8;
+        double maxStepSize = 1.0e+3;
+        double absoluteTolerance = 1.0e-5;
+        double relativeTolerance = 1.0e-5;
+        areasDateTime = new RunoffDateTime(startDate, endDate, runoffStep,
+                minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
+        runoffSolver = new DormandPrince54();
+
+        String areaName = "1";
+        double subcatchmentArea = 1.0;
+
+        double imperviousPercentage = 0.75;
+        double imperviousWOstoragePercentage = 0.25;
+
+        double depressionStorageImpervious = 0.00005;
+        double depressionStoragePervious = 0.00005;
+
+        String perviousTo = "OUTLET";
+        double percentageFromPervious = 0.0;
+
+        String imperviousTo = "OUTLET";
+        double percentageFromImpervious = 0.0;
+
+        double roughnessCoefficientPervious = 0.1;      //Manning number
+        double roughnessCoefficientImpervious = 0.01;   //Manning number
+
+        double characteristicWidth = 100.0;             // [m]
+        double areaSlope = 0.01;
+
+        HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
+        for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
+            subareas.put(curveId, divideAreas(imperviousPercentage, subcatchmentArea,
+                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
+
+            areas.put(areaName, new Area(curveId, projectUnits, areasDateTime, runoffSolver, raingageData,
+                    characteristicWidth, areaSlope, subareas, true));
+        }
+    }
+
+
     private Map<String, Junction> junctions = new ConcurrentHashMap<>();
     private HashMap<String, Outfall> outfalls = new HashMap<>();
-    private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
+
 
     /**
      * Build the data structure starting from the inp file
@@ -60,198 +205,10 @@ public class SWMMobject{
      * @param inpFileName
      */
     public SWMMobject(String inpFileName) {
-        projectUnits = new SWMMunits("CMS");
-        setTime();
-        setRunoff();
-        setRouting();
-        setRaingages();
-        setSubcatchments();
         setNodes();
-        setLinks();
     }
 
-    public SWMMobject() {
-        projectUnits = new SWMMunits("CMS");
-        /*setUnits("CMS");
-        setTime();
-        setRunoff();
-        setRouting();
-        setRaingages();
-        setSubcatchments();
-        setNodes();
-        setLinks();
-        setInitialValues(1);
-        setInitialValues(2);
-        setInitialValues(3);
-        setInitialValues(4);
-        setInitialValues(5);
-        setInitialValues(6);
-        setInitialValues(7);
-        setInitialValues(8);
-        setInitialValues(9);
-        setInitialValues(10);
-        setInitialValues(11);
-        setInitialValues(12);
-        setInitialValues(13);
-        setInitialValues(14);
-        setInitialValues(15);
-        setInitialValues(16);
-        setInitialValues(17);
-        setInitialValues(18);
-        setInitialValues(19);
-        setInitialValues(20);
-        setInitialValues(21);
-        setInitialValues(22);
-        setInitialValues(23);
-        setInitialValues(24);
-        setInitialValues(25);
-        setInitialValues(26);
-        setInitialValues(27);
-        setInitialValues(28);
-        setInitialValues(29);
-        setInitialValues(30);*/
-
-    }
-
-    public com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable getDatetimeable() {
-        return datetimeable;
-    }
-
-    public AbstractRunoffSolver getRunoffSolver() {
-        return runoffSolver;
-    }
-
-    public RoutingSetup getRoutingSetup() { return routingSetup; }
-
-    public Area getAreas(String areaName) {
-        return areas.get(areaName);
-    }
-
-    public Conduit getConduit(String conduitName) {
-        return conduit.get(conduitName);
-    }
-
-    private void setTime() {
-        Instant startDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant endDate = Instant.parse("2018-01-01T01:00:00Z");
-        Instant reportStartDate = Instant.parse("2018-01-01T00:00:00Z");
-        Instant reportEndDate = Instant.parse("2018-01-01T01:00:00Z");
-        Instant sweepStart = Instant.parse("2018-01-01T00:00:00Z");
-        Instant sweepEnd = Instant.parse("2018-01-01T00:00:00Z");
-        Integer dryDays = 0;
-
-        this.datetimeable = new SWMMtime(startDate, endDate, reportStartDate, reportEndDate,
-                sweepStart, sweepEnd, dryDays);
-    }
-
-    private void setRunoff() {
-        Long runoffStepSize = 60L; //must be in seconds!!
-
-        Double minimumStepSize = 1.0e-8;
-        Double maximumStepSize = 1.0e+3;
-        Double absoluteRunoffTolerance = 1.0e-5;
-        Double relativeRunoffTolerance = 1.0e-5;
-
-        Instant initialTime = datetimeable.getProjectDate(startSimDate);
-        Instant totalTime = datetimeable.getProjectDate(endSimDate);
-
-        this.runoffSolver = new SWMM5runoffSolver(runoffStepSize, minimumStepSize, maximumStepSize,
-                absoluteRunoffTolerance, relativeRunoffTolerance, projectUnits);
-    }
-
-    private void setRouting() {
-        Long routingStepSize = 30L;
-        Double toleranceMethod = 0.0015;
-
-        //TODO need change to parallelize
-        //routingSetup = new RoutingKinematicWaveSetup(routingStepSize, toleranceMethod);
-        routingSetup = new RoutingSteadySetup(routingStepSize);
-    }
-
-    private void setRaingages() {
-
-        //for (each raingage)
-
-
-        DataCollector dataCollector = null;
-        /*TODO check if a and n or data
-        try {
-            dataCollector = new SWMM5RainfallFile("./data/rainfallNetwork.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        //Unitable raingageUnits = new SWMMunits();
-        String raingageName = "RG1";
-        String dataSourceName = "rainfallNetwork.txt";
-        String stationName = "RG1";
-        Long rainfallStepSize = 60L;
-        //TODO FORMATDATA
-        //Instant rainfallStartDate = Instant.parse("2000-04-04T00:00Z");
-        //Instant rainfallEndDate = Instant.parse("2000-04-04T00:00Z");
-        //Double snowpack = 0.0;
-
-        raingageData.setDatasetName(raingageName);
-        raingageData.setDatasetStepSize(rainfallStepSize);
-    }
-
-    private void setSubcatchments() {
-        //for (each subcatchment)
-        setAreas("1", 1.937);
-        setAreas("2", 1.731);
-        setAreas("3", 0.481);
-        setAreas("4", 0.547);
-        setAreas("5", 2.141);
-        setAreas("6", 0.383);
-        setAreas("7", 0.353);
-        setAreas("8", 0.999);
-        setAreas("9", 1.583);
-        //setAreas("10", 1.583);
-        setAreas("10", 0.633);
-    }
-
-    private void setAreas(String areaName, double subcatchmentArea) {
-        //DataCollector subcatchmentReadDataFromFile = new SWMM5RainfallFile("ciao");
-        //AcquiferSetup acquiferSetup = new Acquifer();
-        //SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        //Unitable subcatchmentUnits = new SWMMunits();
-        //String subcatchmentName = "Sub1";
-
-        Double imperviousPercentage = 0.75;
-        Double imperviousWOstoragePercentage = 0.25;
-
-        Double depressionStorageImpervious = 0.00005;
-        Double depressionStoragePervious = 0.00005;
-
-        String perviousTo = "OUTLET";
-        Double percentageFromPervious = 0.0;
-
-        String imperviousTo = "OUTLET";
-        Double percentageFromImpervious = 0.0;
-
-        Double roughnessCoefficientPervious = 0.1;      //Manning number
-        Double roughnessCoefficientImpervious = 0.01;   //Manning number
-
-        Double characteristicWidth = 100.0;             // [m]
-        Double areaSlope = 0.01;
-        Double curbLength = 0.0;
-
-        String raingageName = "RG1";
-        ReceiverRunoff receiverSubcatchment = null;
-        int numberOfCurves = 3;
-
-        HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
-        for (int id = 1; id<=numberOfCurves; id++) {
-            subareas.put(id, divideAreas(imperviousPercentage, subcatchmentArea,
-                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
-                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
-                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious) );
-        }
-        areas.put(areaName, new Area(subcatchmentArea, raingageData, characteristicWidth, areaSlope,
-                subareas, projectUnits));
-    }
-
-    private void setNodes() {
+     private void setNodes() {
         setJunctions("J1", 0.0);
         setJunctions("J2", 0.0);
         setJunctions("J3", 0.0);
@@ -283,7 +240,6 @@ public class SWMMobject{
         //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
         //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
         //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        Unitable nodeUnits = new SWMMunits("CMS");
 
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 0.0;
@@ -311,53 +267,6 @@ public class SWMMobject{
 //
 //        outfalls.put(nodeName, new Outfall(nodeElevation, fixedStage, tidalCurve,stageTimeseries,
 //                gated, routeTo));
-    }
-
-    private void setLinks() {
-        //for (each link) TODO check if present
-        setConduit("11", 120.0,"J1", -239.0, 197.0, 0.0,
-                "J3", -119.0, 197.0, 0);
-        setConduit("12", 122,  "J2",-119.0, 319.0, 0.0,
-                "J3",-119.0, 197.0, 0);
-        setConduit("13", 119,  "J3",-119.0, 197.0, 0.0,
-                "J4",0.0, 197.0, 0);
-        setConduit("14", 43,   "J5",111.0, 240.0, 0.0,
-                "J7",111.0, 197.0, 0);
-        setConduit("15", 92,   "J6",203.0, 197.0, 0.0,
-                "J7",111.0, 197.0, 0);
-        setConduit("16", 111,   "J7",111.0, 197.0, 0.0,
-                "J4",0.0, 197.0, 0);
-        setConduit("17", 81,   "J4",  0.0, 197.0, 0.0,
-                "J8",0.0, 116.0, 0);
-        setConduit("18", 150,   "J9",150.0, 116.0, 0.0,
-                "J8",0.0, 116.0, 0);
-        setConduit("19", 134,  "J10",-134.0, 116.0, 0.0,
-                "J8",0.0, 116.0, 0);
-        setConduit("20", 116,   "J8",  0.0, 116.0, 0.0,
-                "J11",0.0,   0.0, 0);
-    }
-
-    private void setConduit(String linkName, double linkLength, String upName, double upX, double upY, double upZ,
-                            String downName, double downX, double downY, double downZ) {
-
-        Double linkRoughness = 120.0;
-        Double upstreamOffset = 0.0;
-        Double downstreamOffset = 0.0;
-        //Double initialFlowRate = 0.0;
-        //Double maximumFlowRate = 0.0;
-        Double fillCoefficient = 0.9;
-        Double diameter = 1.0;
-
-        CrossSectionType crossSectionType = new Circular(diameter);
-        Unitable linkUnits = new SWMMunits("CMS");
-
-        OutsideSetup upstreamOutside = new OutsideSetup(upName, upstreamOffset,
-                fillCoefficient, upX, upY, upZ);
-        OutsideSetup downstreamOutside = new OutsideSetup(downName, downstreamOffset,
-                fillCoefficient, downX, downY, downZ);
-
-        conduit.put(linkName, new Conduit(routingSetup, crossSectionType, upstreamOutside, downstreamOutside,
-                linkLength, linkRoughness, linkUnits));
     }
 
     private List<Subarea> divideAreas(Double imperviousPercentage, Double subcatchmentArea,
@@ -423,49 +332,6 @@ public class SWMMobject{
             }
         }
         return tmpSubareas;
-    }
-
-    //TODO add at each subcatchment!
-    private void setInitialValues(Integer id) {
-        setSubareasInitialValue(id, "1");
-        setSubareasInitialValue(id, "2");
-        setSubareasInitialValue(id, "3");
-        setSubareasInitialValue(id, "4");
-        setSubareasInitialValue(id, "5");
-        setSubareasInitialValue(id, "6");
-        setSubareasInitialValue(id, "7");
-        setSubareasInitialValue(id, "8");
-        setSubareasInitialValue(id, "9");
-        setSubareasInitialValue(id, "10");
-        setInitialTime(id, "11");
-        setInitialTime(id, "12");
-        setInitialTime(id, "13");
-        setInitialTime(id, "14");
-        setInitialTime(id, "15");
-        setInitialTime(id, "16");
-        setInitialTime(id, "17");
-        setInitialTime(id, "18");
-        setInitialTime(id, "19");
-        setInitialTime(id, "20");
-    }
-
-    private void setSubareasInitialValue(Integer id, String areaName) {
-        for( Subarea subarea : areas.get(areaName).getSubareas().get(id) ) {
-            subarea.setAreaFlowRate(id, datetimeable.getProjectDate(startSimDate), 0.0);
-            subarea.setRunoffDepth(id, datetimeable.getProjectDate(startSimDate), 0.0);
-            subarea.setTotalDepth(id, datetimeable.getProjectDate(startSimDate), 0.0);
-        }
-    }
-
-    private void setInitialTime(Integer id, String linkName) {
-        Instant time = datetimeable.getProjectDate(startSimDate);
-        while (time.isBefore(datetimeable.getProjectDate(endSimDate))) {
-            conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
-            conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
-            time = time.plusSeconds(routingSetup.getRoutingStepSize());
-        }
-        conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
-        conduit.get(linkName).getUpstreamOutside().setFlowRate(id, time, 0.01);
     }
 
     public List<Double> readFileList(String fileName) {

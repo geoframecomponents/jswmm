@@ -20,33 +20,15 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 
 import java.time.Instant;
 
-public class RoutingDynamicWaveOptions implements RoutingOptions {
+public class DynamicWaveOptions implements RoutingSolver {
 
-    private final Long routingStepSize;
-
-    public RoutingDynamicWaveOptions(Long routingStepSize) {
-        this.routingStepSize = routingStepSize;
+    @Override
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType, double routingStep) {
+        throw new NullPointerException("Nothing implemented yet.");
     }
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
-                                    OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                    Double linkSlope, CrossSectionType crossSectionType) {
-        throw new NullPointerException("Nothing implemented yet");
-    }
-
-    @Override
-    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
-        throw new NullPointerException("Nothing implemented yet");
-    }
-
-    //@Override
-    //public Double evaluateStreamWetArea(Double runoffFlowRate, Double linkLength, Double linkRoughness) {
-    //    throw new NullPointerException("Nothing implemented yet");
-    //}
-
-    @Override
-    public Long getRoutingStepSize() {
-        return this.routingStepSize;
+    public double adaptTimeDelay(double routingStepSize, double timeDelay) {
+        throw new NullPointerException("Nothing implemented yet.");
     }
 }

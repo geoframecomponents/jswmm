@@ -13,9 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.ReceiverRunoff;
-
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+package com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;

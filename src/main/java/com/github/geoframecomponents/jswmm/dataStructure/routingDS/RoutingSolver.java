@@ -21,7 +21,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Period
 
 import java.time.Instant;
 
-public interface RoutingOptions {
+public interface RoutingSolver {
 
     RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow,
                              OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,

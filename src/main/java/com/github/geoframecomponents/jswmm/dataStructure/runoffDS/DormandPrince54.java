@@ -26,9 +26,7 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
 @Status(Status.DRAFT)
 @License("GPL3.0")
 
-//TODO implement the FirstOrderIntegrator not a local version RunoffSolverMethod!!!!
-
-public class DormandPrince54 implements RunoffSolverMethod {
+public class DormandPrince54 implements RunoffSolver{
 
     @Description("Precipitation data")
     @In
@@ -58,10 +56,10 @@ public class DormandPrince54 implements RunoffSolverMethod {
     @Out
     private double[] outputValues;
 
-
     private FirstOrderIntegrator dp54;
-
     private FirstOrderDifferentialEquations ode;
+
+    public DormandPrince54(){};
 
     protected DormandPrince54(Double precipitation, Double depthFactor,
                               Double minimumStepSize, Double maximumStepSize,
@@ -73,10 +71,26 @@ public class DormandPrince54 implements RunoffSolverMethod {
                 absoluteTolerance, relativeTolerance);
     }
 
+    @Override
     public double[] integrate(Double initialTime, double[] inputValues,
                        Double finalTime, double[] outputValues){
-
         dp54.integrate(ode, initialTime, inputValues, finalTime, outputValues);
         return outputValues;
     }
+
+    @Override
+    public FirstOrderIntegrator getFirstOrderIntegrator() {
+        return this.dp54;
+    }
+
+    @Override
+    public void setOde(Double rainfall, Double depthFactor) {
+        this.ode = new RunoffODE(rainfall, depthFactor);
+    }
+
+    @Override
+    public FirstOrderDifferentialEquations getOde() {
+        return ode;
+    }
+
 }

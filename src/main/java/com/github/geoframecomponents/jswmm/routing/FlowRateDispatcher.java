@@ -16,6 +16,7 @@
 package com.github.geoframecomponents.jswmm.routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import oms3.annotations.Execute;
 import oms3.annotations.In;
 import oms3.annotations.InNode;
@@ -73,10 +74,10 @@ public class FlowRateDispatcher {
     @Execute
     public void run() {
 
-        Long routingStepSize = dataStructure.getRoutingSetup().getRoutingStepSize();
-        Long flowRateStepSize = dataStructure.getRunoffSolver().getRunoffStepSize();//TODO must be generalized
-        Instant initialTime = dataStructure.getDatetimeable().getProjectDate("initial");
-        Instant totalTime = dataStructure.getDatetimeable().getProjectDate("final");
+        Long routingStepSize = dataStructure.getLinksDateTime().getDateTime(AvailableDateTypes.stepSize);
+        Long flowRateStepSize = dataStructure.getRunoffOptions().getRunoffStepSize();
+        Instant initialTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.endDate);
 
         if (flowRate1 != null) {
             System.out.println("Processing flowrate1");

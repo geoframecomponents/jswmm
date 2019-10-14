@@ -16,8 +16,9 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -25,13 +26,28 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractLink {
 
-    RoutingSetup routingSetup;
+    protected Unitable linksUnits;
+    protected Datetimeable linkTime;
+
+    RoutingSolver routingSolver;
 
     OutsideSetup upstreamOutside;
     OutsideSetup downstreamOutside;
 
-    public AbstractLink(Unitable units) {
-        super(units);
+    public void setLinksUnits(Unitable linksUnits) {
+        this.linksUnits = linksUnits;
+    }
+
+    public void setLinkTime(Datetimeable linkTime) {
+        this.linkTime = linkTime;
+    }
+
+    public Unitable getLinksUnits() {
+        return linksUnits;
+    }
+
+    public Datetimeable getLinkTime() {
+        return linkTime;
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getDownstreamFlowRate() {
@@ -50,15 +66,9 @@ public abstract class AbstractLink {
 
     public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
 
-    public enum LinkShape {
-        CIRCURAL,
-        DUMMY
-    }
-    LinkShape linkShape;
+    public abstract void evaluateFlowRate();
 
-    public abstract void evaluateFlowRate(Instant currentTime);
-
-    public abstract Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge);
+    public abstract double evaluateMaxDischarge();
 
     public abstract void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany);
 }

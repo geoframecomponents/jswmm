@@ -16,13 +16,15 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
 import com.github.geoframecomponents.jswmm.dataStructure.Coordinates;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
 import it.blogspot.geoframe.utils.GEOconstants;
 import it.blogspot.geoframe.utils.GEOgeometry;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutedFlow;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -36,19 +38,32 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    public Conduit(RoutingSetup routingSetup, CrossSectionType crossSectionType, OutsideSetup upstreamOutside,
-                   OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Unitable units) {
-        super(units);
-        this.routingSetup = routingSetup;
+    public Conduit(Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
+                   CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
+                   Double linkLength, Double linkRoughness, boolean reportOptions) {
+
+        this(1, units, dateTime, routingSolver, crossSectionType, upstreamOutside,
+                downstreamOutside,linkLength, linkRoughness, reportOptions);
+    }
+
+    public Conduit(Integer curveId, Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
+                   CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
+                   Double linkLength, Double linkRoughness, boolean reportOptions) {
+
+        this.setLinksUnits(units);
+        this.setLinkTime(dateTime);
+
+        this.routingSolver = routingSolver;
+
         this.crossSectionType = crossSectionType;
         this.upstreamOutside = upstreamOutside;
         this.downstreamOutside = downstreamOutside;
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
-    }
 
-    public CrossSectionType getCrossSectionType() {
-        return crossSectionType;
+        //TODO report!!
+
+        upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
     }
 
     @Override
@@ -72,36 +87,48 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void evaluateFlowRate(Instant currentTime) {
+    public void evaluateFlowRate() {
 
-        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
-        for (Integer id : currentFlow.keySet()) {
+        Instant currentTime = getLinkTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = getLinkTime().getDateTime(AvailableDateTypes.endDate);
+        long routingStepSize = getLinkTime().getDateTime(AvailableDateTypes.stepSize);
 
-            HashMap<Integer, LinkedHashMap<Instant, Double>> flow = upstreamOutside.getStreamFlowRate();
-            LinkedHashMap<Instant, Double> upstreamFlow = flow.get(id);
+        for (Instant time = currentTime; time.isBefore(totalTime); time = time.plusSeconds(routingStepSize)) {
+            HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
+            for (Integer id : currentFlow.keySet()) {
 
-            RoutedFlow routedFlow = routingSetup.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
-                    downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType);
+                HashMap<Integer, LinkedHashMap<Instant, Double>> flow = upstreamOutside.getStreamFlowRate();
+                LinkedHashMap<Instant, Double> upstreamFlow = flow.get(id);
 
-            downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+                RoutedFlow routedFlow = routingSolver.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
+                        downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType, routingStepSize);
+
+                downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+            }
         }
-
         //System.out.println("END evaluateFlowRate");
     }
 
     @Override
-    public Double evaluateMaxDischarge(Instant currentTime, Double maxDischarge) {
+    public double evaluateMaxDischarge() {
 
-        HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
+        Instant currentTime = getLinkTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = getLinkTime().getDateTime(AvailableDateTypes.endDate);
 
-        for (Integer id : flowUpstreamNode.keySet()) {
+        double maxDischarge = 0.0;
+        while (currentTime.isBefore(totalTime)) {
 
-            double currentFlow = flowUpstreamNode.get(id).get(currentTime);
-            if ( currentFlow >= maxDischarge) {
-                maxDischarge = currentFlow;
+            HashMap<Integer, LinkedHashMap<Instant, Double>> flowUpstreamNode = this.getUpstreamOutside().getStreamFlowRate();
+
+            for (Integer id : flowUpstreamNode.keySet()) {
+                double currentFlow = flowUpstreamNode.get(id).get(currentTime);
+                if ( currentFlow >= maxDischarge) {
+                    maxDischarge = currentFlow;
+                }
             }
-        }
 
+            currentTime = currentTime.plusSeconds(getLinkTime().getDateTime(AvailableDateTypes.stepSize));
+        }
         return maxDischarge;
     }
 

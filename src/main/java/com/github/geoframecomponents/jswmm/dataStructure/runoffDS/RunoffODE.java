@@ -23,8 +23,6 @@ public class RunoffODE implements FirstOrderDifferentialEquations {
     private double precipitation;
     private double alpha;
 
-    public RunoffODE() {}
-
     public RunoffODE(double precipitation, double alpha) {
         this.precipitation = precipitation;
         this.alpha = alpha;

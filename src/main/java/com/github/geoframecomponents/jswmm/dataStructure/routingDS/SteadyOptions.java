@@ -20,16 +20,16 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 
 import java.time.Instant;
 
-public class RoutingSteadyOptions implements RoutingOptions {
+public class SteadyOptions implements RoutingSolver {
 
     private SWMMroutingTools routingTools;
 
-    public RoutingSteadyOptions(Long routingStepSize, Integer referenceTableLength) {
+    public SteadyOptions(Integer referenceTableLength) {
         this.routingTools = new SWMMroutingTools(referenceTableLength);
     }
 
-    public RoutingSteadyOptions(Long routingStepSize) {
-        this(routingStepSize, 180);
+    public SteadyOptions() {
+        this(180);
     }
 
     @Override

@@ -23,8 +23,7 @@ import java.util.LinkedHashMap;
 
 public class Divider extends AbstractNode {
 
-    public Divider(Unitable units) {
-        super(units);
+    public Divider() {
     }
 
     @Override
