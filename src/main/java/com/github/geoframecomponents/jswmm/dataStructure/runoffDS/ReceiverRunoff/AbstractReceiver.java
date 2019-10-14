@@ -13,7 +13,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.ReceiverRunoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
@@ -21,10 +21,5 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 
 public abstract class AbstractReceiver {
-
-    public AbstractReceiver(Unitable units) {
-        super(units);
-    }
-
     public abstract LinkedHashMap<Instant, Double> getRunoffInflow();
 }

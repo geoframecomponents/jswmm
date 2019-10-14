@@ -13,10 +13,12 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area;
 
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,24 +26,30 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractSubcatchment {
 
-    Unitable projectUnits;
-
-    AcquiferSetup acquiferSetup;
-    SnowPackSetup snowpack;
     Unitable subcatchmentUnits;
+    Datetimeable subcatchmentTime;
+
+    RunoffSolver runoffSolver;
 
     DataCollector dataFromFile;
 
-    String subcatchmentName;
-    Double subcatchmentArea;
-
-    HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData;
-
-    public AbstractSubcatchment(Unitable units) {
-        super(units);
+    public void setSubcatchmentUnits(Unitable subcatchmentUnits) {
+        this.subcatchmentUnits = subcatchmentUnits;
     }
 
-    public abstract void setProjectUnits(Unitable projectUnits);
+    public void setSubcatchmentTime(Datetimeable subcatchmentTime) {
+        this.subcatchmentTime = subcatchmentTime;
+    }
+
+    public Unitable getSubcatchmentUnits() {
+        return subcatchmentUnits;
+    }
+
+    public Datetimeable getSubcatchmentTime() {
+        return subcatchmentTime;
+    }
+
+    HashMap<Integer, LinkedHashMap<Instant, Double>> rainfallData;
 
     public DataCollector getDataFromFile() {
         return dataFromFile;

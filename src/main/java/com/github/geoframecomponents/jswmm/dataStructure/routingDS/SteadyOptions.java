@@ -20,25 +20,22 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 
 import java.time.Instant;
 
-public class RoutingSteadySetup implements RoutingSetup {
-
-    private final Long routingStepSize;
+public class RoutingSteadyOptions implements RoutingOptions {
 
     private SWMMroutingTools routingTools;
 
-    public RoutingSteadySetup(Long routingStepSize, Integer referenceTableLength) {
-        this.routingStepSize = routingStepSize;
+    public RoutingSteadyOptions(Long routingStepSize, Integer referenceTableLength) {
         this.routingTools = new SWMMroutingTools(referenceTableLength);
     }
 
-    public RoutingSteadySetup(Long routingStepSize) {
+    public RoutingSteadyOptions(Long routingStepSize) {
         this(routingStepSize, 180);
     }
 
     @Override
     public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
                                     OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                                    Double linkSlope, CrossSectionType crossSectionType) {
+                                    Double linkSlope, CrossSectionType crossSectionType, double routingStepSize) {
 
         Double dischargeFull = crossSectionType.getDischargeFull(linkRoughness, linkSlope);
         Double Afull = crossSectionType.getAreaFull();
@@ -48,8 +45,8 @@ public class RoutingSteadySetup implements RoutingSetup {
         double currentFlow = upstreamFlow / dischargeFull;
         double area = routingTools.sectionFactorToArea(currentFlow / beta) * Afull;
         double celerity = currentFlow * dischargeFull / area;
-        Long timeDelay = (long) (linkLength / celerity);
-        Long timeDelayLong = adaptTimeDelay(routingStepSize, timeDelay);
+        double timeDelay = (linkLength / celerity);
+        double timeDelayLong = adaptTimeDelay(routingStepSize, timeDelay);
 
         double qout;
         if (currentFlow == 0.0) {
@@ -65,17 +62,12 @@ public class RoutingSteadySetup implements RoutingSetup {
         //System.out.println(" discharge " + qout * dischargeFull);
         //System.out.println("dischargeFull " + dischargeFull);
 
-        return new RoutedFlow(currentTime.plusSeconds(timeDelayLong), (qout * dischargeFull));
+        return new RoutedFlow(currentTime.plusSeconds((long) timeDelayLong), (qout * dischargeFull));
      }
 
     @Override
-    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay) {
-        long temp = timeDelay / routingStepSize;
+    public double adaptTimeDelay(double routingStepSize, double timeDelay) {
+        double temp = timeDelay / routingStepSize;
         return temp * routingStepSize;
-    }
-
-    @Override
-     public Long getRoutingStepSize() {
-        return this.routingStepSize;
     }
 }

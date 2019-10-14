@@ -13,7 +13,19 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.ReceiverRunoff;
 
-public class SnowPack implements SnowPackSetup {
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
+
+public interface ReceiverRunoff {
+    public enum ReceiverType {
+        NODE,
+        SUBCATCHMENT
+    }
+
+    public ReceiverType getReceiverType();
+
+    public AbstractSubcatchment getReceiverObject();
+
+    public Double getPercentage();
 }

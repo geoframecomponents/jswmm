@@ -15,16 +15,16 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.options;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
-import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.SWMMtime;
 
-public abstract class AbstractOptions implements Unitable, Datetimeable {
+public abstract class SWMMoptions extends SWMMtime {
+
+    private Boolean report;
+
 
     /*
     AbstractRunoffSolver runoffSolver;
-    RoutingSetup routingSetup;
+    RoutingOptions routingSetup;
     InfiltrationSetup infiltrationSetup;
     SteadyStateSetup steadyStateSetup;
     Unitable projectUnits;
@@ -51,7 +51,7 @@ public abstract class AbstractOptions implements Unitable, Datetimeable {
         return runoffSolver;
     }
 
-    public RoutingSetup getRoutingSetup() {
+    public RoutingOptions getRoutingOptions() {
         return routingSetup;
     }
 

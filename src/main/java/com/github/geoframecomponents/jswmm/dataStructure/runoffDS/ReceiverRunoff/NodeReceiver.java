@@ -13,19 +13,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.ReceiverRunoff;
 
+import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.AbstractNode;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
 
-public class SubcatchmentReceiver implements ReceiverRunoff {
+public class NodeReceiver implements ReceiverRunoff {
     ReceiverType receiverType;
-    AbstractSubcatchment receiverObject;
+    AbstractNode receiverObject;
     Double percentage;
 
-    public SubcatchmentReceiver(AbstractSubcatchment area, Double percentage) {
-        this.receiverObject = area;
+    public NodeReceiver(AbstractNode node, Double percentage) {
+        this.receiverObject = node;
         this.percentage = percentage;
-        this.receiverType = ReceiverType.SUBCATCHMENT;
+        this.receiverType = ReceiverType.NODE;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class SubcatchmentReceiver implements ReceiverRunoff {
 
     @Override
     public AbstractSubcatchment getReceiverObject() {
-        return receiverObject;
+        return null;
     }
 
     @Override
@@ -43,3 +44,4 @@ public class SubcatchmentReceiver implements ReceiverRunoff {
         return percentage;
     }
 }
+

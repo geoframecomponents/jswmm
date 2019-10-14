@@ -20,11 +20,11 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 
 import java.time.Instant;
 
-public class RoutingDynamicWaveSetup implements RoutingSetup {
+public class RoutingDynamicWaveOptions implements RoutingOptions {
 
     private final Long routingStepSize;
 
-    public RoutingDynamicWaveSetup(Long routingStepSize) {
+    public RoutingDynamicWaveOptions(Long routingStepSize) {
         this.routingStepSize = routingStepSize;
     }
 

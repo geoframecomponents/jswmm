@@ -13,12 +13,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area;
 
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.ReceiverRunoff.ReceiverRunoff;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea.Subarea;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff.ReceiverRunoff;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,9 +33,6 @@ public class Area extends AbstractSubcatchment {
     DataCollector raingageDataset;
     List<ReceiverRunoff> receivers;
 
-    //Double imperviousPercentage; //TODO evaluate from subareas
-    //Double percentageImperviousWOstorage; //TODO evaluate from subareas
-
     Double characteristicWidth;
     Double areaSlope;
     //Double curbLength;
@@ -40,15 +40,36 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
-    public Area(Double subcatchmentArea, DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
-                HashMap<Integer, List<Subarea>> subareas, Unitable projectUnits) {
-        super(projectUnits);
-        this.subcatchmentArea = subcatchmentArea;
+    public Area(Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
+                DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
+                HashMap<Integer, List<Subarea>> subareas, boolean report) {
+
+        this(1, units, dateTime, runoffSolver, raingageDataset, characteristicWidth, areaSlope, subareas, report);
+    }
+
+    public Area(Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
+                DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
+                HashMap<Integer, List<Subarea>> subareas, boolean report) {
+
+        this.setSubcatchmentUnits(units);
+        this.setSubcatchmentTime(dateTime);
+
+        this.runoffSolver = runoffSolver;
+
         this.raingageDataset = raingageDataset;
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
-        this.subareas = subareas;
+        this.subareas = new HashMap<>(subareas);
         this.totalAreaFlowRate = new LinkedHashMap<>();
+
+        //TODO report!!!
+
+        Instant startSimDate = this.getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
+        for (Subarea subarea : this.subareas.get(curveId)) {
+            subarea.setAreaFlowRate(curveId, startSimDate, 0.0);
+            subarea.setRunoffDepth(curveId, startSimDate, 0.0);
+            subarea.setTotalDepth(curveId, startSimDate, 0.0);
+        }
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {
@@ -76,35 +97,27 @@ public class Area extends AbstractSubcatchment {
         return totalAreaFlowRate.get(id);
     }
 
-    /**
-     * Not used.
-     * @return
-     */
-    public List<ReceiverRunoff> getReceivers() {
-        return receivers;
-    }
-
     public HashMap<Integer, List<Subarea>> getSubareas() {
         return subareas;
     }
 
-    public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData,
-                                       AbstractRunoffSolver runoffSolver, Instant currentTime) {
+    public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData) {
 
-        for (Integer identifier : adaptedRainfallData.keySet()) {
+        Instant currentTime = getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = getSubcatchmentTime().getDateTime(AvailableDateTypes.endDate);
+        long runoffStep = getSubcatchmentTime().getDateTime(AvailableDateTypes.stepSize);
 
-            double rainfall = adaptedRainfallData.get(identifier).get(currentTime);
+        for ( Instant time = currentTime; time.isBefore(totalTime); time = time.plusSeconds(runoffStep)) {
 
-            for (Subarea subarea : subareas.get(identifier)) {
-                subarea.setDepthFactor(areaSlope, characteristicWidth);
-                subarea.evaluateFlowRate(identifier, rainfall, 0.0,
-                        currentTime, runoffSolver, areaSlope, characteristicWidth); //TODO evaporation!!
+            for (Integer identifier : adaptedRainfallData.keySet()) {
+
+                double rainfall = adaptedRainfallData.get(identifier).get(currentTime);
+                for (Subarea subarea : subareas.get(identifier)) {
+                    subarea.setDepthFactor(areaSlope, characteristicWidth);
+                    subarea.evaluateFlowRate(identifier, rainfall, 0.0,
+                            currentTime, runoffSolver, areaSlope, characteristicWidth); //TODO evaporation!!
+                }
             }
         }
-    }
-
-    @Override
-    public void setProjectUnits(Unitable projectUnits) {
-        this.projectUnits = projectUnits;
     }
 }

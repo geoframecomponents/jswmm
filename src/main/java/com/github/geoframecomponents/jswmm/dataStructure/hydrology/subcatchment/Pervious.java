@@ -13,10 +13,10 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -35,7 +35,6 @@ public class Pervious extends Subarea {
     public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient,
                     Double percentageRouted, List<Subarea> connections, Unitable projectUnits) {
 
-        super(projectUnits);
         this.subareaArea = subareaArea;
         this.depressionStorage = depressionStoragePervious;
         this.roughnessCoefficient = roughnessCoefficient;
@@ -77,7 +76,7 @@ public class Pervious extends Subarea {
     }
 
     @Override
-    void evaluateNextStep(Integer id, Instant currentTime, AbstractRunoffSolver runoffSolver, Double rainfall, Double evaporation,
+    void evaluateNextStep(Integer id, Instant currentTime, RunoffSolver runoffSolver, Double rainfall, Double evaporation,
                           Double subareaSlope, Double characteristicWidth) {
 
         Long runoffStepSize = runoffSolver.getRunoffStepSize();

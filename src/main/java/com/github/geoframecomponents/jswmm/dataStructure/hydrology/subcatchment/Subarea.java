@@ -13,15 +13,18 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
+package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.subarea;
 
+import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area.Area;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
-import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.AbstractRunoffSolver;
+import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
 import java.time.Instant;
 import java.util.*;
 
-public abstract class Subarea {
+public abstract class Subarea extends Area {
 
     Double subareaArea;
     Double depthFactor;
@@ -36,8 +39,10 @@ public abstract class Subarea {
     HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;      //[mm/s]
     HashMap<Integer, Double> excessRainfall;
 
-    public Subarea(Unitable units) {
-        super(units);
+    public Subarea(Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
+                   DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
+                   HashMap<Integer, List<Subarea>> subareas, boolean report) {
+        super(curveId, units, dateTime, runoffSolver, raingageDataset, characteristicWidth, areaSlope, subareas, report);
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {
@@ -88,7 +93,7 @@ public abstract class Subarea {
     abstract Double getWeightedFlowRate(Integer identifier, Instant currentTime);
 
     public void evaluateFlowRate(Integer identifier, Double rainfall, Double evaporation, Instant currentTime,
-                                 AbstractRunoffSolver runoffSolver, Double subareaSlope, Double characteristicWidth) {
+                                 RunoffSolver runoffSolver, Double subareaSlope, Double characteristicWidth) {
         Double tempPrecipitation = rainfall;
         if (subareaConnections != null) {
             tempPrecipitation = null;
@@ -109,7 +114,7 @@ public abstract class Subarea {
      * Method to evaluate the totalDepth, the runoffDepth and the flowRate at the node.
      * It takes into account the type of Subarea through override.
      */
-    abstract void evaluateNextStep(Integer identifier, Instant currentTime, AbstractRunoffSolver runoffSolver, Double rainfall,
+    abstract void evaluateNextStep(Integer identifier, Instant currentTime, RunoffSolver runoffSolver, Double rainfall,
                                    Double evaporation, Double subareaArea, Double characteristicWidth);
 
     /**
@@ -122,7 +127,7 @@ public abstract class Subarea {
      */
     abstract Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth);
 
-    void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, AbstractRunoffSolver runoffSolver) {
+    void runoffODEsolver(Integer id, Instant currentTime, Instant nextTime, Double rainfall, RunoffSolver runoffSolver) {
         double[] inputValues = new double[1];
         inputValues[0] = runoffDepth.get(id).get(currentTime);
         double[] outputValues = new double[1];

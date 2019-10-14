@@ -1,4 +1,4 @@
-package com.github.geoframecomponents.jswmm.dataStructure.routingDS;/*
+/*
  * This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU General Public License as published by
  *     the Free Software Foundation, either version 3 of the License, or
@@ -12,6 +12,8 @@ package com.github.geoframecomponents.jswmm.dataStructure.routingDS;/*
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+package com.github.geoframecomponents.jswmm.dataStructure.routingDS;
 
 //package org.altervista.growworkinghard.jswmm.dataStructure.routingDS;
 //
@@ -27,12 +29,11 @@ package com.github.geoframecomponents.jswmm.dataStructure.routingDS;/*
 
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutedFlow;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSetup;
 
 import java.time.Instant;
 
-public class RoutingKinematicWaveSetup implements RoutingSetup {
+public class RoutingKinematicWaveOptions implements RoutingOptions {
+
     @Override
     public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType) {
         return null;
@@ -60,7 +61,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 //    private Double lowerBound;
 //    private Double upperBound;
 //
-//    public RoutingKinematicWaveSetup(Long routingStepSize, Integer referenceTableLength, Double iota,
+//    public RoutingKinematicWaveOptions(Long routingStepSize, Integer referenceTableLength, Double iota,
 //                                     Double phi, Double tolerance) {
 //        this.routingStepSize = routingStepSize;
 //        this.referenceTableLength = referenceTableLength;
@@ -70,7 +71,7 @@ public class RoutingKinematicWaveSetup implements RoutingSetup {
 //        fillTables();
 //    }
 //
-//    public RoutingKinematicWaveSetup(Long routingStepSize, Double tolerance) {
+//    public RoutingKinematicWaveOptions(Long routingStepSize, Double tolerance) {
 //        this.routingStepSize = routingStepSize;
 //        this.referenceTableLength = 180;
 //        this.tolerance = tolerance;

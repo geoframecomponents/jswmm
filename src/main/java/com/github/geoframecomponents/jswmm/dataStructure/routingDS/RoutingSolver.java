@@ -17,20 +17,15 @@ package com.github.geoframecomponents.jswmm.dataStructure.routingDS;
 
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.PeriodStepTolerance;
 
 import java.time.Instant;
 
-public interface RoutingSetup {
+public interface RoutingOptions {
 
-
-    /**
-     * Main routing method
-     */
     RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow,
                              OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
-                             Double linkSlope, CrossSectionType crossSectionType);
+                             Double linkSlope, CrossSectionType crossSectionType, double routingStep);
 
-    public Long adaptTimeDelay(Long routingStepSize, Long timeDelay);
-
-    public Long getRoutingStepSize();
+    public double adaptTimeDelay(double routingStepSize, double timeDelay);
 }
