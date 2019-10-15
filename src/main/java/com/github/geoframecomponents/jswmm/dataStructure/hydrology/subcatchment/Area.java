@@ -32,19 +32,14 @@ public class Area extends AbstractSubcatchment {
     DataCollector raingageDataset;
     List<ReceiverRunoff> receivers;
 
+    RunoffSolver runoffSolver;
+
     Double characteristicWidth;
     Double areaSlope;
     //Double curbLength;
 
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
-
-    public Area(Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
-                DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
-                HashMap<Integer, List<Subarea>> subareas, boolean report) {
-
-        this(1, units, dateTime, runoffSolver, raingageDataset, characteristicWidth, areaSlope, subareas, report);
-    }
 
     public Area(Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
                 DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,

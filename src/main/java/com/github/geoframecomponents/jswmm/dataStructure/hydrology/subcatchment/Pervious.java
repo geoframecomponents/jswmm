@@ -15,6 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
@@ -26,25 +28,11 @@ public class Pervious extends Subarea {
 
     Double infiltration = 0.0; //TODO temporary 0.0
 
-    public Pervious(Double subareaArea, Double depressionStoragePervious,
-                    Double roughnessCoefficient, Unitable projectUnits) {
-        this(subareaArea, depressionStoragePervious, roughnessCoefficient, null, null,
-                projectUnits);
-    }
+    public Pervious(Unitable units, Datetimeable time, Double area, Double depressionStorage, Double roughnessCoefficient,
+                    Double percentageRouted, List<Subarea> connections, Double infiltration) {
 
-    public Pervious(Double subareaArea, Double depressionStoragePervious, Double roughnessCoefficient,
-                    Double percentageRouted, List<Subarea> connections, Unitable projectUnits) {
-
-        this.subareaArea = subareaArea;
-        this.depressionStorage = depressionStoragePervious;
-        this.roughnessCoefficient = roughnessCoefficient;
-        this.percentageRouted = percentageRouted;
-        this.subareaConnections = connections;
-
-        this.totalDepth = new HashMap<>();
-        this.runoffDepth = new HashMap<>();
-        this.flowRate = new HashMap<>();
-        this.excessRainfall = new HashMap<>();
+        super(units, time, area, depressionStorage, roughnessCoefficient, percentageRouted, connections);
+        this.infiltration = infiltration;
     }
 
     @Override
@@ -61,9 +49,9 @@ public class Pervious extends Subarea {
             depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * subareaArea);
         }
 
-        if ( super.getUnits().equals(UnitsSWMM.CMS) ) {
+        //if ( super.getUnits().equals(UnitsSWMM.CMS) ) {
             this.depthFactor = 1E-6 * depthFactor; // [ mm^(-2/3)/s ]
-        }
+        //}
     }
 
     @Override
@@ -79,8 +67,7 @@ public class Pervious extends Subarea {
     void evaluateNextStep(Integer id, Instant currentTime, RunoffSolver runoffSolver, Double rainfall, Double evaporation,
                           Double subareaSlope, Double characteristicWidth) {
 
-        Long runoffStepSize = runoffSolver.getRunoffStepSize();
-
+        Long runoffStepSize = getSubcatchmentTime().getDateTime(AvailableDateTypes.stepSize);
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
 
         double totalDepthCurrent = totalDepth.get(id).get(currentTime);
@@ -118,9 +105,9 @@ public class Pervious extends Subarea {
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
         double unitsFactor = 1.0;
-        if (super.getUnits().equals(UnitsSWMM.CMS) ) {
+        //if (super.getUnits().equals(UnitsSWMM.CMS) ) {
             unitsFactor = 1E-6; //[mm/s]
-        }
+        //}
         return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) / (subareaArea * roughnessCoefficient);
     }

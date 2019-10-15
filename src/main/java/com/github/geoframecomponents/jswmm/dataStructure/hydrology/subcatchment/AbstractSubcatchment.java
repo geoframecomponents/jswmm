@@ -29,8 +29,6 @@ public abstract class AbstractSubcatchment {
     Unitable subcatchmentUnits;
     Datetimeable subcatchmentTime;
 
-    RunoffSolver runoffSolver;
-
     DataCollector dataFromFile;
 
     public void setSubcatchmentUnits(Unitable subcatchmentUnits) {

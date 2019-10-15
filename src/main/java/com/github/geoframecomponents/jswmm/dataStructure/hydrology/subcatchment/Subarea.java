@@ -15,7 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
@@ -23,7 +22,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 import java.time.Instant;
 import java.util.*;
 
-public abstract class Subarea extends Area {
+public abstract class Subarea extends AbstractSubcatchment {
 
     Double subareaArea;
     Double depthFactor;
@@ -35,13 +34,21 @@ public abstract class Subarea extends Area {
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalDepth;    //[mm]
     HashMap<Integer, LinkedHashMap<Instant, Double>> runoffDepth;   //[mm]
+
     HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;      //[mm/s]
     HashMap<Integer, Double> excessRainfall;
 
-    public Subarea(Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
-                   DataCollector raingageDataset, Double characteristicWidth, Double areaSlope,
-                   HashMap<Integer, List<Subarea>> subareas, boolean report) {
-        super(curveId, units, dateTime, runoffSolver, raingageDataset, characteristicWidth, areaSlope, subareas, report);
+    public Subarea(Unitable units, Datetimeable time, Double subareaArea, Double depressionStorage, Double roughnessCoefficient,
+                   Double percentageRouted, List<Subarea> subareaConnections) {
+
+        this.subcatchmentUnits = units;
+        this.subcatchmentTime = time;
+
+        this.subareaArea = subareaArea;
+        this.depressionStorage = depressionStorage;
+        this.roughnessCoefficient = roughnessCoefficient;
+        this.percentageRouted = percentageRouted;
+        this.subareaConnections = subareaConnections;
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {

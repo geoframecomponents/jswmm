@@ -15,6 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment;
 
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
@@ -26,26 +28,12 @@ public class ImperviousWithoutStorage extends Subarea {
 
     Double totalImperviousArea;
 
-    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                    Double roughnessCoefficient, Unitable projectUnits) {
-        this(imperviousWStorageArea, imperviousWOStorageArea, roughnessCoefficient,
-                null, null, projectUnits);
-    }
+    public ImperviousWithoutStorage(Unitable units, Datetimeable time, Double imperviousWStorageArea,
+                                    Double imperviousWOStorageArea, Double roughnessCoefficient,
+                                    Double percentageRouted, List<Subarea> connections) {
 
-    public ImperviousWithoutStorage(Double imperviousWStorageArea, Double imperviousWOStorageArea,
-                                    Double roughnessCoefficient, Double percentageRouted,
-                                    List<Subarea> connections, Unitable projectUnits) {
-        this.subareaArea = imperviousWOStorageArea;
+        super(units, time, imperviousWOStorageArea, null, roughnessCoefficient, percentageRouted, connections);
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
-        this.roughnessCoefficient = roughnessCoefficient;
-        this.percentageRouted = percentageRouted;
-        this.subareaConnections = connections;
-
-        this.totalDepth = new HashMap<>();
-        this.runoffDepth = new HashMap<>();
-        this.flowRate = new HashMap<>();
-        this.excessRainfall = new HashMap<>();
-        this.depressionStorage = 0.0;
     }
 
     @Override
@@ -64,10 +52,10 @@ public class ImperviousWithoutStorage extends Subarea {
             depthFactor = (Math.pow(subareaSlope, 0.5) * characteristicWidth) / (roughnessCoefficient * totalImperviousArea);
         }
 
-        if ( super.getUnits().equals(UnitsSWMM.CMS) ){
+        //if ( super.getUnits().equals(UnitsSWMM.CMS) ){
             double CMSdepthFactor = 1E-6;
             this.depthFactor = CMSdepthFactor * depthFactor; // [ mm^(-2/3)/s ]
-        }
+        //}
     }
 
     @Override
@@ -83,7 +71,7 @@ public class ImperviousWithoutStorage extends Subarea {
     void evaluateNextStep(Integer id, Instant currentTime, RunoffSolver runoffSolver, Double rainfall, Double evaporation,
                           Double subareaSlope, Double characteristicWidth) {
 
-        Long runoffStepSize = runoffSolver.getRunoffStepSize();
+        Long runoffStepSize = getSubcatchmentTime().getDateTime(AvailableDateTypes.stepSize);
         Instant nextTime = currentTime.plusSeconds(runoffStepSize);
         Double moistureVolume = rainfall * runoffStepSize + runoffDepth.get(id).get(currentTime);
 
@@ -107,9 +95,9 @@ public class ImperviousWithoutStorage extends Subarea {
 
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
         double unitsFactor = 1.0;
-        if (super.getUnits().equals(UnitsSWMM.CMS) ){
+        //if (super.getUnits().equals(UnitsSWMM.CMS) ){
             unitsFactor = 1E-6; //[mm/s]
-        }
+        //}
         return unitsFactor * Math.pow(subareaSlope, 0.5) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) / (totalImperviousArea * roughnessCoefficient);
     }
