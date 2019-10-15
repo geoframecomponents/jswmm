@@ -16,8 +16,10 @@ public class Period implements Datetimeable {
         switch (type) {
             case startDate:
                 this.startDate = (Instant) field;
+                break;
             case endDate:
                 this.endDate = (Instant) field;
+                break;
             default:
                 throw new NullPointerException("Not a defined DateType");
         }

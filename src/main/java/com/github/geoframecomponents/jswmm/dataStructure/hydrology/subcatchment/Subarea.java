@@ -49,6 +49,10 @@ public abstract class Subarea extends AbstractSubcatchment {
         this.roughnessCoefficient = roughnessCoefficient;
         this.percentageRouted = percentageRouted;
         this.subareaConnections = subareaConnections;
+
+        this.totalDepth = new HashMap<>();
+        this.runoffDepth = new HashMap<>();
+        this.flowRate = new HashMap<>();
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getFlowRate() {

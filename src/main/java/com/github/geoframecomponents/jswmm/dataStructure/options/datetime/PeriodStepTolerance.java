@@ -17,12 +17,16 @@ public abstract class PeriodStepTolerance extends PeriodStep {
         switch (type) {
             case minStep:
                 this.minStep = (Double) field;
+                break;
             case maxStep:
                 this.maxStep = (Double) field;
+                break;
             case absoluteTolerance:
                 this.absoluteTolerance = (Double) field;
+                break;
             case relativeTolerance:
                 this.relativeTolerance = (Double) field;
+                break;
             default:
                 super.setDateTime(type, field);
         }

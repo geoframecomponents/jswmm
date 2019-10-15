@@ -26,6 +26,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Availa
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Period;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.PeriodStep;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingDateTime;
@@ -153,8 +154,8 @@ public class SWMMobject{
         String raingageName = "RG1";
         Long rainfallStepSize = 60L;
 
-        raingageData.setDatasetName(raingageName);
-        raingageData.setDatasetStepSize(rainfallStepSize);
+        //raingageData.setDatasetName(raingageName);
+        //raingageData.setDatasetStepSize(rainfallStepSize);
 
         //Setup areas
         double runoffStep = 30L;

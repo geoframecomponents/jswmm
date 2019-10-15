@@ -40,11 +40,8 @@ public abstract class AbstractNode {
     HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate = new HashMap<>();
     LinkedHashMap<Instant, Double> nodeDepth;
 
-    public AbstractNode(String nodeUnits) {
-        this.nodeUnits = new SWMMunits(nodeUnits);
-    }
-    public AbstractNode(AvailableUnits nodeUnits) {
-        this.nodeUnits = new SWMMunits(nodeUnits);
+    public AbstractNode(Unitable nodeUnits) {
+        this.nodeUnits = nodeUnits;
     }
 
     public abstract void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate);

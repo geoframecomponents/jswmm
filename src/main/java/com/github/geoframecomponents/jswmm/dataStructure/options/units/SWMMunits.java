@@ -5,11 +5,11 @@ public class SWMMunits implements Unitable {
     private AvailableUnits projectUnits;
 
     public SWMMunits(AvailableUnits projectUnits) {
-        setUnits((AvailableUnits) projectUnits);
+        setUnits(projectUnits);
     }
 
     public SWMMunits(String projectUnits) {
-        setUnits((String) projectUnits);
+        setUnits(projectUnits);
     }
 
     @Override
@@ -30,8 +30,10 @@ public class SWMMunits implements Unitable {
         switch (units) {
             case CMS:
                 this.projectUnits = AvailableUnits.CMS;
+                break;
             case CFS:
                 this.projectUnits = AvailableUnits.CFS;
+                break;
             default:
                 throw new IllegalArgumentException("Not a recognized units");
         }
@@ -41,8 +43,10 @@ public class SWMMunits implements Unitable {
         switch (units) {
             case "CMS":
                 this.projectUnits = AvailableUnits.CMS;
+                break;
             case "CFS":
                 this.projectUnits = AvailableUnits.CFS;
+                break;
             default:
                 throw new IllegalArgumentException("Not a recognized units");
         }

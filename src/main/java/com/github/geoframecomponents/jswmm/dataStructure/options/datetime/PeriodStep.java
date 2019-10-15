@@ -15,6 +15,7 @@ public class PeriodStep extends Period {
         switch (type) {
             case stepSize:
                 this.stepSize = (Double) field;
+                break;
             default:
                 super.setDateTime(type, field);
         }
