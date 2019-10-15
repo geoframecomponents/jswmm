@@ -29,8 +29,8 @@ public class Junction extends AbstractNode {
     Double maximumDepthSurcharge;
     Double pondingArea;
 
-    public <T> Junction(Double nodeElevation, Double maximumDepthNode, Double initialDepthnode,
-                    Double maximumDepthSurcharge, Double pondingArea, T units) {
+    public <T> Junction(T units, Double nodeElevation, Double maximumDepthNode, Double initialDepthnode,
+                    Double maximumDepthSurcharge, Double pondingArea) {
         super((String) units);
         this.nodeElevation = nodeElevation;
         this.maximumDepthNode = maximumDepthNode;
