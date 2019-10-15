@@ -15,7 +15,7 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff;
 
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area.AbstractSubcatchment;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
 
 public class SubcatchmentReceiver implements ReceiverRunoff {
     ReceiverType receiverType;

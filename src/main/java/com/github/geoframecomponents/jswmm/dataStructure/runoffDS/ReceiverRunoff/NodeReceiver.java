@@ -16,7 +16,7 @@
 package com.github.geoframecomponents.jswmm.dataStructure.runoffDS.ReceiverRunoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.AbstractNode;
-import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.area.AbstractSubcatchment;
+import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.AbstractSubcatchment;
 
 public class NodeReceiver implements ReceiverRunoff {
     ReceiverType receiverType;
@@ -31,17 +31,20 @@ public class NodeReceiver implements ReceiverRunoff {
 
     @Override
     public ReceiverType getReceiverType() {
-        return receiverType;
+        throw new NullPointerException("Nothing implemented yet");
+
     }
 
     @Override
     public AbstractSubcatchment getReceiverObject() {
-        return null;
+        throw new NullPointerException("Nothing implemented yet");
+
     }
 
     @Override
     public Double getPercentage() {
-        return percentage;
+        throw new NullPointerException("Nothing implemented yet");
+
     }
 }
 
