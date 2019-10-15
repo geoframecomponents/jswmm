@@ -17,6 +17,7 @@ package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import oms3.annotations.*;
 
 import java.time.Instant;
@@ -117,22 +118,18 @@ public class PreRunoff {
 
             DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
 
-            this.runoffStepSize = dataStructure.getRunoffOptions().getRunoffStepSize();
+            this.runoffStepSize = dataStructure.getAreasDateTime().getDateTime(AvailableDateTypes.stepSize);
             this.rainfallStepSize = raingage.getDatasetStepSize();
-            this.initialTime = dataStructure.getDatetimeable().getProjectDate("initial");
-            this.totalTime = dataStructure.getDatetimeable().getProjectDate("final");
 
             if(aLPP == null && nLPP == null) {
                 String stationRaingage = raingage.getDatasetName();
                 this.rainfallData = raingage.getDatasetData().get(stationRaingage);
-                adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize,
-                        totalTime.getEpochSecond(), initialTime.getEpochSecond(), rainfallData) );
+                adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize, rainfallData) );
             }
             else{
                 for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {
                     adaptedRainfallData.put(rainfallTimeId, dataStructure.adaptDataSeries(runoffStepSize,
-                            rainfallStepSize, totalTime.getEpochSecond(), initialTime.getEpochSecond(),
-                            generateRainfall().get(rainfallTimeId)) );
+                            rainfallStepSize, generateRainfall().get(rainfallTimeId)) );
                 }
             }
         }

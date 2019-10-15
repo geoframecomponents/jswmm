@@ -75,7 +75,7 @@ public class FlowRateDispatcher {
     public void run() {
 
         Long routingStepSize = dataStructure.getLinksDateTime().getDateTime(AvailableDateTypes.stepSize);
-        Long flowRateStepSize = dataStructure.getRunoffOptions().getRunoffStepSize();
+        Long flowRateStepSize = routingStepSize;//TODO check this step size
         Instant initialTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.startDate);
         Instant totalTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.endDate);
 
