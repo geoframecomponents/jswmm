@@ -36,12 +36,6 @@ public class Runoff {
     private LinkedHashMap<Instant, Double> adaptedEvaporationData = null; // [mm/hour]
 
     /**
-     * Time setup
-     */
-    private Instant initialTime;
-    private Instant totalTime;
-
-    /**
      * Name of the area of current simulation
      */
     @In

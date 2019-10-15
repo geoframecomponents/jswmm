@@ -17,10 +17,10 @@ package com.github.geoframecomponents.jswmm.routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
-import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
-import oms3.annotations.*;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.Lucchese_ca;
+
+import oms3.annotations.*;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,14 +30,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class Routing {
-
-    /**
-     * Time setup
-     */
-    private Instant initialTime;
-
-    private Instant totalTime;
-
 
     /**
      * Simulation node fields
@@ -56,13 +48,6 @@ public class Routing {
 
     @In
     public CommercialPipeSize pipeCompany = new Lucchese_ca();
-
-    /**
-     * Integration method setup
-     */
-    private Long routingStepSize;
-
-    private RoutingSolver routingOptions;
 
     /**
      * Data structure
