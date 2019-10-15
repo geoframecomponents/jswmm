@@ -15,11 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.writeData.WriteDataToFile;
-import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
@@ -30,8 +25,8 @@ public abstract class AbstractNode {
 
     protected Unitable nodeUnits;
 
-    DataCollector dataCollector;
-    WriteDataToFile writeDataToFile;
+    //DataCollector dataCollector;
+    //WriteDataToFile writeDataToFile;
     ExternalInflow dryWeatherInflow;
     ExternalInflow rainfallDependentInfiltrationInflow;
 

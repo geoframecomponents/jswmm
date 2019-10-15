@@ -16,7 +16,6 @@
 package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import oms3.annotations.*;
 
@@ -114,20 +113,20 @@ public class PreRunoff {
 
         if(dataStructure != null) {
 
-            //this.dataStructure = dataStructure;
-
-            DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
+            //DataCollector raingage = dataStructure.getAreas(areaName).getDataFromFile();
 
             this.initialTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.startDate);
             this.totalTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.endDate);
 
             this.runoffStepSize = dataStructure.getAreasDateTime().getDateTime(AvailableDateTypes.stepSize);
-            this.rainfallStepSize = raingage.getDatasetStepSize();
+            //this.rainfallStepSize = raingage.getDatasetStepSize();
+            this.rainfallStepSize = runoffStepSize;
 
             if(aLPP == null && nLPP == null) {
-                String stationRaingage = raingage.getDatasetName();
-                this.rainfallData = raingage.getDatasetData().get(stationRaingage);
-                adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize, rainfallData) );
+                //String stationRaingage = raingage.getDatasetName();
+                //this.rainfallData = raingage.getDatasetData().get(stationRaingage);
+                //adaptedRainfallData.put( 1, dataStructure.adaptDataSeries(runoffStepSize, rainfallStepSize, rainfallData) );
+                throw new NullPointerException("Nothing implemented yet");
             }
             else{
                 for (int rainfallTimeId = 1; rainfallTimeId <= numberOfCurves; rainfallTimeId++) {

@@ -15,7 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure;
 
-import com.github.geoframecomponents.jswmm.dataStructure.formatData.readData.DataCollector;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.Conduit;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.OutsideSetup;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
@@ -57,8 +56,6 @@ public class SWMMobject{
     private Datetimeable linksDateTime;
     private Map<String, Conduit> conduit = new ConcurrentHashMap<>();
     private RoutingSolver routingSolver;
-
-    private DataCollector raingageData;
 
     private Datetimeable areasDateTime;
     private HashMap<String, Area> areas = new HashMap<>();
@@ -153,9 +150,6 @@ public class SWMMobject{
         String raingageName = "RG1";
         Long rainfallStepSize = 60L;
 
-        //raingageData.setDatasetName(raingageName);
-        //raingageData.setDatasetStepSize(rainfallStepSize);
-
         //Setup areas
         double runoffStep = 30L;
         double minStepSize = 1.0e-8;
@@ -194,7 +188,7 @@ public class SWMMobject{
                     roughnessCoefficientPervious, roughnessCoefficientImpervious,
                     perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
 
-            areas.put(areaName, new Area(curveId, projectUnits, areasDateTime, runoffSolver, raingageData,
+            areas.put(areaName, new Area(curveId, projectUnits, areasDateTime, runoffSolver,
                     characteristicWidth, areaSlope, subareas, true));
         }
 
