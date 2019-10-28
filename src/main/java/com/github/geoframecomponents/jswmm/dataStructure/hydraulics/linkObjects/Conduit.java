@@ -1,17 +1,20 @@
 /*
- * This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+JSWMM: Reimplementation of EPA SWMM in Java
+Copyright (C) 2019 Daniele Dalla Torre (ftt01)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
@@ -51,7 +54,7 @@ public class Conduit extends AbstractLink {
                    Double linkLength, Double linkRoughness, boolean reportOptions) {
 
         this.setLinksUnits(units);
-        this.setLinkTime(dateTime);
+        this.setLinksTime(dateTime);
 
         this.routingSolver = routingSolver;
 
@@ -77,21 +80,11 @@ public class Conduit extends AbstractLink {
     }
 
     @Override
-    public void setInitialUpFlowRate(Integer id, Instant time, Double flowRate) {
-        upstreamOutside.setFlowRate(id, time, flowRate);
-    }
-
-    @Override
-    public void setInitialUpWetArea(Integer id, Instant time, double flowRate) {
-        upstreamOutside.setWetArea(id, time, flowRate);
-    }
-
-    @Override
     public void evaluateFlowRate() {
 
-        Instant currentTime = getLinkTime().getDateTime(AvailableDateTypes.startDate);
-        Instant totalTime = getLinkTime().getDateTime(AvailableDateTypes.endDate);
-        long routingStepSize = getLinkTime().getDateTime(AvailableDateTypes.stepSize);
+        Instant currentTime = getLinksTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = getLinksTime().getDateTime(AvailableDateTypes.endDate);
+        long routingStepSize = getLinksTime().getDateTime(AvailableDateTypes.stepSize);
 
         for (Instant time = currentTime; time.isBefore(totalTime); time = time.plusSeconds(routingStepSize)) {
             HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
@@ -112,8 +105,8 @@ public class Conduit extends AbstractLink {
     @Override
     public double evaluateMaxDischarge() {
 
-        Instant currentTime = getLinkTime().getDateTime(AvailableDateTypes.startDate);
-        Instant totalTime = getLinkTime().getDateTime(AvailableDateTypes.endDate);
+        Instant currentTime = getLinksTime().getDateTime(AvailableDateTypes.startDate);
+        Instant totalTime = getLinksTime().getDateTime(AvailableDateTypes.endDate);
 
         double maxDischarge = 0.0;
         while (currentTime.isBefore(totalTime)) {
@@ -127,7 +120,7 @@ public class Conduit extends AbstractLink {
                 }
             }
 
-            currentTime = currentTime.plusSeconds(getLinkTime().getDateTime(AvailableDateTypes.stepSize));
+            currentTime = currentTime.plusSeconds(getLinksTime().getDateTime(AvailableDateTypes.stepSize));
         }
         return maxDischarge;
     }
