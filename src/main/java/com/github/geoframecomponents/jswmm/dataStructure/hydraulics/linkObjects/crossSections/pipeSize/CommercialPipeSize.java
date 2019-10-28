@@ -26,8 +26,8 @@ import java.util.Map;
  * Class that defines the commercial dimensions of pipe.
  *
  * Extending this abstract class is possible to define personalized dimensions of pipe.
+ * @author sidereus3 (francesco.serafin.3@gmail.com)
  */
-
 public abstract class CommercialPipeSize {
 
     Map<Double, Double> pipe;
