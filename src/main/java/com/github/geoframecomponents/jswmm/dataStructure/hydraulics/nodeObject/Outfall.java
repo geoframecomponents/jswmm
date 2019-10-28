@@ -16,7 +16,10 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
+import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.OutfallINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -32,9 +35,12 @@ public class Outfall extends AbstractNode {
 
     //TODO solve the conflict with tidal/timeseries
 
-    public Outfall(Unitable units, Double nodeElevation, Double fixedStage, LinkedHashMap<Instant, Double> tidalCurve,
-                   LinkedHashMap<Instant, Double> stageTimeseries, boolean gated, String routeTo) {
-        super(units);
+    public Outfall(String name, Unitable units, Double nodeElevation, Double fixedStage,
+                   LinkedHashMap<Instant, Double> tidalCurve, LinkedHashMap<Instant, Double> stageTimeseries,
+                   boolean gated, String routeTo) {
+
+        super(name);
+        this.nodeUnits = units;
         this.nodeElevation = nodeElevation;
 
         this.fixedStage = fixedStage;
@@ -42,6 +48,21 @@ public class Outfall extends AbstractNode {
         this.stageTimeseries = stageTimeseries;
         this.gated = gated;
         this.routeTo = routeTo;
+    }
+
+    public Outfall(String name, String INPfile) throws ConfigurationException {
+
+        super(name);
+        interfaceINP = new OutfallINP(INPfile);
+
+        this.nodeUnits = new SWMMunits( ((OutfallINP) interfaceINP).nodeUnits(name, INPfile) );
+        this.nodeElevation = Double.valueOf( ((OutfallINP) interfaceINP).nodeElev(name, INPfile) );
+
+        this.fixedStage = Double.valueOf( ((OutfallINP) interfaceINP).fixedStage(name, INPfile) );
+        this.tidalCurve = null;
+        this.stageTimeseries = null;
+        this.gated = Boolean.parseBoolean( ((OutfallINP) interfaceINP).fixedStage(name, INPfile) );
+        this.routeTo = ((OutfallINP) interfaceINP).fixedStage(name, INPfile);
     }
 
     @Override

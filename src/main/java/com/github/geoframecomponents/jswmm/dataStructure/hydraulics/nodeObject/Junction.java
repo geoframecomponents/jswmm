@@ -15,9 +15,10 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.JunctionINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,14 +31,29 @@ public class Junction extends AbstractNode {
     Double maximumDepthSurcharge;
     Double pondingArea;
 
-    public Junction(Unitable units, Double nodeElevation, Double maximumDepthNode, Double initialDepthnode,
-                        Double maximumDepthSurcharge, Double pondingArea) {
-        super(units);
+    public Junction(String name, Unitable units, Double nodeElevation, Double maximumDepthNode,
+                    Double initialDepthnode, Double maximumDepthSurcharge, Double pondingArea) {
+
+        super(name);
+        this.nodeUnits = units;
         this.nodeElevation = nodeElevation;
         this.maximumDepthNode = maximumDepthNode;
         this.initialDepthnode = initialDepthnode;
         this.maximumDepthSurcharge = maximumDepthSurcharge;
         this.pondingArea = pondingArea;
+    }
+
+    public Junction(String name, String INPfile) throws ConfigurationException {
+
+        super(name);
+        interfaceINP = new JunctionINP(INPfile);
+
+        this.nodeUnits = new SWMMunits( ((JunctionINP) interfaceINP).nodeUnits(name, INPfile) );
+        this.nodeElevation = Double.valueOf( ((JunctionINP) interfaceINP).nodeElev(name, INPfile) );
+        this.maximumDepthNode = Double.valueOf( ((JunctionINP) interfaceINP).maxDepth(name, INPfile) );
+        this.initialDepthnode = Double.valueOf( ((JunctionINP) interfaceINP).initDepth(name, INPfile) );
+        this.maximumDepthSurcharge = Double.valueOf( ((JunctionINP) interfaceINP).maxDepthSur(name, INPfile) );
+        this.pondingArea = Double.valueOf( ((JunctionINP) interfaceINP).pondArea(name, INPfile) );
     }
 
     @Override

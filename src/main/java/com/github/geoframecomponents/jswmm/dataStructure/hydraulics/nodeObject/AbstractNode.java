@@ -16,6 +16,7 @@
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import org.altervista.growworkinghard.jswmm.inpparser.DataFromFile;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -23,20 +24,25 @@ import java.util.LinkedHashMap;
 
 public abstract class AbstractNode {
 
-    protected Unitable nodeUnits;
+    protected String name;
 
-    //DataCollector dataCollector;
-    //WriteDataToFile writeDataToFile;
+    protected Unitable nodeUnits;
+    Double nodeElevation;
+
     ExternalInflow dryWeatherInflow;
     ExternalInflow rainfallDependentInfiltrationInflow;
-
-    Double nodeElevation;
 
     HashMap<Integer, LinkedHashMap<Instant, Double>> nodeFlowRate = new HashMap<>();
     LinkedHashMap<Instant, Double> nodeDepth;
 
-    public AbstractNode(Unitable nodeUnits) {
-        this.nodeUnits = nodeUnits;
+    DataFromFile interfaceINP;
+
+    public AbstractNode(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public abstract void sumFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate);

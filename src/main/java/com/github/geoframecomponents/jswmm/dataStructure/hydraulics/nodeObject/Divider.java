@@ -15,8 +15,8 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.DividerINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -24,8 +24,9 @@ import java.util.LinkedHashMap;
 
 public class Divider extends AbstractNode {
 
-    public Divider(Unitable nodeUnits) {
-        super(nodeUnits);
+    public Divider(String name, String INPfile) throws ConfigurationException {
+        super(name);
+        interfaceINP = new DividerINP(INPfile);
     }
 
     @Override
