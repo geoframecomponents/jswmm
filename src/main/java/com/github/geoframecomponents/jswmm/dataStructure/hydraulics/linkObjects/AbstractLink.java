@@ -19,15 +19,19 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
+import org.altervista.growworkinghard.jswmm.INPparser;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public abstract class AbstractLink {
+/**
+ * Generic link object
+ */
+public abstract class AbstractLink extends INPparser {
 
     protected Unitable linksUnits;
-    protected Datetimeable linkTime;
+    protected Datetimeable linksTime;
 
     RoutingSolver routingSolver;
 
@@ -38,33 +42,49 @@ public abstract class AbstractLink {
         this.linksUnits = linksUnits;
     }
 
-    public void setLinkTime(Datetimeable linkTime) {
-        this.linkTime = linkTime;
+    public void setLinksTime(Datetimeable linksTime) {
+        this.linksTime = linksTime;
     }
 
     public Unitable getLinksUnits() {
-        return linksUnits;
+        if (linksUnits!=null) {
+            return linksUnits;
+        }
+        else {
+            throw new NullPointerException("linksUnits null");
+        }
     }
 
-    public Datetimeable getLinkTime() {
-        return linkTime;
+    public Datetimeable getLinksTime() {
+        if (linksTime !=null) {
+            return linksTime;
+        }
+        else {
+            throw new NullPointerException("linksTime null");
+        }
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getDownstreamFlowRate() {
-        return downstreamOutside.streamFlowRate;
+        if (downstreamOutside.streamFlowRate !=null) {
+            return downstreamOutside.streamFlowRate;
+        }
+        else {
+            throw new NullPointerException("downstreamOutside.streamFlowRate null");
+        }
     }
 
     public HashMap<Integer, LinkedHashMap<Instant, Double>> getUpstreamFlowRate() {
-        return upstreamOutside.streamFlowRate;
+        if (upstreamOutside.streamFlowRate !=null) {
+            return upstreamOutside.streamFlowRate;
+        }
+        else {
+            throw new NullPointerException("upstreamOutside.streamFlowRate null");
+        }
     }
 
     public abstract OutsideSetup getUpstreamOutside();
 
     public abstract OutsideSetup getDownstreamOutside();
-
-    public abstract void setInitialUpFlowRate(Integer id, Instant time, Double flowRate);
-
-    public abstract void setInitialUpWetArea(Integer id, Instant startDate, double flowRate);
 
     public abstract void evaluateFlowRate();
 
