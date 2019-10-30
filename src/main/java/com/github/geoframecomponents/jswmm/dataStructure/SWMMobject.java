@@ -34,6 +34,12 @@ import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.DormandPrince5
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffDateTime;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
+import org.altervista.growworkinghard.jswmm.inpparser.DataFromFile;
+import org.altervista.growworkinghard.jswmm.inpparser.INPConfiguration;
+import org.altervista.growworkinghard.jswmm.inpparser.INPparser;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.GeneralINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -46,11 +52,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Build the data structure starting from the inp file
  * TODO create the INPparser and import it
  */
-public class SWMMobject{
+public class SWMMobject extends INPparser {
+
+    DataFromFile interfaceINP;
 
     private Unitable projectUnits;
     private Datetimeable projectDateTime;
 
+    //TODO  report stuff
     private Datetimeable reportDateTime;
 
     private Datetimeable linksDateTime;
@@ -139,8 +148,8 @@ public class SWMMobject{
                 fillCoefficient, downX, downY, downZ);
 
         for (int curveId=1; curveId<=numberOfCurves; curveId++) {
-            conduit.put(linkName, new Conduit(curveId, projectUnits, linksDateTime, routingSolver, crossSectionType, upstreamOutside,
-                    downstreamOutside, linkLength, linkRoughness, true));
+            conduit.put(linkName, new Conduit(linkName, curveId, projectUnits, linksDateTime, routingSolver,
+                    crossSectionType, upstreamOutside, downstreamOutside, linkLength, linkRoughness, true));
         }
 
         //Setup raingage
@@ -183,12 +192,12 @@ public class SWMMobject{
 
         HashMap<Integer, List<Subarea>> subareas = new LinkedHashMap<>();
         for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
-            subareas.put(curveId, divideAreas(projectUnits, areasDateTime, imperviousPercentage, subcatchmentArea,
-                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
-                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
-                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
+            //subareas.put(curveId, areas.divideAreas(projectUnits, areasDateTime, imperviousPercentage, subcatchmentArea,
+            //        imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+            //        roughnessCoefficientPervious, roughnessCoefficientImpervious,
+            //        perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
 
-            areas.put(areaName, new Area(curveId, projectUnits, areasDateTime, runoffSolver,
+            areas.put(areaName, new Area(areaName, curveId, projectUnits, areasDateTime, runoffSolver,
                     characteristicWidth, areaSlope, subareas, true));
         }
 
@@ -201,73 +210,96 @@ public class SWMMobject{
         Double maximumDepthSurcharge = 1.0;
         Double nodePondingArea = 200.0;
 
-        junctions.put(nodeName, new Junction(projectUnits, nodeElevation, maximumDepthNode, initialDepthNode,
+        junctions.put(nodeName, new Junction(nodeName, projectUnits, nodeElevation, maximumDepthNode, initialDepthNode,
                 maximumDepthSurcharge, nodePondingArea));
     }
 
-    private List<Subarea> divideAreas(Unitable units, Datetimeable time, Double imperviousPercentage, Double subcatchmentArea,
-                                      Double imperviousWOstoragePercentage, Double depressionStoragePervious, Double depressionStorageImpervious,
-                                      Double roughnessCoefficientPervious, Double roughnessCoefficientImpervious,
-                                      String perviousTo, String imperviousTo, Double percentageFromPervious, Double percentageFromImpervious) {
+    public SWMMobject(String INPfile) throws ConfigurationException {
 
-        Double imperviousWOStorageArea = subcatchmentArea * imperviousPercentage * imperviousWOstoragePercentage;
-        Double imperviousWStorageArea = subcatchmentArea * imperviousPercentage  - imperviousWOStorageArea;
-        double perviousArea = subcatchmentArea * (1-imperviousPercentage);
+        load(INPfile);
+        INPConfiguration config = getConfiguration(INPfile);
+        interfaceINP = new GeneralINP(INPfile);
 
-        List<Subarea> tmpSubareas = new LinkedList<>();
-        if(imperviousPercentage == 0.0) {
-            tmpSubareas.add(new Pervious(units, time, perviousArea, depressionStoragePervious,
-                    roughnessCoefficientImpervious, null, null, null));
-        }
-        else if(imperviousPercentage == 1.0) {
-            if (imperviousWOstoragePercentage != 0.0) {
-                tmpSubareas.add(new ImperviousWithoutStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, null, null));
-            }
-            if (imperviousWOstoragePercentage != 1.0) {
-                tmpSubareas.add(new ImperviousWithStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, null, null));
-            }
+        //Setup units
+        String units = ((GeneralINP) interfaceINP).projectUnits(INPfile);
+        projectUnits = new SWMMunits(units);
 
-        }
-        else {
-            if (perviousTo.equals("IMPERVIOUS")) {
-                tmpSubareas.add(new ImperviousWithoutStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, null, null));
+        //Setup simulation dates
+        Instant startDate = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.startDate.toString());
+        Instant endDate = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.endDate.toString());
+        projectDateTime = new Period(startDate, endDate);
 
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new Pervious(units, time, perviousArea, depressionStoragePervious,
-                        roughnessCoefficientPervious, null, null, null));
+        //Setup report
+        Instant reportStartDate = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStart");
+        Instant reportEndDate = endDate;
+        double reportStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStep");
+        reportDateTime = new PeriodStep(reportStartDate, reportEndDate, reportStep);
 
-                tmpSubareas.add(new ImperviousWithStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
-                        tmpConnections));
-            }
-            else if(perviousTo.equals("OUTLET")) {
-                tmpSubareas.add(new Pervious(units, time, perviousArea, depressionStoragePervious,
-                        roughnessCoefficientPervious, null, null, null));
-            }
+        //Setup routing solver
+        double routingStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "routingStep");
+        double routingTol = 0.0015;
+        linksDateTime = new RoutingDateTime(startDate, endDate, routingStep, routingTol);
+        routingSolver = ((GeneralINP) interfaceINP).routingSolver(INPfile, "type");
 
-            if (imperviousTo.equals("PERVIOUS")) {
+        //Setup raingage
+        String raingageName;
+        Long rainfallStepSize;
+        //DataCollector junctionReadDataFromFile = new SWMM5RainfallFile("ciao");
 
-                List<Subarea> tmpConnections = null;
-                tmpConnections.add(new ImperviousWithoutStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, null, null));
-                tmpConnections.add(new ImperviousWithStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
-                        tmpConnections));
+        //for () {
+        // now I take just the first one!
+            raingageName = ((GeneralINP) interfaceINP).raingage(INPfile);
+            rainfallStepSize = ((GeneralINP) interfaceINP).raingage(INPfile, raingageName, "step");
+        //}
 
-                tmpSubareas.add(new Pervious(units, time, perviousArea, depressionStoragePervious, roughnessCoefficientPervious,
-                        percentageFromImpervious, tmpConnections, null));
-            }
-            else if (imperviousTo.equals("OUTLET")) {
-                tmpSubareas.add(new ImperviousWithStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        depressionStorageImpervious, roughnessCoefficientImpervious, null, null));
-                tmpSubareas.add(new ImperviousWithoutStorage(units, time, imperviousWStorageArea, imperviousWOStorageArea,
-                        roughnessCoefficientImpervious, null, null));
+        //Setup runoff solver
+        double runoffStep = ((GeneralINP) interfaceINP).runoffSolver(INPfile, raingageName, "step");
+        double minStepSize = 1.0e-8;
+        double maxStepSize = 1.0e+3;
+        double absoluteTolerance = 1.0e-5;
+        double relativeTolerance = 1.0e-5;
+        areasDateTime = new RunoffDateTime(startDate, endDate, runoffStep,
+                minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
+
+        runoffSolver = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "type");
+
+        //Link properties
+        String linkName;
+        Iterator<String> conduitsList = config.getSection("CONDUITS").getKeys();
+
+        for (Iterator<String> it = conduitsList; it.hasNext(); ) {
+            linkName = it.next();
+
+            for (int curveId=1; curveId<=numberOfCurves; curveId++) {
+                conduit.put(linkName, new Conduit(linkName, curveId, linksDateTime, projectUnits, routingSolver, INPfile));
             }
         }
-        return tmpSubareas;
+
+        //Setup Junctions
+        String nodeName;
+        Iterator<String> junctionsList = config.getSection("JUNCTIONS").getKeys();
+
+        for (Iterator<String> it = junctionsList; it.hasNext(); ) {
+            nodeName = it.next();
+            junctions.put(nodeName, new Junction(nodeName, projectUnits, INPfile));
+        }
+
+        //Areas properties
+        String areaName;
+        Iterator<String> areasList = config.getSection("SUBCATCHMENTS").getKeys();
+
+        for (Iterator<String> it = junctionsList; it.hasNext(); ) {
+            areaName = it.next();
+
+            for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
+                areas.put(areaName, new Area(areaName, curveId, areasDateTime, projectUnits, runoffSolver, INPfile));
+            }
+        }
+    }
+
+    public SWMMobject(String INPfile, int numberOfCurves) throws ConfigurationException {
+        this(INPfile);
+        this.numberOfCurves = numberOfCurves;
     }
 
     public List<Double> readFileList(String fileName) {

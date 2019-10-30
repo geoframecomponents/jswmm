@@ -23,6 +23,10 @@ import java.time.Instant;
 class Pump extends AbstractLink {
 
 
+    public Pump(String name) {
+        super(name);
+    }
+
     @Override
     public OutsideSetup getUpstreamOutside() {
         throw new NullPointerException("Nothing implemented yet");

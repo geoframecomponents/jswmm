@@ -19,6 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
 import com.github.geoframecomponents.jswmm.dataStructure.Coordinates;
+import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
@@ -28,7 +29,10 @@ import it.blogspot.geoframe.utils.GEOgeometry;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.pipeSize.CommercialPipeSize;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutedFlow;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.ConduitINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
+import java.security.InvalidParameterException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -41,17 +45,18 @@ public class Conduit extends AbstractLink {
     Double linkRoughness;
     Double linkSlope;
 
-    public Conduit(Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
+    public Conduit(String linkName, Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
                    CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
                    Double linkLength, Double linkRoughness, boolean reportOptions) {
 
-        this(1, units, dateTime, routingSolver, crossSectionType, upstreamOutside,
+        this(linkName, 1, units, dateTime, routingSolver, crossSectionType, upstreamOutside,
                 downstreamOutside,linkLength, linkRoughness, reportOptions);
     }
 
-    public Conduit(Integer curveId, Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
+    public Conduit(String linkName, int curveId, Unitable units, Datetimeable dateTime, RoutingSolver routingSolver,
                    CrossSectionType crossSectionType, OutsideSetup upstreamOutside, OutsideSetup downstreamOutside,
                    Double linkLength, Double linkRoughness, boolean reportOptions) {
+        super(linkName);
 
         this.setLinksUnits(units);
         this.setLinksTime(dateTime);
@@ -67,6 +72,71 @@ public class Conduit extends AbstractLink {
         //TODO report!!
 
         upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
+    }
+
+    public Conduit(String name, int curveId, Datetimeable dateTime, Unitable units,
+                   RoutingSolver routingSolver, String INPfile) throws ConfigurationException {
+
+        super(name);
+        interfaceINP = new ConduitINP(INPfile);
+
+        this.setLinksUnits(units);
+        this.setLinksTime(dateTime);
+
+        this.routingSolver = routingSolver;
+
+        String type = ((ConduitINP) interfaceINP).linkType(name, INPfile);
+        double dimension = Double.parseDouble( ((ConduitINP) interfaceINP).linkDimension(name, INPfile) );
+        this.setXsecProperties(type, dimension);
+
+        this.setOutside(INPfile, "up");
+        this.setOutside(INPfile, "down");
+
+        this.linkLength = Double.parseDouble( ((ConduitINP) interfaceINP).linkLength(name, INPfile) );
+        this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(name, INPfile) );
+
+        upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
+    }
+
+    private void setXsecProperties(String type, double dimension) {
+        switch (type) {
+            case "CIRCULAR":
+                this.crossSectionType = new Circular(dimension);
+            default:
+                throw new InvalidParameterException("Not an implemented cross section type.");
+        }
+    }
+
+    private void setOutside(String INPfile, String upORdown) {
+
+        String nodeName;
+        double offset;
+        double fillCoeff = 0.9;
+        double x;
+        double y;
+        double terrainElev;
+
+        switch (upORdown) {
+            case "up":
+                nodeName = ((ConduitINP) interfaceINP).nodeLinked(name, INPfile, "up");
+                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(name, INPfile, "up") );
+                //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
+                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "x", "up") );
+                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "y", "up") );
+                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "z", "up") );
+                break;
+            case "down":
+                nodeName = ((ConduitINP) interfaceINP).nodeLinked(name, INPfile, "down");
+                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(name, INPfile, "down") );
+                //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
+                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "x", "down") );
+                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "y", "down") );
+                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "z", "down") );
+                break;
+            default:
+                throw new InvalidParameterException("Not defined conduit parameters!");
+        }
+        this.upstreamOutside = new OutsideSetup(nodeName, offset, fillCoeff, x, y, terrainElev);
     }
 
     @Override

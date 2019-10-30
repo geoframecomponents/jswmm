@@ -43,12 +43,12 @@ public class Junction extends AbstractNode {
         this.pondingArea = pondingArea;
     }
 
-    public Junction(String name, String INPfile) throws ConfigurationException {
+    public Junction(String name, Unitable units, String INPfile) throws ConfigurationException {
 
         super(name);
         interfaceINP = new JunctionINP(INPfile);
+        this.nodeUnits = units;
 
-        this.nodeUnits = new SWMMunits( ((JunctionINP) interfaceINP).nodeUnits(name, INPfile) );
         this.nodeElevation = Double.valueOf( ((JunctionINP) interfaceINP).nodeElev(name, INPfile) );
         this.maximumDepthNode = Double.valueOf( ((JunctionINP) interfaceINP).maxDepth(name, INPfile) );
         this.initialDepthnode = Double.valueOf( ((JunctionINP) interfaceINP).initDepth(name, INPfile) );

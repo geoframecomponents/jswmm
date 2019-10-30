@@ -28,11 +28,11 @@ public class ImperviousWithStorage extends Subarea {
 
     Double totalImperviousArea;
 
-    public ImperviousWithStorage(Unitable units, Datetimeable time, Double imperviousWStorageArea,
+    public ImperviousWithStorage(String name, Unitable units, Datetimeable time, Double imperviousWStorageArea,
                                  Double imperviousWOStorageArea, Double depressionStorageImpervious,
                                  Double roughnessCoefficient, Double percentageRouted, List<Subarea> connections) {
 
-        super(units, time, imperviousWStorageArea, depressionStorageImpervious, roughnessCoefficient, percentageRouted, connections);
+        super(name, units, time, imperviousWStorageArea, depressionStorageImpervious, roughnessCoefficient, percentageRouted, connections);
         this.totalImperviousArea = imperviousWStorageArea + imperviousWOStorageArea;
     }
 

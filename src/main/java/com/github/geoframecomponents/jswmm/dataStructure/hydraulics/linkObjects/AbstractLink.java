@@ -19,7 +19,8 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.routingDS.RoutingSolver;
-import org.altervista.growworkinghard.jswmm.INPparser;
+import org.altervista.growworkinghard.jswmm.inpparser.DataFromFile;
+import org.altervista.growworkinghard.jswmm.inpparser.INPparser;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import java.util.LinkedHashMap;
  */
 public abstract class AbstractLink extends INPparser {
 
+    protected String name;
+
     protected Unitable linksUnits;
     protected Datetimeable linksTime;
 
@@ -37,6 +40,16 @@ public abstract class AbstractLink extends INPparser {
 
     OutsideSetup upstreamOutside;
     OutsideSetup downstreamOutside;
+
+    DataFromFile interfaceINP;
+
+    public AbstractLink(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 
     public void setLinksUnits(Unitable linksUnits) {
         this.linksUnits = linksUnits;

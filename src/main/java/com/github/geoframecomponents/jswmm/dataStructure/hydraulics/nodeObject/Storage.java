@@ -15,7 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 
 import java.time.Instant;
@@ -24,8 +23,8 @@ import java.util.LinkedHashMap;
 
 public class Storage extends AbstractNode {
 
-    public Storage(Unitable units) {
-        super(units);
+    public Storage(String name) {
+        super(name);
     }
 
     @Override

@@ -38,9 +38,10 @@ public abstract class Subarea extends AbstractSubcatchment {
     HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate;      //[mm/s]
     HashMap<Integer, Double> excessRainfall;
 
-    public Subarea(Unitable units, Datetimeable time, Double subareaArea, Double depressionStorage, Double roughnessCoefficient,
+    public Subarea(String areaName, Unitable units, Datetimeable time, Double subareaArea, Double depressionStorage, Double roughnessCoefficient,
                    Double percentageRouted, List<Subarea> subareaConnections) {
 
+        super(areaName);
         this.subcatchmentUnits = units;
         this.subcatchmentTime = time;
 

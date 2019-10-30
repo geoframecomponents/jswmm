@@ -17,17 +17,25 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment
 
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
+import org.altervista.growworkinghard.jswmm.inpparser.DataFromFile;
+import org.altervista.growworkinghard.jswmm.inpparser.INPparser;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+public abstract class AbstractSubcatchment extends INPparser {
 
-public abstract class AbstractSubcatchment {
+    protected String name;
 
     Unitable subcatchmentUnits;
     Datetimeable subcatchmentTime;
 
-    //DataCollector dataFromFile;
+    DataFromFile interfaceINP;
+
+    public AbstractSubcatchment(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 
     public void setSubcatchmentUnits(Unitable subcatchmentUnits) {
         this.subcatchmentUnits = subcatchmentUnits;

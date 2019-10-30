@@ -20,10 +20,12 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Availa
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.AreaINP;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Area extends AbstractSubcatchment {
@@ -39,9 +41,10 @@ public class Area extends AbstractSubcatchment {
     HashMap<Integer, List<Subarea>> subareas;
     HashMap<Integer, LinkedHashMap<Instant, Double>> totalAreaFlowRate;
 
-    public Area(Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
+    public Area(String areaName, Integer curveId, Unitable units, Datetimeable dateTime, RunoffSolver runoffSolver,
                 Double characteristicWidth, Double areaSlope, HashMap<Integer, List<Subarea>> subareas, boolean report) {
 
+        super(areaName);
         this.setSubcatchmentUnits(units);
         this.setSubcatchmentTime(dateTime);
 
@@ -50,6 +53,66 @@ public class Area extends AbstractSubcatchment {
         this.characteristicWidth = characteristicWidth;
         this.areaSlope = areaSlope;
         this.subareas = new HashMap<>(subareas);
+        this.totalAreaFlowRate = new LinkedHashMap<>();
+
+        Instant startSimDate = this.getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
+        for (Subarea subarea : this.subareas.get(curveId)) {
+            subarea.setAreaFlowRate(curveId, startSimDate, 0.0);
+            subarea.setRunoffDepth(curveId, startSimDate, 0.0);
+            subarea.setTotalDepth(curveId, startSimDate, 0.0);
+        }
+    }
+
+    public Area(String areaName, Integer curveId, Datetimeable dateTime, Unitable units,
+                RunoffSolver runoffSolver, String INPfile) {
+
+        super(areaName);
+        this.setSubcatchmentUnits(units);
+        this.setSubcatchmentTime(dateTime);
+
+        this.runoffSolver = runoffSolver;
+
+        this.characteristicWidth = Double.parseDouble( ((AreaINP) interfaceINP).width(name, INPfile) );
+        this.areaSlope = Double.parseDouble( ((AreaINP) interfaceINP).slope(name, INPfile) );
+
+        double subcatchmentArea = Double.parseDouble( ((AreaINP) interfaceINP).subcatchArea(name, INPfile) );
+        double imperviousPercentage = Double.parseDouble( ((AreaINP) interfaceINP).impPerc(name, INPfile) );
+        double imperviousWOstoragePercentage = Double.parseDouble( ((AreaINP) interfaceINP).impWOstoPerc(name, INPfile) );
+        double depressionStoragePervious = Double.parseDouble( ((AreaINP) interfaceINP).dsPerv(name, INPfile) );
+        double depressionStorageImpervious = Double.parseDouble( ((AreaINP) interfaceINP).dsImperv(name, INPfile) );
+        double roughnessCoefficientPervious = Double.parseDouble( ((AreaINP) interfaceINP).roughPerv(name, INPfile) );
+        double roughnessCoefficientImpervious = Double.parseDouble( ((AreaINP) interfaceINP).roughImperv(name, INPfile) );
+
+        String routeTo = ((AreaINP) interfaceINP).routeTo(name, INPfile);
+        String perviousTo;
+        String imperviousTo;
+        double percentageFromPervious;
+        double percentageFromImpervious;
+
+        switch (routeTo) {
+            case "IMPERVIOUS":
+                perviousTo = "IMPERVIOUS";
+                imperviousTo = "OUTLET";
+                percentageFromPervious = Double.parseDouble( ((AreaINP) interfaceINP).routeToPerc(name, INPfile) );
+                percentageFromImpervious = 1.0;
+                break;
+            case "PERVIOUS":
+                perviousTo = "OUTLET";
+                imperviousTo = "PERVIOUS";
+                percentageFromImpervious = Double.parseDouble( ((AreaINP) interfaceINP).routeToPerc(name, INPfile) );
+                percentageFromPervious = 1.0;
+                break;
+            default:
+                perviousTo = "OUTLET";
+                imperviousTo = "OUTLET";
+                percentageFromPervious = 1.0;
+                percentageFromImpervious = 1.0;
+        }
+
+        this.subareas.put(curveId, divideAreas(imperviousPercentage, subcatchmentArea,
+                imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+                roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
         this.totalAreaFlowRate = new LinkedHashMap<>();
 
         //TODO report!!!
@@ -109,5 +172,70 @@ public class Area extends AbstractSubcatchment {
                 }
             }
         }
+    }
+
+    private List<Subarea> divideAreas(Double imperviousPercentage, Double subcatchmentArea,
+                                      Double imperviousWOstoragePercentage, Double depressionStoragePervious, Double depressionStorageImpervious,
+                                      Double roughnessCoefficientPervious, Double roughnessCoefficientImpervious,
+                                      String perviousTo, String imperviousTo, Double percentageFromPervious, Double percentageFromImpervious) {
+
+        Double imperviousWOStorageArea = subcatchmentArea * imperviousPercentage * imperviousWOstoragePercentage;
+        Double imperviousWStorageArea = subcatchmentArea * imperviousPercentage  - imperviousWOStorageArea;
+        double perviousArea = subcatchmentArea * (1-imperviousPercentage);
+
+        List<Subarea> tmpSubareas = new LinkedList<>();
+        if(imperviousPercentage == 0.0) {
+            tmpSubareas.add(new Pervious(name, subcatchmentUnits, subcatchmentTime, perviousArea, depressionStoragePervious,
+                    roughnessCoefficientImpervious, null, null, null));
+        }
+        else if(imperviousPercentage == 1.0) {
+            if (imperviousWOstoragePercentage != 0.0) {
+                tmpSubareas.add(new ImperviousWithoutStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, null, null));
+            }
+            if (imperviousWOstoragePercentage != 1.0) {
+                tmpSubareas.add(new ImperviousWithStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious, null, null));
+            }
+
+        }
+        else {
+            if (perviousTo.equals("IMPERVIOUS")) {
+                tmpSubareas.add(new ImperviousWithoutStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, null, null));
+
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new Pervious(name, subcatchmentUnits, subcatchmentTime, perviousArea, depressionStoragePervious,
+                        roughnessCoefficientPervious, null, null, null));
+
+                tmpSubareas.add(new ImperviousWithStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
+                        tmpConnections));
+            }
+            else if(perviousTo.equals("OUTLET")) {
+                tmpSubareas.add(new Pervious(name, subcatchmentUnits, subcatchmentTime, perviousArea, depressionStoragePervious,
+                        roughnessCoefficientPervious, null, null, null));
+            }
+
+            if (imperviousTo.equals("PERVIOUS")) {
+
+                List<Subarea> tmpConnections = null;
+                tmpConnections.add(new ImperviousWithoutStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, null, null));
+                tmpConnections.add(new ImperviousWithStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious, percentageFromPervious,
+                        tmpConnections));
+
+                tmpSubareas.add(new Pervious(name, subcatchmentUnits, subcatchmentTime, perviousArea, depressionStoragePervious, roughnessCoefficientPervious,
+                        percentageFromImpervious, tmpConnections, null));
+            }
+            else if (imperviousTo.equals("OUTLET")) {
+                tmpSubareas.add(new ImperviousWithStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        depressionStorageImpervious, roughnessCoefficientImpervious, null, null));
+                tmpSubareas.add(new ImperviousWithoutStorage(name, subcatchmentUnits, subcatchmentTime, imperviousWStorageArea, imperviousWOStorageArea,
+                        roughnessCoefficientImpervious, null, null));
+            }
+        }
+        return tmpSubareas;
     }
 }

@@ -28,10 +28,10 @@ public class Pervious extends Subarea {
 
     Double infiltration = 0.0; //TODO temporary 0.0
 
-    public Pervious(Unitable units, Datetimeable time, Double area, Double depressionStorage, Double roughnessCoefficient,
+    public Pervious(String name, Unitable units, Datetimeable time, Double area, Double depressionStorage, Double roughnessCoefficient,
                     Double percentageRouted, List<Subarea> connections, Double infiltration) {
 
-        super(units, time, area, depressionStorage, roughnessCoefficient, percentageRouted, connections);
+        super(name, units, time, area, depressionStorage, roughnessCoefficient, percentageRouted, connections);
         this.infiltration = infiltration;
     }
 
