@@ -226,4 +226,8 @@ public class PreRunoff {
 
         return rainfallValue;
     }
+
+    public void setDataStructure(SWMMobject data) {
+        this.dataStructure = data;
+    }
 }

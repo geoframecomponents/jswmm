@@ -19,7 +19,6 @@ import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import com.github.geoframecomponents.jswmm.routing.Routing;
 import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
 import com.github.geoframecomponents.jswmm.runoff.Runoff;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,8 +40,8 @@ public class RoutingMain {
         preRunoff_1 = new PreRunoff();
         preRunoff_2 = new PreRunoff();
 
-        preRunoff_1.dataStructure = data;
-        preRunoff_2.dataStructure = data;
+        preRunoff_1.setDataStructure(data);
+        preRunoff_2.setDataStructure(data);
 
         preRunoff_1.areaName = "RG1";
         preRunoff_2.areaName = "RG2";
