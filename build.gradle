@@ -84,6 +84,15 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+sourceSets {
+    main {
+    }
+
+    test {
+    }
+}
+
+
 shadowJar {
     mergeServiceFiles()
     archiveName = project.name + "-" + project.version + "-all.jar"
