@@ -33,7 +33,6 @@ public interface CrossSectionType {
     public Boolean getAlwaysIncrease();
 
     /**
-     * <img src="./doc-files/signature.png" />
      * @param theta
      * @return
      */
