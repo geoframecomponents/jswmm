@@ -73,11 +73,11 @@ repositories {
 }
 
 dependencies {
-    compile name: 'HydroGeoEntities'
     compile name: 'oms-all'
+    compile name: 'inpparser'
 
+    compile 'com.github.geoframecomponents:GEOframeUtils:0.4'
     compile 'commons-lang:commons-lang:2.3'
-    compile 'com.github.geoframecomponents:GEOframeUtils:0.3.27'
     compile 'org.apache.commons:commons-math3:3.6.1'
 
     compile 'junit:junit:4.12'
