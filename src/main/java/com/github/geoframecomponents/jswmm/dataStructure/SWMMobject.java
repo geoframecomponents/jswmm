@@ -20,6 +20,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.Circular;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Junction;
+import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject.Outfall;
 import com.github.geoframecomponents.jswmm.dataStructure.hydrology.subcatchment.*;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Datetimeable;
@@ -216,6 +217,11 @@ public class SWMMobject extends INPparser {
     }
 
     public SWMMobject(String INPfile) throws ConfigurationException {
+        this(INPfile, 1);
+    }
+
+    public SWMMobject(String INPfile, int numberOfCurves) throws ConfigurationException {
+        this.numberOfCurves = numberOfCurves;
 
         load(INPfile);
         INPConfiguration config = getConfiguration(INPfile);
@@ -226,18 +232,21 @@ public class SWMMobject extends INPparser {
         projectUnits = new SWMMunits(units);
 
         //Setup simulation dates
-        Instant startDate = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.startDate.toString());
-        Instant endDate = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.endDate.toString());
+        String startDateStr = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.startDate.toString());
+        Instant startDate = Instant.parse(startDateStr);
+        String endDateStr = ((GeneralINP) interfaceINP).dateTime(INPfile, AvailableDateTypes.endDate.toString());
+        Instant endDate = Instant.parse(endDateStr);
         projectDateTime = new Period(startDate, endDate);
 
         //Setup report
-        Instant reportStartDate = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStart");
+        String reportStartDateStr = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStart");
+        Instant reportStartDate = Instant.parse(reportStartDateStr);
         Instant reportEndDate = endDate;
-        double reportStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStep");
+        Long reportStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "reportStep");
         reportDateTime = new PeriodStep(reportStartDate, reportEndDate, reportStep);
 
         //Setup routing solver
-        double routingStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "routingStep");
+        Long routingStep = ((GeneralINP) interfaceINP).routingSolver(INPfile, "step");
         double routingTol = 0.0015;
         linksDateTime = new RoutingDateTime(startDate, endDate, routingStep, routingTol);
 
@@ -261,12 +270,12 @@ public class SWMMobject extends INPparser {
 
         //for () {
         // now I take just the first one!
-            raingageName = ((GeneralINP) interfaceINP).raingage(INPfile);
-            rainfallStepSize = ((GeneralINP) interfaceINP).raingage(INPfile, raingageName, "step");
+        raingageName = ((GeneralINP) interfaceINP).raingage(INPfile);
+        rainfallStepSize = ((GeneralINP) interfaceINP).raingage(INPfile, raingageName, "step");
         //}
 
         //Setup runoff solver
-        double runoffStep = ((GeneralINP) interfaceINP).runoffSolver(INPfile, raingageName, "step");
+        Long runoffStep = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "step");
         double minStepSize = 1.0e-8;
         double maxStepSize = 1.0e+3;
         double absoluteTolerance = 1.0e-5;
@@ -309,7 +318,7 @@ public class SWMMobject extends INPparser {
 
         for (Iterator<String> it = outfallList; it.hasNext(); ) {
             nodeName = it.next();
-            junctions.put(nodeName, new Junction(nodeName, projectUnits, INPfile));
+            junctions.put(nodeName, new Junction(nodeName, projectUnits, INPfile, true));
         }
 
         //Areas properties
@@ -320,14 +329,9 @@ public class SWMMobject extends INPparser {
             areaName = it.next();
 
             for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
-                areas.put(areaName, new Area(areaName, curveId, areasDateTime, projectUnits, runoffSolver, INPfile));
+                areas.put(areaName, new Area(areaName, curveId, projectUnits, areasDateTime, runoffSolver, INPfile));
             }
         }
-    }
-
-    public SWMMobject(String INPfile, int numberOfCurves) throws ConfigurationException {
-        this(INPfile);
-        this.numberOfCurves = numberOfCurves;
     }
 
     public List<Double> readFileList(String fileName) {

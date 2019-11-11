@@ -12,12 +12,12 @@ public class SourceSetTest {
     SWMMobject data;
 
     public SourceSetTest() throws ConfigurationException {
-        this.data = new SWMMobject("network12.inp");
+        //this.data = new SWMMobject("network12.inp");
     }
 
     @Before
-    public void initialize() {
-        data = new SWMMobject();
+    public void initialize() throws ConfigurationException {
+        data = new SWMMobject("network12.inp", 3);
     }
 
     @Test
