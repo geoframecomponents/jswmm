@@ -167,9 +167,8 @@ public class SWMMobject extends INPparser {
         double maxStepSize = 1.0e+3;
         double absoluteTolerance = 1.0e-5;
         double relativeTolerance = 1.0e-5;
-        areasDateTime = new RunoffDateTime(startDate, endDate, runoffStep,
-                minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
-        runoffSolver = new DormandPrince54();
+        areasDateTime = new PeriodStep(startDate, endDate, runoffStep);
+        runoffSolver = new DormandPrince54(minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
 
         String areaName = "1";
         double subcatchmentArea = 1.0;
@@ -280,13 +279,12 @@ public class SWMMobject extends INPparser {
         double maxStepSize = 1.0e+3;
         double absoluteTolerance = 1.0e-5;
         double relativeTolerance = 1.0e-5;
-        areasDateTime = new RunoffDateTime(startDate, endDate, runoffStep,
-                minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
+        areasDateTime = new PeriodStep(startDate, endDate, runoffStep);
 
         String runoffSolverName = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "name");
         switch ( runoffSolverName ) {
             case "DP54":
-                runoffSolver = new DormandPrince54();
+                runoffSolver = new DormandPrince54(minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
                 break;
             default:
                 throw new InvalidParameterException("Solver not valid");
