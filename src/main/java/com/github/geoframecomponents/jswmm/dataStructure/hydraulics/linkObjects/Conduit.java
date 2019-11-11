@@ -85,15 +85,15 @@ public class Conduit extends AbstractLink {
 
         this.routingSolver = routingSolver;
 
-        String type = ((ConduitINP) interfaceINP).linkType(name, INPfile);
-        double dimension = Double.parseDouble( ((ConduitINP) interfaceINP).linkDimension(name, INPfile) );
+        String type = ((ConduitINP) interfaceINP).linkType(INPfile, name);
+        double dimension = Double.parseDouble( ((ConduitINP) interfaceINP).linkDimension(INPfile, name) );
         this.setXsecProperties(type, dimension);
 
         this.setOutside(INPfile, "up");
         this.setOutside(INPfile, "down");
 
-        this.linkLength = Double.parseDouble( ((ConduitINP) interfaceINP).linkLength(name, INPfile) );
-        this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(name, INPfile) );
+        this.linkLength = Double.parseDouble( ((ConduitINP) interfaceINP).linkLength(INPfile, name) );
+        this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(INPfile, name) );
 
         upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
     }
@@ -102,6 +102,7 @@ public class Conduit extends AbstractLink {
         switch (type) {
             case "CIRCULAR":
                 this.crossSectionType = new Circular(dimension);
+                break;
             default:
                 throw new InvalidParameterException("Not an implemented cross section type.");
         }
@@ -118,20 +119,20 @@ public class Conduit extends AbstractLink {
 
         switch (upORdown) {
             case "up":
-                nodeName = ((ConduitINP) interfaceINP).nodeLinked(name, INPfile, "up");
-                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(name, INPfile, "up") );
+                nodeName = ((ConduitINP) interfaceINP).nodeLinked(INPfile, name, "up");
+                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(INPfile, name, "up") );
                 //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
-                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "x", "up") );
-                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "y", "up") );
-                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "z", "up") );
+                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "up") );
+                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "up") );
+                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "up") );
                 break;
             case "down":
-                nodeName = ((ConduitINP) interfaceINP).nodeLinked(name, INPfile, "down");
-                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(name, INPfile, "down") );
+                nodeName = ((ConduitINP) interfaceINP).nodeLinked(INPfile, name, "down");
+                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(INPfile, name, "down") );
                 //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
-                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "x", "down") );
-                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "y", "down") );
-                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(name, INPfile, "z", "down") );
+                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "down") );
+                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "down") );
+                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "down") );
                 break;
             default:
                 throw new InvalidParameterException("Not defined conduit parameters!");
