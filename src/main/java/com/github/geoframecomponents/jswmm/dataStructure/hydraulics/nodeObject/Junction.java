@@ -18,6 +18,7 @@ package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import org.altervista.growworkinghard.jswmm.inpparser.objects.JunctionINP;
+import org.altervista.growworkinghard.jswmm.inpparser.objects.OutfallINP;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.time.Instant;
@@ -37,6 +38,7 @@ public class Junction extends AbstractNode {
         super(name);
         this.nodeUnits = units;
         this.nodeElevation = nodeElevation;
+
         this.maximumDepthNode = maximumDepthNode;
         this.initialDepthnode = initialDepthnode;
         this.maximumDepthSurcharge = maximumDepthSurcharge;
@@ -49,11 +51,24 @@ public class Junction extends AbstractNode {
         interfaceINP = new JunctionINP(INPfile);
         this.nodeUnits = units;
 
-        this.nodeElevation = Double.valueOf( ((JunctionINP) interfaceINP).nodeElev(name, INPfile) );
-        this.maximumDepthNode = Double.valueOf( ((JunctionINP) interfaceINP).maxDepth(name, INPfile) );
-        this.initialDepthnode = Double.valueOf( ((JunctionINP) interfaceINP).initDepth(name, INPfile) );
-        this.maximumDepthSurcharge = Double.valueOf( ((JunctionINP) interfaceINP).maxDepthSur(name, INPfile) );
-        this.pondingArea = Double.valueOf( ((JunctionINP) interfaceINP).pondArea(name, INPfile) );
+        this.nodeElevation = Double.valueOf( ((JunctionINP) interfaceINP).nodeElev(INPfile, name) );
+        this.maximumDepthNode = Double.valueOf( ((JunctionINP) interfaceINP).maxDepth(INPfile, name) );
+        this.initialDepthnode = Double.valueOf( ((JunctionINP) interfaceINP).initDepth(INPfile, name) );
+        this.maximumDepthSurcharge = Double.valueOf( ((JunctionINP) interfaceINP).maxDepthSur(INPfile, name) );
+        this.pondingArea = Double.valueOf( ((JunctionINP) interfaceINP).pondArea(INPfile, name) );
+    }
+
+    public Junction(String name, Unitable units, String INPfile, boolean outfall) throws ConfigurationException {
+        super(name);
+
+        interfaceINP = new OutfallINP(INPfile);
+        this.nodeUnits = units;
+
+        this.nodeElevation = Double.valueOf( ((OutfallINP) interfaceINP).nodeElev(INPfile, name) );
+        this.maximumDepthNode = Double.valueOf( ((OutfallINP) interfaceINP).maxDepth(INPfile, name) );
+        this.initialDepthnode = Double.valueOf( ((OutfallINP) interfaceINP).initDepth(INPfile, name) );
+        this.maximumDepthSurcharge = Double.valueOf( ((OutfallINP) interfaceINP).maxDepthSur(INPfile, name) );
+        this.pondingArea = Double.valueOf( ((OutfallINP) interfaceINP).pondArea(INPfile, name) );
     }
 
     @Override
