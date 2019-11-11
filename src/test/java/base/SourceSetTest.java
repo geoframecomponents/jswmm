@@ -1,4 +1,4 @@
-package dummy;
+package base;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 import org.apache.commons.configuration2.ex.ConfigurationException;

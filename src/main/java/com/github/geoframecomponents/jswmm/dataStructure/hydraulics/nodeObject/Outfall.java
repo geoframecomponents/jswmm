@@ -15,8 +15,6 @@
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.AvailableUnits;
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import org.altervista.growworkinghard.jswmm.inpparser.objects.OutfallINP;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -50,19 +48,19 @@ public class Outfall extends AbstractNode {
         this.routeTo = routeTo;
     }
 
-    public Outfall(String name, String INPfile) throws ConfigurationException {
+    public Outfall(String name, Unitable units, String INPfile) throws ConfigurationException {
 
         super(name);
         interfaceINP = new OutfallINP(INPfile);
 
-        this.nodeUnits = new SWMMunits( ((OutfallINP) interfaceINP).nodeUnits(name, INPfile) );
-        this.nodeElevation = Double.valueOf( ((OutfallINP) interfaceINP).nodeElev(name, INPfile) );
+        this.nodeUnits = units;
+        this.nodeElevation = Double.valueOf( ((OutfallINP) interfaceINP).nodeElev(INPfile, name) );
 
-        this.fixedStage = Double.valueOf( ((OutfallINP) interfaceINP).fixedStage(name, INPfile) );
+        this.fixedStage = Double.valueOf( ((OutfallINP) interfaceINP).fixedStage(INPfile, name) );
         this.tidalCurve = null;
         this.stageTimeseries = null;
-        this.gated = Boolean.parseBoolean( ((OutfallINP) interfaceINP).fixedStage(name, INPfile) );
-        this.routeTo = ((OutfallINP) interfaceINP).fixedStage(name, INPfile);
+        this.gated = Boolean.parseBoolean( ((OutfallINP) interfaceINP).fixedStage(INPfile, name) );
+        this.routeTo = ((OutfallINP) interfaceINP).fixedStage(INPfile, name);
     }
 
     @Override
