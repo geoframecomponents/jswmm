@@ -21,6 +21,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Dateti
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 import org.altervista.growworkinghard.jswmm.inpparser.objects.AreaINP;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -63,27 +64,30 @@ public class Area extends AbstractSubcatchment {
         }
     }
 
-    public Area(String areaName, Integer curveId, Datetimeable dateTime, Unitable units,
-                RunoffSolver runoffSolver, String INPfile) {
+    public Area(String areaName, Integer curveId, Unitable units, Datetimeable dateTime,
+                RunoffSolver runoffSolver, String INPfile) throws ConfigurationException {
 
         super(areaName);
+
+        interfaceINP = new AreaINP(INPfile);
+
         this.setSubcatchmentUnits(units);
         this.setSubcatchmentTime(dateTime);
 
         this.runoffSolver = runoffSolver;
 
-        this.characteristicWidth = Double.parseDouble( ((AreaINP) interfaceINP).width(name, INPfile) );
-        this.areaSlope = Double.parseDouble( ((AreaINP) interfaceINP).slope(name, INPfile) );
+        this.characteristicWidth = Double.parseDouble( ((AreaINP) interfaceINP).width(INPfile, name) );
+        this.areaSlope = Double.parseDouble( ((AreaINP) interfaceINP).slope(INPfile, name) );
 
-        double subcatchmentArea = Double.parseDouble( ((AreaINP) interfaceINP).subcatchArea(name, INPfile) );
-        double imperviousPercentage = Double.parseDouble( ((AreaINP) interfaceINP).impPerc(name, INPfile) );
-        double imperviousWOstoragePercentage = Double.parseDouble( ((AreaINP) interfaceINP).impWOstoPerc(name, INPfile) );
-        double depressionStoragePervious = Double.parseDouble( ((AreaINP) interfaceINP).dsPerv(name, INPfile) );
-        double depressionStorageImpervious = Double.parseDouble( ((AreaINP) interfaceINP).dsImperv(name, INPfile) );
-        double roughnessCoefficientPervious = Double.parseDouble( ((AreaINP) interfaceINP).roughPerv(name, INPfile) );
-        double roughnessCoefficientImpervious = Double.parseDouble( ((AreaINP) interfaceINP).roughImperv(name, INPfile) );
+        double subcatchmentArea = Double.parseDouble( ((AreaINP) interfaceINP).subcatchArea(INPfile, name) );
+        double imperviousPercentage = Double.parseDouble( ((AreaINP) interfaceINP).impPerc(INPfile, name) );
+        double imperviousWOstoragePercentage = Double.parseDouble( ((AreaINP) interfaceINP).impWOstoPerc(INPfile, name) );
+        double depressionStoragePervious = Double.parseDouble( ((AreaINP) interfaceINP).dsPerv(INPfile, name) );
+        double depressionStorageImpervious = Double.parseDouble( ((AreaINP) interfaceINP).dsImperv(INPfile, name) );
+        double roughnessCoefficientPervious = Double.parseDouble( ((AreaINP) interfaceINP).roughPerv(INPfile, name) );
+        double roughnessCoefficientImpervious = Double.parseDouble( ((AreaINP) interfaceINP).roughImperv(INPfile, name) );
 
-        String routeTo = ((AreaINP) interfaceINP).routeTo(name, INPfile);
+        String routeTo = ((AreaINP) interfaceINP).routeTo(INPfile, name);
         String perviousTo;
         String imperviousTo;
         double percentageFromPervious;
@@ -109,6 +113,7 @@ public class Area extends AbstractSubcatchment {
                 percentageFromImpervious = 1.0;
         }
 
+        this.subareas = new HashMap<>();
         this.subareas.put(curveId, divideAreas(imperviousPercentage, subcatchmentArea,
                 imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
                 roughnessCoefficientPervious, roughnessCoefficientImpervious,
