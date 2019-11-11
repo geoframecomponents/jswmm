@@ -46,11 +46,11 @@ public class DormandPrince54 implements RunoffSolver{
 
     @Description("Initial value")
     @In
-    private double[] initialValue = { 0.0 };
+    private double[] initialValue;
 
     @Description("Output step size")
     @In
-    private Double outputStepSize = 0.0;
+    private Double outputStepSize;
 
     @Description("Output values")
     @Out
@@ -59,7 +59,11 @@ public class DormandPrince54 implements RunoffSolver{
     private FirstOrderIntegrator dp54;
     private FirstOrderDifferentialEquations ode;
 
-    public DormandPrince54(){};
+    public DormandPrince54(Double minimumStepSize, Double maximumStepSize,
+                           Double absoluteTolerance, Double relativeTolerance){
+        this.dp54 = new DormandPrince54Integrator(minimumStepSize, maximumStepSize,
+                absoluteTolerance, relativeTolerance);
+    };
 
     protected DormandPrince54(Double precipitation, Double depthFactor,
                               Double minimumStepSize, Double maximumStepSize,

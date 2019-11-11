@@ -5,14 +5,10 @@ import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.Period
 
 import java.time.Instant;
 
+@Deprecated
 public class RunoffDateTime extends PeriodStepTolerance {
 
-    public RunoffDateTime(Instant startDate, Instant endDate, double stepSize,
-                          double minStep, double maxStep, double absTol, double relTol) {
+    public RunoffDateTime(Instant startDate, Instant endDate, double stepSize) {
         super(startDate, endDate, stepSize);
-        this.setDateTime(AvailableDateTypes.minStep, minStep);
-        this.setDateTime(AvailableDateTypes.maxStep, maxStep);
-        this.setDateTime(AvailableDateTypes.absoluteTolerance, absTol);
-        this.setDateTime(AvailableDateTypes.relativeTolerance, relTol);
     }
 }
