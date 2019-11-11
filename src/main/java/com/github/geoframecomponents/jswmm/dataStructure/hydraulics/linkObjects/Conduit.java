@@ -94,6 +94,7 @@ public class Conduit extends AbstractLink {
 
         this.linkLength = Double.parseDouble( ((ConduitINP) interfaceINP).linkLength(INPfile, name) );
         this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(INPfile, name) );
+        this.linkSlope = Double.parseDouble( ((ConduitINP) interfaceINP).linksMinSlope(INPfile) );
 
         upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
     }
@@ -120,24 +121,25 @@ public class Conduit extends AbstractLink {
         switch (upORdown) {
             case "up":
                 nodeName = ((ConduitINP) interfaceINP).nodeLinked(INPfile, name, "up");
-                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(INPfile, name, "up") );
+                offset = Double.parseDouble(((ConduitINP) interfaceINP).offset(INPfile, name, "up"));
                 //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
-                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "up") );
-                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "up") );
-                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "up") );
+                x = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "up"));
+                y = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "up"));
+                terrainElev = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "up"));
+                this.upstreamOutside = new OutsideSetup(nodeName, offset, fillCoeff, x, y, terrainElev);
                 break;
             case "down":
                 nodeName = ((ConduitINP) interfaceINP).nodeLinked(INPfile, name, "down");
-                offset = Double.parseDouble( ((ConduitINP) interfaceINP).offset(INPfile, name, "down") );
+                offset = Double.parseDouble(((ConduitINP) interfaceINP).offset(INPfile, name, "down"));
                 //fillCoeff = Double.parseDouble( ((ConduitINP) interfaceINP).fillCoeff(name, INPfile) );
-                x = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "down") );
-                y = Double.parseDouble(  ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "down") );
-                terrainElev = Double.parseDouble( ((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "down") );
+                x = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "x", "down"));
+                y = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "y", "down"));
+                terrainElev = Double.parseDouble(((ConduitINP) interfaceINP).nodeCoord(INPfile, name, "z", "down"));
+                this.downstreamOutside = new OutsideSetup(nodeName, offset, fillCoeff, x, y, terrainElev);
                 break;
             default:
                 throw new InvalidParameterException("Not defined conduit parameters!");
         }
-        this.upstreamOutside = new OutsideSetup(nodeName, offset, fillCoeff, x, y, terrainElev);
     }
 
     @Override
