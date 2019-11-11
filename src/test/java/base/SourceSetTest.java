@@ -7,11 +7,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
-public class DummyTest {
+public class SourceSetTest {
 
     SWMMobject data;
 
-    public DummyTest() throws ConfigurationException {
+    public SourceSetTest() throws ConfigurationException {
         this.data = new SWMMobject("network12.inp");
     }
 

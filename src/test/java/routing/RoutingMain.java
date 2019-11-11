@@ -80,6 +80,6 @@ public class RoutingMain {
         routing.linkName = "L1";
 
         routing.run();
-        //routingDS.DummyTest();
+        //routingDS.SourceSetTest();
     }
 }
