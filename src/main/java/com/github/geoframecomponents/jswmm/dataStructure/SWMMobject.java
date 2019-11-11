@@ -44,6 +44,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -239,7 +240,19 @@ public class SWMMobject extends INPparser {
         double routingStep = ((GeneralINP) interfaceINP).dateTime(INPfile, "routingStep");
         double routingTol = 0.0015;
         linksDateTime = new RoutingDateTime(startDate, endDate, routingStep, routingTol);
-        routingSolver = ((GeneralINP) interfaceINP).routingSolver(INPfile, "type");
+
+        String routingMethod =  ((GeneralINP) interfaceINP).routingSolver(INPfile, "name");
+        switch ( routingMethod ) {
+            case "STEADY":
+                routingSolver = new SteadyOptions();
+                break;
+            case "KINWAVE":
+                throw new NullPointerException("Nothing implemented yet");
+            case "DYNWAVE":
+                throw new NullPointerException("Nothing implemented yet");
+            default:
+                throw new InvalidParameterException("Solver not valid");
+        }
 
         //Setup raingage
         String raingageName;
@@ -261,7 +274,14 @@ public class SWMMobject extends INPparser {
         areasDateTime = new RunoffDateTime(startDate, endDate, runoffStep,
                 minStepSize, maxStepSize, absoluteTolerance, relativeTolerance);
 
-        runoffSolver = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "type");
+        String runoffSolverName = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "name");
+        switch ( runoffSolverName ) {
+            case "DP54":
+                runoffSolver = new DormandPrince54();
+                break;
+            default:
+                throw new InvalidParameterException("Solver not valid");
+        }
 
         //Link properties
         String linkName;
@@ -284,11 +304,19 @@ public class SWMMobject extends INPparser {
             junctions.put(nodeName, new Junction(nodeName, projectUnits, INPfile));
         }
 
+        //Setup Outfalls as Junctions
+        Iterator<String> outfallList = config.getSection("OUTFALLS").getKeys();
+
+        for (Iterator<String> it = outfallList; it.hasNext(); ) {
+            nodeName = it.next();
+            junctions.put(nodeName, new Junction(nodeName, projectUnits, INPfile));
+        }
+
         //Areas properties
         String areaName;
         Iterator<String> areasList = config.getSection("SUBCATCHMENTS").getKeys();
 
-        for (Iterator<String> it = junctionsList; it.hasNext(); ) {
+        for (Iterator<String> it = areasList; it.hasNext(); ) {
             areaName = it.next();
 
             for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
