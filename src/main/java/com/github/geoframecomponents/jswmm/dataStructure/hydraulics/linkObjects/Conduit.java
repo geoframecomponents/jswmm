@@ -71,7 +71,13 @@ public class Conduit extends AbstractLink {
 
         //TODO report!!
 
-        upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
+        Instant current;
+        for (current = dateTime.getDateTime(AvailableDateTypes.startDate);
+             current.isBefore( dateTime.getDateTime(AvailableDateTypes.endDate) );
+             current = current.plusSeconds( dateTime.getDateTime(AvailableDateTypes.stepSize)) ) {
+
+            upstreamOutside.setFlowRate(curveId, current, 0.01);
+        }
     }
 
     public Conduit(String name, int curveId, Datetimeable dateTime, Unitable units,
@@ -96,7 +102,13 @@ public class Conduit extends AbstractLink {
         this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(INPfile, name) );
         this.linkSlope = Double.parseDouble( ((ConduitINP) interfaceINP).linksMinSlope(INPfile) );
 
-        upstreamOutside.setFlowRate(curveId, dateTime.getDateTime(AvailableDateTypes.startDate), 0.0001);
+        Instant current;
+        for (current = dateTime.getDateTime(AvailableDateTypes.startDate);
+             current.isBefore( dateTime.getDateTime(AvailableDateTypes.endDate) );
+             current = current.plusSeconds( dateTime.getDateTime(AvailableDateTypes.stepSize)) ) {
+
+            upstreamOutside.setFlowRate(curveId, current, 0.0001);
+        }
     }
 
     private void setXsecProperties(String type, double dimension) {
