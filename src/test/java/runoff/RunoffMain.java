@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.time.Instant;
+
 @Ignore
 public class RunoffMain {
 
@@ -72,6 +74,7 @@ public class RunoffMain {
         //runoff_1.test("./data/testingData/runoffTesting/N1");
         //runoff_2.test("./data/testingData/runoffTesting/N2");
 
-        //System.out.println(data.getJunctions().get("N1").getNodeFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
+        System.out.println(data.getConduit("1")
+                .getDownstreamOutside().getStreamFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
     }
 }
