@@ -12,10 +12,8 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.nodeObject;
 
-import com.github.geoframecomponents.jswmm.dataStructure.options.units.SWMMunits;
 import com.github.geoframecomponents.jswmm.dataStructure.options.units.Unitable;
 import org.altervista.growworkinghard.jswmm.inpparser.objects.JunctionINP;
 import org.altervista.growworkinghard.jswmm.inpparser.objects.OutfallINP;

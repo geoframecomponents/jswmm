@@ -12,7 +12,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.github.geoframecomponents.jswmm.routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
@@ -89,7 +88,7 @@ public class Routing {
         /**
          * Alignment of water table of all links of the node
          */
-        dataStructure.upgradeSubtrees(linkName, net3subtrees);
+        //dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
         conduit.evaluateFlowRate();

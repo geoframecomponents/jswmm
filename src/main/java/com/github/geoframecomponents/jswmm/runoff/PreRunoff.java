@@ -12,7 +12,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.github.geoframecomponents.jswmm.runoff;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
@@ -138,7 +137,6 @@ public class PreRunoff {
         else {
             throw new NullPointerException("Data structure is null");//TODO
         }
-
         //adaptInfiltrationData();
     }
 
