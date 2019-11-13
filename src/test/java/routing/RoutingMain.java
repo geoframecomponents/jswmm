@@ -59,13 +59,13 @@ public class RoutingMain {
         runoff_2 = new Runoff();
 
         runoff_1.dataStructure = data;
-        runoff_1.areaName = "Sub1";
-        runoff_1.nodeName = "N1";
+        runoff_1.areaName = "1";
+        runoff_1.nodeName = "J3";
         runoff_1.adaptedRainfallData = preRunoff_1.getAdaptedRainfallData();
 
         runoff_2.dataStructure = data;
-        runoff_2.areaName = "Sub2";
-        runoff_2.nodeName = "N1";
+        runoff_2.areaName = "1";
+        runoff_2.nodeName = "J3";
         runoff_2.adaptedRainfallData = preRunoff_2.getAdaptedRainfallData();
 
         runoff_1.initialize();
@@ -77,7 +77,7 @@ public class RoutingMain {
         routing = new Routing();
 
         routing.dataStructure = data;
-        routing.linkName = "L1";
+        routing.linkName = "11";
 
         routing.run();
         //routingDS.SourceSetTest();

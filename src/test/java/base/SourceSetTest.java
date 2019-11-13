@@ -17,7 +17,7 @@ public class SourceSetTest {
 
     @Before
     public void initialize() throws ConfigurationException {
-        data = new SWMMobject("network12.inp", 3);
+        data = new SWMMobject();
     }
 
     @Test
