@@ -1,0 +1,50 @@
+/*
+ * Hello 'world' example.
+ *   A component printing a greeting.
+ */
+import static oms3.SimBuilder.instance as OMS3
+import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject
+
+OMS3.graph(path: "./data/topo.csv",
+           simpath: "./simulation/") {
+           	
+	resource "$oms_prj/lib"
+
+    graph(traverser: "downstream.all") {
+    	parameter {
+            "aLPP" 60.4
+            "nLPP" 0.61
+            "numberOfCurves" 3
+        }
+    }
+    
+    flags {
+    	"1" "{overwrite}"
+    	"2" "{overwrite}"
+    	"3" "{overwrite}"
+    	"4" "{overwrite}"
+    	"5" "{overwrite}"
+    	"6" "{overwrite}"
+    	"7" "{overwrite}"
+    	"8" "{overwrite}"
+    	"9" "{overwrite}"
+    	"10" "{overwrite}"
+    }
+    
+    build()
+    
+    model() {
+    	
+        components {
+            "c" "ex0.OutT"
+        }
+        
+        parameter {
+            "c.datastructure" new SWMMobject()
+        }
+        
+        outFluxes {
+            "c.datastructure" ""
+        }
+    } 
+}

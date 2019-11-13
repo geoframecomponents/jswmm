@@ -1,0 +1,41 @@
+/*
+ * Hello 'world' example.
+ *   A component printing a greeting.
+ */
+import static oms3.SimBuilder.instance as OMS3
+
+OMS3.sim()
+{
+
+    // build()
+    
+    model() {
+    	
+        components {
+            "flowDispatcher" "org.altervista.growworkinghard.jswmm.routing.FlowRateDispatcher"
+            "routing" "org.altervista.growworkinghard.jswmm.routing.Routing"
+        }
+        
+        parameter {
+        	"flowDispatcher.upstreamNodeName" "J7"
+        	"flowDispatcher.linkName" "16"
+        	"routing.linkName" "16"
+        }
+        
+        inFluxes {
+        	"0.datastructure" "flowDispatcher.dataStructure"
+        	"6.runoffFlowRate" "flowDispatcher.flowRate1"
+        	"14.routingFlowRate" "flowDispatcher.flowRate2"
+        	"15.routingFlowRate" "flowDispatcher.flowRate3"
+        	"0.net3subtrees" "routing.net3subtrees"
+        }
+                
+        outFluxes {
+        	"routing.routingFlowRate" ""
+        }
+               
+        connect {
+        	"flowDispatcher.dataStructure" "routing.dataStructure"
+        }
+    }
+}

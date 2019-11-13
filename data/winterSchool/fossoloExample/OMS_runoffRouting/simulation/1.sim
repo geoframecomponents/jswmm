@@ -1,0 +1,42 @@
+/*
+ * Hello 'world' example.
+ *   A component printing a greeting.
+ */
+import static oms3.SimBuilder.instance as OMS3
+
+OMS3.sim()
+{
+
+	resource "$oms_prj/lib"
+    // build()
+    
+    model() {
+    	
+        components {
+            "prerunoff" "org.altervista.growworkinghard.jswmm.runoff.PreRunoff"
+            "runoff" "org.altervista.growworkinghard.jswmm.runoff.Runoff"
+        }
+        
+        parameter {
+            "prerunoff.areaName" "1"
+            "runoff.areaName" "1"
+            "runoff.nodeName" "J1"
+            "prerunoff.aLPP" 1
+            "prerunoff.nLPP" 1
+            "prerunoff.numberOfCurves" 1            
+        }
+
+        inFluxes {
+            "0.datastructure" "prerunoff.dataStructure"
+        }
+
+        outFluxes {
+        	"runoff.runoffFlowRate" ""
+        }
+        
+        connect {
+            "prerunoff.dataStructure" "runoff.dataStructure"
+            "prerunoff.adaptedRainfallData" "runoff.adaptedRainfallData"
+        }
+    }
+}

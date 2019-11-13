@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="graph" default="all" basedir=".">
+    <description>
+       Manages the project 'graph'.
+       Created at Wed Jun 07 13:04:36 MDT 2017.
+    </description>
+    <import file=".oms/project.xml"/>
+</project>
