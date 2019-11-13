@@ -4,9 +4,9 @@ import java.time.Instant;
 
 public class PeriodStep extends Period {
 
-    private double stepSize;
+    private Long stepSize;
 
-    public PeriodStep(Instant startDate, Instant endDate, double stepSize) {
+    public PeriodStep(Instant startDate, Instant endDate, Long stepSize) {
         super(startDate, endDate);
         this.stepSize = stepSize;
     }
@@ -14,7 +14,7 @@ public class PeriodStep extends Period {
     public <T> void setDateTime(AvailableDateTypes type, T field) {
         switch (type) {
             case stepSize:
-                this.stepSize = (Double) field;
+                this.stepSize = (Long) field;
                 break;
             default:
                 super.setDateTime(type, field);
@@ -24,7 +24,7 @@ public class PeriodStep extends Period {
     public <T> T getDateTime(AvailableDateTypes type) {
         switch ( type) {
             case stepSize:
-                return (T) (Double) this.stepSize;
+                return (T) (Long) this.stepSize;
             default:
                 return super.getDateTime(type);
         }

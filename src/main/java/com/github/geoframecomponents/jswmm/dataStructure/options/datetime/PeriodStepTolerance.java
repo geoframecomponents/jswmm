@@ -9,7 +9,7 @@ public abstract class PeriodStepTolerance extends PeriodStep {
     private double absoluteTolerance;
     private double relativeTolerance;
 
-    public PeriodStepTolerance(Instant startDate, Instant endDate, double stepSize) {
+    public PeriodStepTolerance(Instant startDate, Instant endDate, Long stepSize) {
         super(startDate, endDate, stepSize);
     }
 

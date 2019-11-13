@@ -7,7 +7,7 @@ import java.time.Instant;
 
 public class RoutingDateTime extends PeriodStepTolerance {
 
-    public RoutingDateTime(Instant startDate, Instant endDate, double stepSize, double absTol) {
+    public RoutingDateTime(Instant startDate, Instant endDate, Long stepSize, double absTol) {
         super(startDate, endDate, stepSize);
         setDateTime(AvailableDateTypes.absoluteTolerance, absTol);
     }

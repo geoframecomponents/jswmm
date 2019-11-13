@@ -8,7 +8,7 @@ import java.time.Instant;
 @Deprecated
 public class RunoffDateTime extends PeriodStepTolerance {
 
-    public RunoffDateTime(Instant startDate, Instant endDate, double stepSize) {
+    public RunoffDateTime(Instant startDate, Instant endDate, Long stepSize) {
         super(startDate, endDate, stepSize);
     }
 }
