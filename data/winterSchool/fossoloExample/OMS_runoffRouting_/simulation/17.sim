@@ -1,0 +1,41 @@
+/*
+ * Hello 'world' example.
+ *   A component printing a greeting.
+ */
+import static oms3.SimBuilder.instance as OMS3
+
+OMS3.sim()
+{
+
+    // build()
+    
+    model() {
+    	
+        components {
+            "flowDispatcher" "com.github.geoframecomponents.jswmm.routing.FlowRateDispatcher"
+            "routing" "com.github.geoframecomponents.jswmm.routing.Routing"
+        }
+        
+        parameter {
+        	"flowDispatcher.upstreamNodeName" "J4"
+        	"flowDispatcher.linkName" "17"
+        	"routing.linkName" "17"
+        }
+        
+        inFluxes {
+        	"0.datastructure" "flowDispatcher.dataStructure"
+        	"7.runoffFlowRate" "flowDispatcher.flowRate1"
+        	"13.routingFlowRate" "flowDispatcher.flowRate2"
+        	"16.routingFlowRate" "flowDispatcher.flowRate3"
+        	"0.net3subtrees" "routing.net3subtrees"
+        }
+                
+        outFluxes {
+        	"routing.routingFlowRate" ""
+        }
+               
+        connect {
+        	"flowDispatcher.dataStructure" "routing.dataStructure"
+        }
+    }
+}
