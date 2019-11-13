@@ -92,6 +92,9 @@ public abstract class Subarea extends AbstractSubcatchment {
     }
 
     public void setExcessRainfall(Integer id, Double value) {
+        if (excessRainfall == null) {
+            this.excessRainfall = new HashMap<>();
+        }
         this.excessRainfall.put(id, value);
     }
 
