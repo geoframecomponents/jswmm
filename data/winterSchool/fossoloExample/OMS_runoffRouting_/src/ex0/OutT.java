@@ -20,7 +20,7 @@
 package ex0;
 
 import oms3.annotations.*;
-import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 
 /**
  * @author sidereus

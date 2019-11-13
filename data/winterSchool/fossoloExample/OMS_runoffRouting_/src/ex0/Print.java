@@ -8,7 +8,7 @@ package ex0;
 import java.time.Instant;
 import oms3.annotations.Execute;
 import oms3.annotations.InNode;
-import org.altervista.growworkinghard.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Print {
         // print dimension of the pipes
         for (int i=11; i<=20; i++) {
             System.out.print(i);
-            System.out.println(datastructure.getConduit(String.valueOf(i)).getCrossSectionType().getMainDimension());
+            //System.out.println(datastructure.getConduit(String.valueOf(i)).getCrossSectionType().getMainDimension());
         }
     }
 }
