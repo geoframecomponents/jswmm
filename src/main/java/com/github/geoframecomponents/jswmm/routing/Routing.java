@@ -88,7 +88,7 @@ public class Routing {
         /**
          * Alignment of water table of all links of the node
          */
-        //dataStructure.upgradeSubtrees(linkName, net3subtrees);
+        dataStructure.upgradeSubtrees(linkName, net3subtrees);
 
         //route the maximum discharge to next bucket
         conduit.evaluateFlowRate();
