@@ -143,7 +143,7 @@ public class SWMMobject extends INPparser {
     }
 
     public SWMMobject(String INPfile) throws ConfigurationException {
-        this(INPfile, 1);
+        this(INPfile, 3);
     }
 
     public SWMMobject(String INPfile, int numberOfCurves) throws ConfigurationException {
