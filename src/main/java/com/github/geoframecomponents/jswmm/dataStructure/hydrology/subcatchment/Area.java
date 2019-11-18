@@ -163,11 +163,11 @@ public class Area extends AbstractSubcatchment {
 
     public void evaluateRunoffFlowRate(HashMap<Integer, LinkedHashMap<Instant, Double>> adaptedRainfallData) {
 
-        Instant currentTime = getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
+        Instant startTime = getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
         Instant totalTime = getSubcatchmentTime().getDateTime(AvailableDateTypes.endDate);
         long runoffStep = getSubcatchmentTime().getDateTime(AvailableDateTypes.stepSize);
 
-        for ( Instant time = currentTime; time.isBefore(totalTime); time = time.plusSeconds(runoffStep)) {
+        for ( Instant currentTime = startTime; currentTime.isBefore(totalTime); currentTime = currentTime.plusSeconds(runoffStep)) {
 
             for (Integer identifier : adaptedRainfallData.keySet()) {
 
