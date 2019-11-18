@@ -224,9 +224,7 @@ public class SWMMobject extends INPparser {
         for (Iterator<String> it = conduitsList; it.hasNext(); ) {
             linkName = it.next();
 
-            for (int curveId=1; curveId<=numberOfCurves; curveId++) {
-                conduits.put(linkName, new Conduit(linkName, curveId, linksDateTime, projectUnits, routingSolver, INPfile));
-            }
+            conduits.put(linkName, new Conduit(linkName, numberOfCurves, linksDateTime, projectUnits, routingSolver, INPfile));
         }
 
         //Setup Junctions
@@ -253,9 +251,8 @@ public class SWMMobject extends INPparser {
         for (Iterator<String> it = areasList; it.hasNext(); ) {
             areaName = it.next();
 
-            for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
-                areas.put(areaName, new Area(areaName, curveId, projectUnits, areasDateTime, runoffSolver, INPfile));
-            }
+            areas.put(areaName, new Area(areaName, numberOfCurves, projectUnits, areasDateTime, runoffSolver, INPfile));
+
         }
     }
 
