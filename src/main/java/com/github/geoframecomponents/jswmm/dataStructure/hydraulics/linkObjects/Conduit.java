@@ -80,7 +80,7 @@ public class Conduit extends AbstractLink {
         }
     }
 
-    public Conduit(String name, int curveId, Datetimeable dateTime, Unitable units,
+    public Conduit(String name, int numberOfCurves, Datetimeable dateTime, Unitable units,
                    RoutingSolver routingSolver, String INPfile) throws ConfigurationException {
 
         super(name);
@@ -102,12 +102,14 @@ public class Conduit extends AbstractLink {
         this.linkRoughness = Double.parseDouble( ((ConduitINP) interfaceINP).linkRoughness(INPfile, name) );
         this.linkSlope = Double.parseDouble( ((ConduitINP) interfaceINP).linksMinSlope(INPfile) );
 
-        Instant current;
-        for (current = dateTime.getDateTime(AvailableDateTypes.startDate);
-             current.isBefore( dateTime.getDateTime(AvailableDateTypes.endDate) );
-             current = current.plusSeconds( dateTime.getDateTime(AvailableDateTypes.stepSize)) ) {
+        for (int curveId=1; curveId<=numberOfCurves; curveId++) {
+            Instant current;
+            for (current = dateTime.getDateTime(AvailableDateTypes.startDate);
+                 current.isBefore( dateTime.getDateTime(AvailableDateTypes.endDate) );
+                 current = current.plusSeconds( dateTime.getDateTime(AvailableDateTypes.stepSize)) ) {
 
-            upstreamOutside.setFlowRate(curveId, current, 0.0001);
+                upstreamOutside.setFlowRate(curveId, current, 0.0001);
+            }
         }
     }
 
@@ -342,12 +344,20 @@ public class Conduit extends AbstractLink {
 
     private Double computeNaturalSlope() {
         Coordinates upstream = getUpstreamOutside().getNodeCoordinates();
-        if ( upstreamOutside.getTerrainElevation().equals(downstreamOutside.getTerrainElevation()) ) {
-            return 0.001;//TODO is there a better method?
+        Coordinates downstream = getDownstreamOutside().getNodeCoordinates();
+        if ( Math.abs ( upstreamOutside.getTerrainElevation()
+                - downstreamOutside.getTerrainElevation() ) < 0.0001 ) {
+            return 0.01;//TODO is there a better method?
         }
         else {
-            return GEOgeometry.computeSlope(upstream.x, upstream.y, upstreamOutside.getTerrainElevation(),
-                    upstream.x, upstream.y, downstreamOutside.getTerrainElevation());
+            Double slopeFromData = GEOgeometry.computeSlope(upstream.x, upstream.y, upstreamOutside.getTerrainElevation(),
+                    downstream.x, downstream.y, downstreamOutside.getTerrainElevation());
+            if ( slopeFromData < 0.001 ) {
+                return 0.01;
+            }
+            else {
+                return slopeFromData;
+            }
         }
     }
 
