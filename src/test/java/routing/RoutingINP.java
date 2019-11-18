@@ -16,13 +16,19 @@
 package routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.routing.FlowRateDispatcher;
 import com.github.geoframecomponents.jswmm.routing.Routing;
 import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
 import com.github.geoframecomponents.jswmm.runoff.Runoff;
+import oms3.annotations.In;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Ignore
 public class RoutingINP {
@@ -33,6 +39,7 @@ public class RoutingINP {
     Runoff runoff_1;
     Runoff runoff_2;
     Routing routing;
+    FlowRateDispatcher flowRateDispatcher;
 
     @Before
     public void initialize() throws ConfigurationException {
@@ -66,7 +73,7 @@ public class RoutingINP {
 
         runoff_2.dataStructure = data;
         runoff_2.areaName = "S2";
-        runoff_2.nodeName = "J4";
+        runoff_2.nodeName = "J3";
         runoff_2.adaptedRainfallData = preRunoff_2.getAdaptedRainfallData();
 
         runoff_1.initialize();
@@ -75,12 +82,26 @@ public class RoutingINP {
         runoff_1.run();
         runoff_2.run();
 
+        System.out.println( runoff_1.runoffFlowRate.size() );
+
         routing = new Routing();
 
+        List<Integer> subtree = new ArrayList<>();
+        subtree.add(0, 8);
+        //subtree.add(0, 10);
+        //subtree.add(1, 8);
+        //subtree.add(2, 9);
+        //routingTest("10", subtree);
+        routingTest("8", subtree);
+    }
+
+    private void routingTest(String localConduit, List<Integer> subtree) {
         routing.dataStructure = data;
-        routing.linkName = "8";
+        routing.linkName = localConduit;
+
+        routing.net3subtrees = new HashMap<>();
+        routing.net3subtrees.put(subtree.get(0), subtree);
 
         routing.run();
-        //routingDS.SourceSetTest();
     }
 }
