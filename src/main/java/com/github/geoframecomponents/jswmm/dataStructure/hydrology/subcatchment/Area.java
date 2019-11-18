@@ -64,7 +64,7 @@ public class Area extends AbstractSubcatchment {
         }
     }
 
-    public Area(String areaName, Integer curveId, Unitable units, Datetimeable dateTime,
+    public Area(String areaName, Integer numberOfCurves, Unitable units, Datetimeable dateTime,
                 RunoffSolver runoffSolver, String INPfile) throws ConfigurationException {
 
         super(areaName);
@@ -114,20 +114,22 @@ public class Area extends AbstractSubcatchment {
         }
 
         this.subareas = new HashMap<>();
-        this.subareas.put(curveId, divideAreas(imperviousPercentage, subcatchmentArea,
-                imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
-                roughnessCoefficientPervious, roughnessCoefficientImpervious,
-                perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
+        for (int curveId = 1; curveId<=numberOfCurves; curveId++) {
+            this.subareas.put(curveId, divideAreas(imperviousPercentage, subcatchmentArea,
+                    imperviousWOstoragePercentage, depressionStoragePervious, depressionStorageImpervious,
+                    roughnessCoefficientPervious, roughnessCoefficientImpervious,
+                    perviousTo, imperviousTo, percentageFromPervious, percentageFromImpervious));
+
+            Instant startSimDate = this.getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
+            for (Subarea subarea : this.subareas.get(curveId)) {
+                subarea.setAreaFlowRate(curveId, startSimDate, 0.0);
+                subarea.setRunoffDepth(curveId, startSimDate, 0.0);
+                subarea.setTotalDepth(curveId, startSimDate, 0.0);
+            }
+        }
         this.totalAreaFlowRate = new LinkedHashMap<>();
 
         //TODO report!!!
-
-        Instant startSimDate = this.getSubcatchmentTime().getDateTime(AvailableDateTypes.startDate);
-        for (Subarea subarea : this.subareas.get(curveId)) {
-            subarea.setAreaFlowRate(curveId, startSimDate, 0.0);
-            subarea.setRunoffDepth(curveId, startSimDate, 0.0);
-            subarea.setTotalDepth(curveId, startSimDate, 0.0);
-        }
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {
