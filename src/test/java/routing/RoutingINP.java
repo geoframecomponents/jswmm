@@ -16,21 +16,21 @@
 package routing;
 
 import com.github.geoframecomponents.jswmm.dataStructure.SWMMobject;
+import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.AvailableDateTypes;
 import com.github.geoframecomponents.jswmm.routing.FlowRateDispatcher;
 import com.github.geoframecomponents.jswmm.routing.Routing;
 import com.github.geoframecomponents.jswmm.runoff.PreRunoff;
 import com.github.geoframecomponents.jswmm.runoff.Runoff;
-import oms3.annotations.In;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-@Ignore
 public class RoutingINP {
 
     SWMMobject data;
@@ -38,8 +38,12 @@ public class RoutingINP {
     PreRunoff preRunoff_2;
     Runoff runoff_1;
     Runoff runoff_2;
-    Routing routing;
-    FlowRateDispatcher flowRateDispatcher;
+    Routing routing1;
+    Routing routing2;
+    Routing routing3;
+    FlowRateDispatcher flowRateDispatcher1;
+    FlowRateDispatcher flowRateDispatcher2;
+    FlowRateDispatcher flowRateDispatcher3;
 
     @Before
     public void initialize() throws ConfigurationException {
@@ -59,10 +63,7 @@ public class RoutingINP {
 
         preRunoff_1.run();
         preRunoff_2.run();
-    }
 
-    @Test
-    public void execute() {
         runoff_1 = new Runoff();
         runoff_2 = new Runoff();
 
@@ -82,9 +83,22 @@ public class RoutingINP {
         runoff_1.run();
         runoff_2.run();
 
-        System.out.println( runoff_1.runoffFlowRate.size() );
+        //System.out.println(runoff_1.runoffFlowRate);
+        //System.out.println(runoff_2.runoffFlowRate);
+    }
 
-        routing = new Routing();
+    @Test
+    public void execute() {
+
+        routing1 = new Routing();
+        flowRateDispatcher1 = new FlowRateDispatcher();
+        flowRateDispatcher1.dataStructure = data;
+        flowRateDispatcher1.setFlowRate1(runoff_1.runoffFlowRate);
+        flowRateDispatcher1.upstreamNodeName = "J1";
+        flowRateDispatcher1.linkName = "8";
+        flowRateDispatcher1.run();
+
+        //System.out.println(flowRateDispatcher1.flowRate1);
 
         List<Integer> subtree = new ArrayList<>();
         subtree.add(0, 8);
@@ -92,16 +106,60 @@ public class RoutingINP {
         //subtree.add(1, 8);
         //subtree.add(2, 9);
         //routingTest("10", subtree);
-        routingTest("8", subtree);
-    }
 
-    private void routingTest(String localConduit, List<Integer> subtree) {
-        routing.dataStructure = data;
-        routing.linkName = localConduit;
+        routing1.dataStructure = data;
+        routing1.linkName = "8";
 
-        routing.net3subtrees = new HashMap<>();
-        routing.net3subtrees.put(subtree.get(0), subtree);
+        routing1.net3subtrees = new HashMap<>();
+        routing1.net3subtrees.put(subtree.get(0), subtree);
 
-        routing.run();
+        routing1.run();
+
+        flowRateDispatcher2 = new FlowRateDispatcher();
+        flowRateDispatcher2.dataStructure = data;
+        flowRateDispatcher2.setFlowRate1(runoff_2.runoffFlowRate);
+        flowRateDispatcher2.upstreamNodeName = "J3";
+        flowRateDispatcher2.linkName = "9";
+        flowRateDispatcher2.run();
+
+        routing2 = new Routing();
+
+        subtree.set(0, 9);
+        //subtree.add(0, 10);
+        //subtree.add(1, 8);
+        //subtree.add(2, 9);
+        //routingTest("10", subtree);
+
+        routing2.dataStructure = data;
+        routing2.linkName = "9";
+
+        routing2.net3subtrees = new HashMap<>();
+        routing2.net3subtrees.put(subtree.get(0), subtree);
+
+        routing2.run();
+
+        //System.out.println(routing1.routingFlowRate);
+
+        flowRateDispatcher3 = new FlowRateDispatcher();
+        flowRateDispatcher3.dataStructure = data;
+        flowRateDispatcher3.setFlowRate1(routing1.routingFlowRate);
+        flowRateDispatcher3.setFlowRate2(routing2.routingFlowRate);
+        flowRateDispatcher3.upstreamNodeName = "J4";
+        flowRateDispatcher3.linkName = "10";
+        flowRateDispatcher3.run();
+
+        routing3 = new Routing();
+
+        subtree.set(0, 10);
+        subtree.add(1, 8);
+        subtree.add(2, 9);
+
+        routing3.dataStructure = data;
+        routing3.linkName = "10";
+
+        routing3.net3subtrees = new HashMap<>();
+        routing3.net3subtrees.put(subtree.get(0), subtree);
+
+        routing3.run();
     }
 }
