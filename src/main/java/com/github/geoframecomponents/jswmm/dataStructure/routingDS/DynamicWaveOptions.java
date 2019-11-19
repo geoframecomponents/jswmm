@@ -19,11 +19,15 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class DynamicWaveOptions implements RoutingSolver {
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow, OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope, CrossSectionType crossSectionType, double routingStep) {
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, HashMap<Integer, LinkedHashMap<Instant, Double>> upstreamFlow,
+                                    OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness, Double linkSlope,
+                                    CrossSectionType crossSectionType, double routingStep) {
         throw new NullPointerException("Nothing implemented yet.");
     }
 

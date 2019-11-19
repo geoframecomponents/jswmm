@@ -11,7 +11,7 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+ */upstreaFlow
 
 package com.github.geoframecomponents.jswmm.dataStructure.routingDS;
 
@@ -20,10 +20,12 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.options.datetime.PeriodStepTolerance;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public interface RoutingSolver {
 
-    RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreaFlow,
+    RoutedFlow routeFlowRate(Integer id, Instant currentTime, HashMap<Integer, LinkedHashMap<Instant, Double>> upstreamFlow,
                              OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                              Double linkSlope, CrossSectionType crossSectionType, double routingStep);
 
