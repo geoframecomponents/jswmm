@@ -1,0 +1,230 @@
+[TITLE]
+;;Project Title/Notes
+
+[OPTIONS]
+;;Option             Value
+FLOW_UNITS           CMS
+INFILTRATION         HORTON
+FLOW_ROUTING         STEADY
+LINK_OFFSETS         DEPTH
+MIN_SLOPE            0
+ALLOW_PONDING        NO
+SKIP_STEADY_STATE    NO
+
+START_DATE           01/01/2018
+START_TIME           00:00:00
+REPORT_START_DATE    01/01/2018
+REPORT_START_TIME    00:00:00
+END_DATE             01/01/2018
+END_TIME             01:00:00
+SWEEP_START          01/01
+SWEEP_END            12/31
+DRY_DAYS             0
+REPORT_STEP          00:00:30
+WET_STEP             00:01:00
+DRY_STEP             01:00:00
+ROUTING_STEP         0:00:30 
+
+INERTIAL_DAMPING     PARTIAL
+NORMAL_FLOW_LIMITED  BOTH
+FORCE_MAIN_EQUATION  H-W
+VARIABLE_STEP        0.75
+LENGTHENING_STEP     0
+MIN_SURFAREA         1.14
+MAX_TRIALS           8
+HEAD_TOLERANCE       0.0015
+SYS_FLOW_TOL         5
+LAT_FLOW_TOL         5
+MINIMUM_STEP         0.5
+THREADS              1
+
+[EVAPORATION]
+;;Data Source    Parameters
+;;-------------- ----------------
+CONSTANT         0.0
+DRY_ONLY         NO
+
+[RAINGAGES]
+;;Name           Format    Interval SCF      Source    
+;;-------------- --------- ------ ------ ----------
+RG1              INTENSITY 0:01     1.0      TIMESERIES 3mins           
+
+[SUBCATCHMENTS]
+;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
+;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
+Sub1             RG1              J1               1.937    75       100      1        0                        
+Sub2             RG1              J2               1.731    75       100      1        0                        
+Sub3             RG1              J3               0.481    75       100      1        0                        
+Sub4             RG1              J5               0.547    75       100      1        0                        
+Sub5             RG1              J6               2.141    75       100      1        0                        
+Sub6             RG1              J7               0.383    75       100      1        0                        
+Sub7             RG1              J4               0.353    75       100      1        0                        
+Sub8             RG1              J9               0.999    75       100      1        0                        
+Sub9             RG1              J10              1.583    75       100      1        0                        
+Sub10            RG1              J8               0.633    75       100      1        0                        
+
+[SUBAREAS]
+;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted 
+;;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
+Sub1             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub2             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub3             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub4             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub5             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub6             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub7             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub8             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub9             0.01       0.1        0.05       0.05       25         OUTLET    
+Sub10            0.01       0.1        0.05       0.05       25         OUTLET    
+
+[INFILTRATION]
+;;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil  
+;;-------------- ---------- ---------- ---------- ---------- ----------
+Sub1             3.0        0.5        4          7          0         
+Sub2             3.0        0.5        4          7          0         
+Sub3             3.0        0.5        4          7          0         
+Sub4             3.0        0.5        4          7          0         
+Sub5             3.0        0.5        4          7          0         
+Sub6             3.0        0.5        4          7          0         
+Sub7             3.0        0.5        4          7          0         
+Sub8             3.0        0.5        4          7          0         
+Sub9             3.0        0.5        4          7          0         
+Sub10            3.0        0.5        4          7          0         
+
+[JUNCTIONS]
+;;Name           Elevation  MaxDepth   InitDepth  SurDepth   Aponded   
+;;-------------- ---------- ---------- ---------- ---------- ----------
+J1               8          0          0          0          0         
+J2               8          0          0          0          0         
+J3               6          0          0          0          0         
+J4               4          0          0          0          0         
+J5               8          0          0          0          0         
+J6               8          0          0          0          0         
+J7               6          0          0          0          0         
+J8               2          0          0          0          0         
+J9               4          0          0          0          0         
+J10              4          0          0          0          0         
+
+[OUTFALLS]
+;;Name           Elevation  Type       Stage Data       Gated    Route To        
+;;-------------- ---------- ---------- ---------------- -------- ----------------
+Out1             0          FREE                        NO                       
+
+[CONDUITS]
+;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
+;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
+C1               J1               J3               200        0.0083     0          0          0          0         
+C2               J2               J3               200        0.0083     0          0          0          0         
+C3               J3               J4               200        0.0083     0          0          0          0         
+C4               J5               J7               200        0.0083     0          0          0          0         
+C5               J6               J7               200        0.0083     0          0          0          0         
+C7               J7               J4               200        0.0083     0          0          0          0         
+C8               J4               J8               200        0.0083     0          0          0          0         
+C9               J9               J8               200        0.0083     0          0          0          0         
+C10              J10              J8               200        0.0083     0          0          0          0         
+C11              J8               Out1             200        0.0083     0          0          0          0         
+
+[XSECTIONS]
+;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
+;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
+C1               CIRCULAR     0.5              0          0          0          1                    
+C2               CIRCULAR     0.5              0          0          0          1                    
+C3               CIRCULAR     0.6              0          0          0          1                    
+C4               CIRCULAR     0.4              0          0          0          1                    
+C5               CIRCULAR     0.5              0          0          0          1                    
+C7               CIRCULAR     0.6              0          0          0          1                    
+C8               CIRCULAR     0.8              0          0          0          1                    
+C9               CIRCULAR     0.4              0          0          0          1                    
+C10              CIRCULAR     0.4              0          0          0          1                    
+C11              CIRCULAR     1                0          0          0          1                    
+
+[TIMESERIES]
+;;Name           Date       Time       Value     
+;;-------------- ---------- ---------- ----------
+3mins                       00:00      194.28    
+3mins                       00:01      194.28    
+3mins                       00:02      194.28    
+
+[REPORT]
+;;Reporting Options
+INPUT      NO
+CONTROLS   NO
+SUBCATCHMENTS ALL
+NODES ALL
+LINKS ALL
+
+[TAGS]
+
+[MAP]
+DIMENSIONS 0.000 0.000 10000.000 10000.000
+Units      None
+
+[COORDINATES]
+;;Node           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+J1               1569.767           8357.558          
+J2               3139.535           8401.163          
+J3               2412.791           7063.953          
+J4               4738.372           6191.860          
+J5               6526.163           8430.233          
+J6               7936.047           7151.163          
+J7               6366.279           6744.186          
+J8               5639.535           4113.372          
+J9               7427.326           5436.047          
+J10              3488.372           4273.256          
+Out1             5581.395           1802.326          
+
+[VERTICES]
+;;Link           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+
+[Polygons]
+;;Subcatchment   X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+Sub1             29.070             8808.140          
+Sub1             1947.674           8764.535          
+Sub1             1947.674           9825.581          
+Sub1             14.535             9840.116          
+Sub2             3793.605           9738.372          
+Sub2             3866.279           8720.930          
+Sub2             2340.116           8808.140          
+Sub2             2354.651           9796.512          
+Sub3             1224.564           7539.971          
+Sub3             1428.052           6362.645          
+Sub3             -243.459           6638.808          
+Sub3             -374.273           7539.971          
+Sub4             6947.674           9781.977          
+Sub4             6962.209           8735.465          
+Sub4             5479.651           8662.791          
+Sub4             5508.721           9752.907          
+Sub5             9026.163           8895.349          
+Sub5             9069.767           7674.419          
+Sub5             7558.140           7601.744          
+Sub5             7543.605           8808.140          
+Sub6             5465.116           8473.837          
+Sub6             5377.907           7063.953          
+Sub6             4127.907           7078.488          
+Sub6             4113.372           8299.419          
+Sub7             1453.488           6002.907          
+Sub7             3023.256           5959.302          
+Sub7             3037.791           4796.512          
+Sub7             1337.209           4811.047          
+Sub7             1409.884           5741.279          
+Sub8             9520.349           6889.535          
+Sub8             9476.744           5566.860          
+Sub8             7863.372           5494.186          
+Sub8             7848.837           6468.023          
+Sub9             3997.093           3677.326          
+Sub9             4127.907           2572.674          
+Sub9             2020.349           2659.884          
+Sub9             2063.953           3619.186          
+Sub10            8546.512           4255.087          
+Sub10            8575.581           3106.831          
+Sub10            6816.860           3135.901          
+Sub10            6816.860           4327.762          
+
+[SYMBOLS]
+;;Gage           X-Coord            Y-Coord           
+;;-------------- ------------------ ------------------
+RG1              -886.628           8284.884          
+
