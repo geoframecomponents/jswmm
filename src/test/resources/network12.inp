@@ -52,8 +52,8 @@ RG1              INTENSITY 0:01     1.0      TIMESERIES 5mins
 [SUBCATCHMENTS]
 ;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
 ;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
-S1                RG1              J1               1        0.25       100      0.5      0
-S2                RG1              J3               1        0.25       100      0.5      0
+S1                RG1              J1               0.2        0.25       100      0.5      0
+S2                RG1              J3               0.5        0.25       100      0.5      0
 S3                RG1              J3               1        0.25       100      0.5      0
 S4                RG1              J3               1        0.25       100      0.5      0
 S5                RG1              J4               1        0.25       100      0.5      0
@@ -99,11 +99,11 @@ O1              4.20       FREE                        NO
 [CONDUITS]
 ;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
 ;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
-8                J1               J4               200        0.01       0          0          0          0
-9                J3               J4               200        0.01       0          0          0          0
-10               J4               J5               200        0.01       0          0          0          0
-11               J2               J5               500        0.01       0          0          0          0
-12               J5               O1               200        0.01       0          0          0          0
+8                J1               J4               200        60       0          0          0          0
+9                J3               J4               200        60       0          0          0          0
+10               J4               J5               200        60       0          0          0          0
+11               J2               J5               500        60       0          0          0          0
+12               J5               O1               200        60       0          0          0          0
 
 [XSECTIONS]
 ;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
