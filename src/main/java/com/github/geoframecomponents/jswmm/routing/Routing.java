@@ -60,8 +60,8 @@ public class Routing {
 
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
+
     @Execute
-    
     public void run() {
 
         System.out.println("Routing on " + linkName);
