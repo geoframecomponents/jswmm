@@ -22,10 +22,7 @@ import oms3.annotations.InNode;
 import oms3.annotations.Out;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 public class FlowRateDispatcher {
 
@@ -167,11 +164,34 @@ public class FlowRateDispatcher {
 //            }
 //        }
 
+        long flowRateStepSize = getTimeStep(flowRate);
+
+        HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
+        if ( !routingStepSize.equals(flowRateStepSize) ) {
+            for (Integer id : flowRate.keySet()) {
+                LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
+                        flowRateStepSize, totalTime, initialTime, flowRate.get(id));
+                newFlowRate.put(id, currentFlowRate);
+            }
+            dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
+            dataStructure.setLinkFlowRate(linkName, newFlowRate);
+        }
+        else {
+            dataStructure.setNodeFlowRate(upstreamNodeName, flowRate);
+            dataStructure.setLinkFlowRate(linkName, flowRate);
+        }
+    }
+
+    private long getTimeStep(HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
+
         Long flowRateStepSize = null;
         Set<Integer> test = flowRate.keySet();
         for (Iterator<Integer> it = test.iterator(); it.hasNext(); ) {
-            Integer test2 = it.next();
-            Set<Instant> test3 = flowRate.get(test2).keySet();
+
+            Integer curveId = it.next();
+            LinkedHashMap<Instant, Double> reorded = reorderHM(flowRate.get(curveId));
+
+            Set<Instant> test3 = reorded.keySet();
             for (Iterator<Instant> it2 = test3.iterator(); it2.hasNext(); ) {
                 Instant tmpInstant = it2.next();
                 Instant tmpInstantPlus = it2.next();
@@ -181,17 +201,26 @@ public class FlowRateDispatcher {
             break;
         }
 
-        HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
-        if ( !routingStepSize.equals(flowRateStepSize) ) {
-            for (Integer id : flowRate.keySet()) {
-                LinkedHashMap<Instant, Double> currentFlowRate = dataStructure.adaptDataSeries(routingStepSize,
-                        flowRateStepSize, totalTime, initialTime, flowRate.get(id));
-                newFlowRate.put(id, currentFlowRate);
-            }
-        }
+        return flowRateStepSize;
+    }
 
-        dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
-        dataStructure.setLinkFlowRate(linkName, newFlowRate);
+    private LinkedHashMap<Instant, Double> reorderHM( LinkedHashMap<Instant, Double> flowRate ) {
+
+        ArrayList<String> flowByKey = new ArrayList<>();
+        Set<Instant> test = flowRate.keySet();
+        for (Iterator<Instant> it = test.iterator(); it.hasNext(); ) {
+            Instant iter = it.next();
+            flowByKey.add(iter.toString());
+        }
+        Collections.sort(flowByKey);
+
+        LinkedHashMap<Instant, Double> sorted = new LinkedHashMap<>();
+        for (Iterator<String> it = flowByKey.iterator(); it.hasNext(); ) {
+            String stringKey = it.next();
+            Instant key = Instant.parse(stringKey);
+            sorted.put(key, flowRate.get(key));
+        }
+        return sorted;
     }
 
     public void setFlowRate1(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
