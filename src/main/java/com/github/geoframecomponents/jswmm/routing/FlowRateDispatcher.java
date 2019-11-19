@@ -23,7 +23,9 @@ import oms3.annotations.Out;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class FlowRateDispatcher {
 
@@ -74,14 +76,12 @@ public class FlowRateDispatcher {
     public void run() {
 
         Long routingStepSize = dataStructure.getLinksDateTime().getDateTime(AvailableDateTypes.stepSize);
-        Long flowRateStepSize = routingStepSize;//TODO check this step size
         Instant initialTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.startDate);
         Instant totalTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.endDate);
 
         if (flowRate1 != null) {
             System.out.println("Processing flowrate1");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
-                    initialTime.getEpochSecond(), flowRate1);
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(), initialTime.getEpochSecond(), flowRate1);
         }
 
         if (flowRate2 != null) {
@@ -95,55 +95,55 @@ public class FlowRateDispatcher {
                 }
             }*/
 
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate2);
         }
 
         if (flowRate3 != null) {
             System.out.println("Processing flowrate3");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate3);
         }
 
         if (flowRate4 != null) {
             System.out.println("Processing flowrate4");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate4);
         }
 
         if (flowRate5 != null) {
             System.out.println("Processing flowRate5");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate5);
         }
 
         if (flowRate6 != null) {
             System.out.println("Processing flowRate6");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate6);
         }
 
         if (flowRate7 != null) {
             System.out.println("Processing flowRate7");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate7);
         }
 
         if (flowRate8 != null) {
             System.out.println("Processing flowrate8");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate8);
         }
 
         if (flowRate9 != null) {
             System.out.println("Processing flowrate9");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate9);
         }
 
         if (flowRate10 != null) {
             System.out.println("Processing flowrate10");
-            dispatchFlow(routingStepSize, flowRateStepSize, totalTime.getEpochSecond(),
+            dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate10);
         }
 
@@ -152,12 +152,11 @@ public class FlowRateDispatcher {
     /**
      * Method to sum all flow rate to the node, upgrading the flow rate into the node and the related output stream.
      * @param routingStepSize
-     * @param flowRateStepSize
      * @param totalTime
      * @param initialTime
      * @param flowRate
      */
-    private void dispatchFlow(Long routingStepSize, Long flowRateStepSize, long totalTime, long initialTime,
+    private void dispatchFlow(Long routingStepSize, long totalTime, long initialTime,
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
 
 //        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate.entrySet()) {
@@ -167,6 +166,20 @@ public class FlowRateDispatcher {
 //                System.out.println("Value " + entry.getValue().get(time));
 //            }
 //        }
+
+        Long flowRateStepSize = null;
+        Set<Integer> test = flowRate.keySet();
+        for (Iterator<Integer> it = test.iterator(); it.hasNext(); ) {
+            Integer test2 = it.next();
+            Set<Instant> test3 = flowRate.get(test2).keySet();
+            for (Iterator<Instant> it2 = test3.iterator(); it2.hasNext(); ) {
+                Instant tmpInstant = it2.next();
+                Instant tmpInstantPlus = it2.next();
+                flowRateStepSize = tmpInstantPlus.minusSeconds(tmpInstant.getEpochSecond()).getEpochSecond();
+                break;
+            }
+            break;
+        }
 
         HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate = new HashMap<>();
         if ( !routingStepSize.equals(flowRateStepSize) ) {
