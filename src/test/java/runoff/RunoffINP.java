@@ -23,8 +23,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.time.Instant;
-
 @Ignore
 public class RunoffINP {
 
@@ -66,15 +64,13 @@ public class RunoffINP {
 
         runoff_2.dataStructure = data;
         runoff_2.areaName = "S2";
-        runoff_2.nodeName = "J2";
+        runoff_2.nodeName = "J3";
         runoff_2.adaptedRainfallData = preRunoff_2.getAdaptedRainfallData();
 
         runoff_1.run();
         runoff_2.run();
 
-        //runoff_1.test("./data/testingData/runoffTesting/N1");
-        //runoff_2.test("./data/testingData/runoffTesting/N2");
-
-        //System.out.println(data.getConduit("1").getDownstreamOutside().getStreamFlowRate().get(Instant.parse("2018-01-01T00:02:00Z")));
+        System.out.println( runoff_1.runoffFlowRate );
+        System.out.println( runoff_2.runoffFlowRate );
     }
 }
