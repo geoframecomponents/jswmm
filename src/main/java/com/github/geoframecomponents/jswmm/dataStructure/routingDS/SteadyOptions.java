@@ -19,6 +19,8 @@ import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.
 import com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects.crossSections.CrossSectionType;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class SteadyOptions implements RoutingSolver {
 
@@ -33,20 +35,20 @@ public class SteadyOptions implements RoutingSolver {
     }
 
     @Override
-    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, double upstreamFlow,
+    public RoutedFlow routeFlowRate(Integer id, Instant currentTime, HashMap<Integer, LinkedHashMap<Instant, Double>> flow,
                                     OutsideSetup downstreamOutside, Double linkLength, Double linkRoughness,
                                     Double linkSlope, CrossSectionType crossSectionType, double routingStepSize) {
 
+        LinkedHashMap<Instant, Double> upstreamFlow = flow.get(id);
         Double dischargeFull = crossSectionType.getDischargeFull(linkRoughness, linkSlope);
         Double Afull = crossSectionType.getAreaFull();
 
         final Double beta = (Math.sqrt(linkSlope) * linkRoughness) / dischargeFull; //with Gs as linkRoughness
 
-        double currentFlow = upstreamFlow / dischargeFull;
+        double currentFlow = upstreamFlow.get(currentTime) / dischargeFull;
         double area = routingTools.sectionFactorToArea(currentFlow / beta) * Afull;
         double celerity = currentFlow * dischargeFull / area;
         double timeDelay = (linkLength / celerity);
-        double timeDelayLong = adaptTimeDelay(routingStepSize, timeDelay);
 
         double qout;
         if (currentFlow == 0.0) {
@@ -62,12 +64,21 @@ public class SteadyOptions implements RoutingSolver {
         //System.out.println(" discharge " + qout * dischargeFull);
         //System.out.println("dischargeFull " + dischargeFull);
 
-        return new RoutedFlow(currentTime.plusSeconds((long) timeDelayLong), (qout * dischargeFull));
+        double currentValue = (qout * dischargeFull);
+
+        if (timeDelay < routingStepSize) {
+            return new RoutedFlow(currentTime, currentValue);
+        }
+        else {
+            double downTime = adaptTimeDelay(routingStepSize, timeDelay);
+            return new RoutedFlow(currentTime.plusSeconds((long) downTime), currentValue);
+
+        }
      }
 
     @Override
     public double adaptTimeDelay(double routingStepSize, double timeDelay) {
         double temp = timeDelay / routingStepSize;
-        return temp * routingStepSize;
+        return (int) temp * routingStepSize;
     }
 }
