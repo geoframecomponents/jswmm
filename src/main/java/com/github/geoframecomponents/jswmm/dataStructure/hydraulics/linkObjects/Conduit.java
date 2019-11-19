@@ -169,18 +169,17 @@ public class Conduit extends AbstractLink {
     @Override
     public void evaluateFlowRate() {
 
-        Instant currentTime = getLinksTime().getDateTime(AvailableDateTypes.startDate);
+        Instant startTime = getLinksTime().getDateTime(AvailableDateTypes.startDate);
         Instant totalTime = getLinksTime().getDateTime(AvailableDateTypes.endDate);
         long routingStepSize = getLinksTime().getDateTime(AvailableDateTypes.stepSize);
 
-        for (Instant time = currentTime; time.isBefore(totalTime); time = time.plusSeconds(routingStepSize)) {
+        for (Instant currentTime = startTime; currentTime.isBefore(totalTime); currentTime = currentTime.plusSeconds(routingStepSize)) {
             HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
             for (Integer id : currentFlow.keySet()) {
 
-                HashMap<Integer, LinkedHashMap<Instant, Double>> flow = upstreamOutside.getStreamFlowRate();
-                LinkedHashMap<Instant, Double> upstreamFlow = flow.get(id);
+                HashMap<Integer, LinkedHashMap<Instant, Double>> upstreamFlow = upstreamOutside.getStreamFlowRate();
 
-                RoutedFlow routedFlow = routingSolver.routeFlowRate(id, currentTime, upstreamFlow.get(currentTime),
+                RoutedFlow routedFlow = routingSolver.routeFlowRate(id, currentTime, upstreamFlow,
                         downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType, routingStepSize);
 
                 downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
