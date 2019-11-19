@@ -173,19 +173,41 @@ public class Conduit extends AbstractLink {
         Instant totalTime = getLinksTime().getDateTime(AvailableDateTypes.endDate);
         long routingStepSize = getLinksTime().getDateTime(AvailableDateTypes.stepSize);
 
-        for (Instant currentTime = startTime; currentTime.isBefore(totalTime); currentTime = currentTime.plusSeconds(routingStepSize)) {
-            HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = getUpstreamOutside().getStreamFlowRate();
-            for (Integer id : currentFlow.keySet()) {
+        for (Instant currentTime = startTime; currentTime.isBefore(totalTime);
+             currentTime = currentTime.plusSeconds(routingStepSize)) {
 
-                HashMap<Integer, LinkedHashMap<Instant, Double>> upstreamFlow = upstreamOutside.getStreamFlowRate();
+            HashMap<Integer, LinkedHashMap<Instant, Double>> upstreamFlow = getUpstreamOutside().getStreamFlowRate();
+            for (Integer id : upstreamFlow.keySet()) {
 
                 RoutedFlow routedFlow = routingSolver.routeFlowRate(id, currentTime, upstreamFlow,
                         downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType, routingStepSize);
+
+                if (!currentTime.isAfter(startTime)) {
+                    routedFlow = new RoutedFlow(currentTime, 0.0);
+                }
+                else {
+                    if (!upstreamFlow.get(id).containsKey(currentTime)) {
+                        Instant timeDown = currentTime.minusSeconds(routingStepSize);
+                        Instant timeUp = currentTime.plusSeconds(routingStepSize);
+                        double valueDown = upstreamFlow.get(id).get(timeDown);
+                        double valueUp = upstreamFlow.get(id).get(timeUp);
+
+                        routedFlow = interpolate(currentTime, valueUp, valueDown, timeUp, timeDown);
+                    }
+                }
+
+                downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
 
                 downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
             }
         }
         //System.out.println("END evaluateFlowRate");
+    }
+
+    private RoutedFlow interpolate(Instant current, double valueUp, double valueDown, Instant timeUp, Instant timeDown) {
+        double slope = (valueUp - valueDown) / (timeUp.getEpochSecond() - timeDown.getEpochSecond());
+        RoutedFlow tmp = new RoutedFlow(current, valueDown + valueDown * slope);
+        return tmp;
     }
 
     @Override
