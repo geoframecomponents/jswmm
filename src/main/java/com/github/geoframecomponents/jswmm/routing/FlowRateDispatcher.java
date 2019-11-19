@@ -180,7 +180,53 @@ public class FlowRateDispatcher {
         dataStructure.setNodeFlowRate(upstreamNodeName, newFlowRate);
         dataStructure.setLinkFlowRate(linkName, newFlowRate);
     }
+
+    public void setFlowRate1(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
+
+        flowRate1 = new HashMap<>();
+        for (Integer id : newFlowRate.keySet()) {
+            if (!flowRate1.containsKey(id)) {
+                flowRate1.put(id, new LinkedHashMap<>());
+            }
+            for (Instant time : newFlowRate.get(id).keySet()) {
+                Double oldFLowRate = flowRate1.get(id).get(time);
+                double value;
+                if (oldFLowRate == null) {
+                    value = newFlowRate.get(id).get(time);
+                } else {
+                    value = newFlowRate.get(id).get(time) + oldFLowRate;
+                }
+                LinkedHashMap<Instant, Double> oldLHM = flowRate1.get(id);
+                oldLHM.put(time, value);
+                flowRate1.put(id, oldLHM);
+            }
+        }
+    }
+
+    public void setFlowRate2(HashMap<Integer, LinkedHashMap<Instant, Double>> newFlowRate) {
+
+        flowRate2 = new HashMap<>();
+        for (Integer id : newFlowRate.keySet()) {
+            if (!flowRate2.containsKey(id)) {
+                flowRate2.put(id, new LinkedHashMap<>());
+            }
+            for (Instant time : newFlowRate.get(id).keySet()) {
+                Double oldFLowRate = flowRate2.get(id).get(time);
+                double value;
+                if (oldFLowRate == null) {
+                    value = newFlowRate.get(id).get(time);
+                } else {
+                    value = newFlowRate.get(id).get(time) + oldFLowRate;
+                }
+                LinkedHashMap<Instant, Double> oldLHM = flowRate2.get(id);
+                oldLHM.put(time, value);
+                flowRate2.put(id, oldLHM);
+            }
+        }
+    }
+
 }
+
 
             /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate1.entrySet()) {
                 for (Instant time : entry.getValue().keySet()) {
