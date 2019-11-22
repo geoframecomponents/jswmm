@@ -78,7 +78,7 @@ public class PreRunoff {
      * TODO must be global otherwise it crash? Please verify.
      */
     @In
-    public Integer numberOfCurves = 3;
+    public Integer numberOfCurves;
 
     //@In
     //public Long stormwaterInterval = null;
@@ -174,18 +174,21 @@ public class PreRunoff {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(180L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                    break;
                 }
                 if (rainfallTimeId == 2) {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(300L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                    break;
                 }
                 if (rainfallTimeId == 3) {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(600L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
+                    break;
                 }
-
+                throw new NullPointerException("numberOfCurves must be between 1 and 3");
             }
 
             //TODO nullo
