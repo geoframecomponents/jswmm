@@ -32,6 +32,7 @@ import com.github.geoframecomponents.jswmm.dataStructure.routingDS.SteadyOptions
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.DormandPrince54;
 import com.github.geoframecomponents.jswmm.dataStructure.runoffDS.RunoffSolver;
 
+import oms3.annotations.In;
 import org.altervista.growworkinghard.jswmm.inpparser.DataFromFile;
 import org.altervista.growworkinghard.jswmm.inpparser.INPConfiguration;
 import org.altervista.growworkinghard.jswmm.inpparser.INPparser;
@@ -307,37 +308,37 @@ public class SWMMobject extends INPparser {
                                                           Long initialTime, LinkedHashMap<Instant, Double> HMData) {
 
         LinkedHashMap<Instant, Double> adaptedData = new LinkedHashMap<>();
-        Long currentDataTime = initialTime;
 
+        Long currentDataTime = initialTime;
         Long currentTime = initialTime;
+
         while (currentTime<finalTime) {
 
             double currentData;
-            if (currentDataTime.equals(currentTime)) {
-                currentData = HMData.get(Instant.ofEpochSecond(currentTime));
+            while(currentDataTime <= currentTime) {
+                currentDataTime += fromStepSize;
+            }
+
+            long upperTime = currentDataTime;
+            double upperData;
+
+            if (HMData.containsKey(Instant.ofEpochSecond(upperTime))) {
+                upperData = HMData.get(Instant.ofEpochSecond(upperTime));
             }
             else {
-                while(currentDataTime <= currentTime) {
-                    currentDataTime += fromStepSize;
-                }
-
-                Long upperTime = currentDataTime;
-
-                Double upperData = HMData.get(Instant.ofEpochSecond(upperTime));
-                if (upperData == null) {
-                    upperData = HMData.get(Instant.ofEpochSecond(finalTime));
-                }
-
-                Long lowerTime = upperTime - fromStepSize;
-                double lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
-
-                currentData = interpolateData(currentTime, lowerTime, lowerData,
-                        upperTime, upperData);
+                upperData = HMData.get(Instant.ofEpochSecond(finalTime));
             }
+
+            long lowerTime = upperTime - fromStepSize;
+            double lowerData = HMData.get(Instant.ofEpochSecond(lowerTime));
+
+            currentData = interpolateData(currentTime, lowerTime, lowerData,
+                    upperTime, upperData);
+
             adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
             currentTime+=toStepSize;
         }
-        adaptedData.put(Instant.ofEpochSecond(currentTime), HMData.get(Instant.ofEpochSecond(finalTime)));
+        //adaptedData.put(Instant.ofEpochSecond(currentTime), HMData.get(Instant.ofEpochSecond(finalTime)));
 
 //        for (Instant time : adaptedData.keySet()) {
 //            System.out.println("Time " + time + " value " + adaptedData.get(time));
