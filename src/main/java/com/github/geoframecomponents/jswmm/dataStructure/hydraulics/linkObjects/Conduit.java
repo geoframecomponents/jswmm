@@ -182,23 +182,13 @@ public class Conduit extends AbstractLink {
                 RoutedFlow routedFlow = routingSolver.routeFlowRate(id, currentTime, upstreamFlow,
                         downstreamOutside, linkLength, linkRoughness, linkSlope, crossSectionType, routingStepSize);
 
-                if (!currentTime.isAfter(startTime)) {
-                    routedFlow = new RoutedFlow(currentTime, 0.0);
-                }
-                else {
-                    if (!upstreamFlow.get(id).containsKey(currentTime)) {
-                        Instant timeDown = currentTime.minusSeconds(routingStepSize);
-                        Instant timeUp = currentTime.plusSeconds(routingStepSize);
-                        double valueDown = upstreamFlow.get(id).get(timeDown);
-                        double valueUp = upstreamFlow.get(id).get(timeUp);
-
-                        routedFlow = interpolate(currentTime, valueUp, valueDown, timeUp, timeDown);
-                    }
-                }
-
                 downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
 
-                downstreamOutside.setFlowRate(id, routedFlow.getTime(), routedFlow.getValue());
+                // to avoid NullPointerExceptions -> currentTime must be have a value
+                HashMap<Integer, LinkedHashMap<Instant, Double>> downFlow = downstreamOutside.getStreamFlowRate();
+                if (!downFlow.get(id).containsKey(currentTime)) {
+                    downstreamOutside.setFlowRate(id, currentTime, 0.0);
+                }
             }
         }
         //System.out.println("END evaluateFlowRate");
