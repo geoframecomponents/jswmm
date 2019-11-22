@@ -52,30 +52,30 @@ RG1              INTENSITY 0:01     1.0      TIMESERIES 3mins
 [SUBCATCHMENTS]
 ;;Name           Rain Gage        Outlet           Area     %Imperv  Width    %Slope   CurbLen  SnowPack        
 ;;-------------- ---------------- ---------------- -------- -------- -------- -------- -------- ----------------
-Sub1             RG1              J1               1.937    75       100      1        0                        
-Sub2             RG1              J2               1.731    75       100      1        0                        
-Sub3             RG1              J3               0.481    75       100      1        0                        
-Sub4             RG1              J5               0.547    75       100      1        0                        
-Sub5             RG1              J6               2.141    75       100      1        0                        
-Sub6             RG1              J7               0.383    75       100      1        0                        
-Sub7             RG1              J4               0.353    75       100      1        0                        
-Sub8             RG1              J9               0.999    75       100      1        0                        
-Sub9             RG1              J10              1.583    75       100      1        0                        
-Sub10            RG1              J8               0.633    75       100      1        0                        
+Sub1             RG1              J1               1.937    0.75       100      0.01        0
+Sub2             RG1              J2               1.731    0.75       100      0.01        0
+Sub3             RG1              J3               0.481    0.75       100      0.01        0
+Sub4             RG1              J5               0.547    0.75       100      0.01        0
+Sub5             RG1              J6               2.141    0.75       100      0.01        0
+Sub6             RG1              J7               0.383    0.75       100      0.01        0
+Sub7             RG1              J4               0.353    0.75       100      0.01        0
+Sub8             RG1              J9               0.999    0.75       100      0.01        0
+Sub9             RG1              J10              1.583    0.75       100      0.01        0
+Sub10            RG1              J8               0.633    0.75       100      0.01        0
 
 [SUBAREAS]
 ;;Subcatchment   N-Imperv   N-Perv     S-Imperv   S-Perv     PctZero    RouteTo    PctRouted 
 ;;-------------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
-Sub1             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub2             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub3             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub4             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub5             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub6             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub7             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub8             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub9             0.01       0.1        0.05       0.05       25         OUTLET    
-Sub10            0.01       0.1        0.05       0.05       25         OUTLET    
+Sub1             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub2             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub3             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub4             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub5             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub6             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub7             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub8             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub9             0.01       0.1        0.05       0.05       0.25         OUTLET
+Sub10            0.01       0.1        0.05       0.05       0.25         OUTLET
 
 [INFILTRATION]
 ;;Subcatchment   MaxRate    MinRate    Decay      DryTime    MaxInfil  
@@ -108,35 +108,35 @@ J10              4          0          0          0          0
 [OUTFALLS]
 ;;Name           Elevation  Type       Stage Data       Gated    Route To        
 ;;-------------- ---------- ---------- ---------------- -------- ----------------
-Out1             0          FREE                        NO                       
+Out1             0          FREE                        NO
 
 [CONDUITS]
 ;;Name           From Node        To Node          Length     Roughness  InOffset   OutOffset  InitFlow   MaxFlow   
 ;;-------------- ---------------- ---------------- ---------- ---------- ---------- ---------- ---------- ----------
-C1               J1               J3               200        0.0083     0          0          0          0         
-C2               J2               J3               200        0.0083     0          0          0          0         
-C3               J3               J4               200        0.0083     0          0          0          0         
-C4               J5               J7               200        0.0083     0          0          0          0         
-C5               J6               J7               200        0.0083     0          0          0          0         
-C7               J7               J4               200        0.0083     0          0          0          0         
-C8               J4               J8               200        0.0083     0          0          0          0         
-C9               J9               J8               200        0.0083     0          0          0          0         
-C10              J10              J8               200        0.0083     0          0          0          0         
-C11              J8               Out1             200        0.0083     0          0          0          0         
+1               J1               J3               200        120     0          0          0          0
+2               J2               J3               200        120     0          0          0          0
+3               J3               J4               200        120     0          0          0          0
+4               J5               J7               200        120     0          0          0          0
+5               J6               J7               200        120     0          0          0          0
+7               J7               J4               200        120     0          0          0          0
+8               J4               J8               200        120     0          0          0          0
+9               J9               J8               200        120     0          0          0          0
+10              J10              J8               200        120     0          0          0          0
+11              J8               Out1             200        120     0          0          0          0
 
 [XSECTIONS]
 ;;Link           Shape        Geom1            Geom2      Geom3      Geom4      Barrels    Culvert   
 ;;-------------- ------------ ---------------- ---------- ---------- ---------- ---------- ----------
-C1               CIRCULAR     0.5              0          0          0          1                    
-C2               CIRCULAR     0.5              0          0          0          1                    
-C3               CIRCULAR     0.6              0          0          0          1                    
-C4               CIRCULAR     0.4              0          0          0          1                    
-C5               CIRCULAR     0.5              0          0          0          1                    
-C7               CIRCULAR     0.6              0          0          0          1                    
-C8               CIRCULAR     0.8              0          0          0          1                    
-C9               CIRCULAR     0.4              0          0          0          1                    
-C10              CIRCULAR     0.4              0          0          0          1                    
-C11              CIRCULAR     1                0          0          0          1                    
+1               CIRCULAR     0.5              0          0          0          1
+2               CIRCULAR     0.5              0          0          0          1
+3               CIRCULAR     0.6              0          0          0          1
+4               CIRCULAR     0.4              0          0          0          1
+5               CIRCULAR     0.5              0          0          0          1
+7               CIRCULAR     0.6              0          0          0          1
+8               CIRCULAR     0.8              0          0          0          1
+9               CIRCULAR     0.4              0          0          0          1
+10              CIRCULAR     0.4              0          0          0          1
+11              CIRCULAR     1                0          0          0          1
 
 [TIMESERIES]
 ;;Name           Date       Time       Value     
