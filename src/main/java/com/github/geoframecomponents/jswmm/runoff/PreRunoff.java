@@ -174,21 +174,20 @@ public class PreRunoff {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(180L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
-                    break;
                 }
-                if (rainfallTimeId == 2) {
+                else if (rainfallTimeId == 2) {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(300L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
-                    break;
                 }
-                if (rainfallTimeId == 3) {
+                else if (rainfallTimeId == 3) {
                     rainfallValues.put(Instant.ofEpochSecond(currentTime),
                             constantRainfallData(Instant.ofEpochSecond(600L),
                                     Instant.ofEpochSecond(currentTime).minusSeconds(initialTime.getEpochSecond())) );
-                    break;
                 }
-                throw new NullPointerException("numberOfCurves must be between 1 and 3");
+                else {
+                    throw new NullPointerException("numberOfCurves must be between 1 and 3");
+                }
             }
 
             //TODO nullo
