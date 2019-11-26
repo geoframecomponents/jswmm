@@ -47,7 +47,8 @@ public class RoutingINP {
 
     @Before
     public void initialize() throws ConfigurationException {
-        data = new SWMMobject("network12.inp", 3);
+        int numberOfCurves = 3;
+        data = new SWMMobject("network12.inp", numberOfCurves);
 
         preRunoff_1 = new PreRunoff();
         preRunoff_2 = new PreRunoff();
@@ -57,6 +58,9 @@ public class RoutingINP {
 
         preRunoff_1.areaName = "S1";
         preRunoff_2.areaName = "S2";
+
+        preRunoff_1.numberOfCurves = numberOfCurves;
+        preRunoff_2.numberOfCurves = numberOfCurves;
 
         preRunoff_1.initialize();
         preRunoff_2.initialize();
