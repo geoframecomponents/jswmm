@@ -1,20 +1,20 @@
 /*
-JSWMM: Reimplementation of EPA SWMM in Java
-Copyright (C) 2019 Daniele Dalla Torre (ftt01)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+ * JSWMM: Reimplementation of EPA SWMM in Java
+ * Copyright (C) 2019 Daniele Dalla Torre (ftt01)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 package com.github.geoframecomponents.jswmm.dataStructure.hydraulics.linkObjects;
 
@@ -191,7 +191,6 @@ public class Conduit extends AbstractLink {
                 }
             }
         }
-        //System.out.println("END evaluateFlowRate");
     }
 
     private RoutedFlow interpolate(Instant current, double valueUp, double valueDown, Instant timeUp, Instant timeDown) {
@@ -225,16 +224,13 @@ public class Conduit extends AbstractLink {
 
     /**
      * Method to evaluate commercial diameter from maximum discharge, it takes into account the slope
-     * TODO generalize to different crossSections
-     * @param discharge
-     * @param pipeCompany
+     * @param discharge discharge at conduit upside [m^3/s]
+     * @param pipeCompany commercial pipe company defined by user
      */
     @Override
     public void evaluateDimension(Double discharge, CommercialPipeSize pipeCompany) {
 
         linkSlope = computeNaturalSlope();
-
-        // TODO: the first diameter has to be bigger or equal to the biggest upstream pipe
 
         double diameter = getDimension(discharge, linkSlope);
 
@@ -243,7 +239,6 @@ public class Conduit extends AbstractLink {
 
         double deltaSlope = 0.0;
         Double minSlope = computeMinSlope(diameters[0]);
-        //if (naturalSlope < minSlope && naturalSlope > maxSlope) {
         if (linkSlope < minSlope) {
             diameter = getDimension(discharge, minSlope);
             diameters = pipeCompany.getCommercialDiameter(diameter); //diameters in meters
@@ -384,10 +379,9 @@ public class Conduit extends AbstractLink {
 
     /**
      * Evaluate the dimension for a given discharge and slope, just for the Circular
-     * TODO extend to all crossSectionTypes
-     * @param discharge
-     * @param slope
-     * @return
+     * @param discharge discharge at conduit upside
+     * @param slope slope to design the pipe
+     * @return commercial dimension [m]
      */
     private Double getDimension(Double discharge, Double slope) {
         
@@ -396,10 +390,6 @@ public class Conduit extends AbstractLink {
         if( fillAngle == 0.0 ) {
             fillAngle = 0.001;
         }
-
-        System.out.println("fillCoeff " + fillCoeff);
-        System.out.println("fillAngle " + fillAngle);
-        System.out.println("slope " + slope);
 
         final double pow1 = 3.0 / 8;
         double coeff = Math.pow(2, 13.0/3);

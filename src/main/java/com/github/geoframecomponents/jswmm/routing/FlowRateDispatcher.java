@@ -1,16 +1,19 @@
 /*
+ * JSWMM: Reimplementation of EPA SWMM in Java
+ * Copyright (C) 2019 Daniele Dalla Torre (ftt01)
+ *
  * This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.github.geoframecomponents.jswmm.routing;
 
@@ -77,69 +80,50 @@ public class FlowRateDispatcher {
         Instant totalTime = dataStructure.getProjectDateTime().getDateTime(AvailableDateTypes.endDate);
 
         if (flowRate1 != null) {
-            System.out.println("Processing flowrate1");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(), initialTime.getEpochSecond(), flowRate1);
         }
 
         if (flowRate2 != null) {
-            System.out.println("Processing flowrate2");
-
-            /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate1.entrySet()) {
-                for (Instant time : entry.getValue().keySet()) {
-                    System.out.println("ID " + entry.getKey());
-                    System.out.println("Instant " + time);
-                    System.out.println("Value " + entry.getValue().get(time));
-                }
-            }*/
-
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate2);
         }
 
         if (flowRate3 != null) {
-            System.out.println("Processing flowrate3");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate3);
         }
 
         if (flowRate4 != null) {
-            System.out.println("Processing flowrate4");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate4);
         }
 
         if (flowRate5 != null) {
-            System.out.println("Processing flowRate5");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate5);
         }
 
         if (flowRate6 != null) {
-            System.out.println("Processing flowRate6");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate6);
         }
 
         if (flowRate7 != null) {
-            System.out.println("Processing flowRate7");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate7);
         }
 
         if (flowRate8 != null) {
-            System.out.println("Processing flowrate8");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate8);
         }
 
         if (flowRate9 != null) {
-            System.out.println("Processing flowrate9");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate9);
         }
 
         if (flowRate10 != null) {
-            System.out.println("Processing flowrate10");
             dispatchFlow(routingStepSize, totalTime.getEpochSecond(),
                     initialTime.getEpochSecond(), flowRate10);
         }
@@ -155,14 +139,6 @@ public class FlowRateDispatcher {
      */
     private void dispatchFlow(Long routingStepSize, long totalTime, long initialTime,
                               HashMap<Integer, LinkedHashMap<Instant, Double>> flowRate) {
-
-//        for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate.entrySet()) {
-//            for (Instant time : entry.getValue().keySet()) {
-//                System.out.print("ID " + entry.getKey());
-//                System.out.print("Instant " + time);
-//                System.out.println("Value " + entry.getValue().get(time));
-//            }
-//        }
 
         long flowRateStepSize = getTimeStep(flowRate);
 
@@ -266,25 +242,4 @@ public class FlowRateDispatcher {
             }
         }
     }
-
 }
-
-
-            /*for (Map.Entry<Integer, LinkedHashMap<Instant, Double>> entry : flowRate1.entrySet()) {
-                for (Instant time : entry.getValue().keySet()) {
-                    System.out.println("ID " + entry.getKey());
-                    System.out.println("Instant " + time);
-                    System.out.println("Value " + entry.getValue().get(time));
-                }
-            }
-
-
-            for (Integer id : flowRate.keySet()) {
-            LinkedHashMap<Instant, Double> currentFlow = dataStructure.getConduit(linkName).getUpstreamOutside().getStreamFlowRate().get(id);
-            for (Instant time : currentFlow.keySet()) {
-                System.out.println("time " +  time);
-                System.out.println("Value " + currentFlow.get(time));
-            }
-        }
-
-        */

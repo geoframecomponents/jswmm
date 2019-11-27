@@ -1,16 +1,19 @@
 /*
+ * JSWMM: Reimplementation of EPA SWMM in Java
+ * Copyright (C) 2019 Daniele Dalla Torre (ftt01)
+ *
  * This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.github.geoframecomponents.jswmm.dataStructure;
 
@@ -50,7 +53,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Build the data structure starting from the inp file
- * TODO create the INPparser and import it
  */
 public class SWMMobject extends INPparser {
 
@@ -59,7 +61,6 @@ public class SWMMobject extends INPparser {
     private Unitable projectUnits;
     private Datetimeable projectDateTime;
 
-    //TODO  report stuff
     private Datetimeable reportDateTime;
 
     private Datetimeable linksDateTime;
@@ -134,13 +135,6 @@ public class SWMMobject extends INPparser {
         setNodes();
         setLinks();
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //Setup raingage
-
-        //DataCollector junctionReadDataFromFile = new SWMM5RainfallFile("ciao");
-
-        String raingageName = "RG1";
-        Long rainfallStepSize = 60L;
     }
 
     public SWMMobject(String INPfile) throws ConfigurationException {
@@ -193,13 +187,8 @@ public class SWMMobject extends INPparser {
         //Setup raingage
         String raingageName;
         Long rainfallStepSize;
-        //DataCollector junctionReadDataFromFile = new SWMM5RainfallFile("ciao");
 
-        //for () {
-        // now I take just the first one!
         raingageName = ((GeneralINP) interfaceINP).raingage(INPfile);
-        rainfallStepSize = ((GeneralINP) interfaceINP).raingage(INPfile, raingageName, "step");
-        //}
 
         //Setup runoff solver
         Long runoffStep = ((GeneralINP) interfaceINP).runoffSolver(INPfile, "step");
@@ -297,11 +286,11 @@ public class SWMMobject extends INPparser {
 
     /**
      * Method that adapts data to a defined step size and over the period between initialTime and finalTime
-     * @param toStepSize
-     * @param fromStepSize
-     * @param finalTime
-     * @param initialTime
-     * @param HMData
+     * @param toStepSize step size of the output
+     * @param fromStepSize step size of the input
+     * @param finalTime end of data in input
+     * @param initialTime start of data in input
+     * @param HMData data in input
      * @return the HM of data over data/time
      */
     public LinkedHashMap<Instant, Double> adaptDataSeries(Long toStepSize, Long fromStepSize, Long finalTime,
@@ -338,12 +327,6 @@ public class SWMMobject extends INPparser {
             adaptedData.put(Instant.ofEpochSecond(currentTime), currentData);
             currentTime+=toStepSize;
         }
-        //adaptedData.put(Instant.ofEpochSecond(currentTime), HMData.get(Instant.ofEpochSecond(finalTime)));
-
-//        for (Instant time : adaptedData.keySet()) {
-//            System.out.println("Time " + time + " value " + adaptedData.get(time));
-//        }
-
         return adaptedData;
     }
 
@@ -393,21 +376,13 @@ public class SWMMobject extends INPparser {
         for (List<Integer> subtreeList : subtrees.values()) {
             String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
 
-            //System.out.println("firstSon " + firstSon);
-
             if (getConduit(firstSon) != null) {
                 double downstreamDepth = getConduit(firstSon).getDownstreamOutside().getWaterDepth();
                 if (downstreamDepth - maxDepth != 0.0) {
-
-                    //System.out.println("subtreeList " + subtreeList );
-                    //System.out.println("downstreamDepth - maxDepth " + (downstreamDepth - maxDepth) );
-
                     upgradeStream(subtreeList, maxDepth - downstreamDepth);
                 }
 
             }
-
-            //System.out.println("END part 3");
         }
     }
 
@@ -427,14 +402,8 @@ public class SWMMobject extends INPparser {
                 OutsideSetup upstream = getConduit(currentLink).getUpstreamOutside();
                 OutsideSetup downstream = getConduit(currentLink).getDownstreamOutside();
 
-                //System.out.println("upstream " + upstream );
                 upstream.upgradeOffset(delta);
-
-                //System.out.println("downstream " + downstream );
-                //System.out.println("delta " + delta );
                 downstream.upgradeOffset(delta);
-
-                //System.out.println("END UPSTREAM upgrade!");
             }
     }
 
@@ -444,7 +413,7 @@ public class SWMMobject extends INPparser {
     /////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////                         /////////////////////////////
-    ///////////////////////////  TODO: OLD CODE UPDATE! /////////////////////////////
+    ///////////////////////////     OLD CODE           /////////////////////////////
     ///////////////////////////                         /////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////
@@ -467,11 +436,6 @@ public class SWMMobject extends INPparser {
     }
 
     private void setAreas(String areaName, double subcatchmentArea) {
-        //ReadDataFromFile subcatchmentReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        //AcquiferSetup acquiferSetup = new Acquifer();
-        //SnowPackSetup subcatchmentSnowpack = new SnowPack();
-        //ProjectUnits subcatchmentUnits = new CubicMetersperSecond();
-        //String subcatchmentName = "Sub1";
 
         Double imperviousPercentage = 0.75;
         Double imperviousWOstoragePercentage = 0.25;
@@ -524,13 +488,6 @@ public class SWMMobject extends INPparser {
     }
 
     private void setJunctions(String nodeName, double nodeElevation) {
-        //for (each junction)
-        //ReadDataFromFile junctionReadDataFromFile = new ReadSWMM5RainfallFile("ciao");
-        //WriteDataToFile writeDataToFile = new WriteSWMM5RainfallToFile();
-        //ExternalInflow dryWeatherInflow = new DryWeatherInflow();
-        //ExternalInflow RDII = new RainfallDependentInfiltrationInflow();
-        //ProjectUnits nodeUnits = new CubicMetersperSecond();
-
         Double maximumDepthNode = 3.0;
         Double initialDepthNode = 2.0;
         Double maximumDepthSurcharge = 1.0;
@@ -541,7 +498,6 @@ public class SWMMobject extends INPparser {
     }
 
     private void setLinks() {
-        //for (each link) TODO check if present
         setConduit("11", 120.0,"J1", -239.0, 197.0, 0.0,
                 "J3", -119.0, 197.0, 0);
         setConduit("12", 122,  "J2",-119.0, 319.0, 0.0,

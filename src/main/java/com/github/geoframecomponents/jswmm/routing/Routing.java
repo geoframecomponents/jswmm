@@ -1,16 +1,19 @@
 /*
+ * JSWMM: Reimplementation of EPA SWMM in Java
+ * Copyright (C) 2019 Daniele Dalla Torre (ftt01)
+ *
  * This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.github.geoframecomponents.jswmm.routing;
 
@@ -73,7 +76,6 @@ public class Routing {
 
         /**
          * Evaluate the maximum discharge over all the response curves
-         * TODO move everything inside the evaluateMaxDischarge method
          */
         double maxDischarge = conduit.evaluateMaxDischarge();
         System.out.println("Q_MAX " + maxDischarge);
@@ -83,42 +85,9 @@ public class Routing {
          */
         conduit.evaluateDimension(maxDischarge, pipeCompany);
 
-        //System.out.println("UPGRADING SUBTREES");
-
-        /**
-         * Alignment of water table of all links of the node
-         */
-        //dataStructure.upgradeSubtrees(linkName, net3subtrees);
-
         //route the maximum discharge to next bucket
         conduit.evaluateFlowRate();
 
         routingFlowRate = conduit.getDownstreamFlowRate();
-        //routingFlowRate = conduit.getUpstreamFlowRate();
-
-
-//        HashMap<Integer, LinkedHashMap<Instant, Double>> currentFlow = routingFlowRate;
-//        for (Integer id : currentFlow.keySet()) {
-//            LinkedHashMap<Instant, Double> flow = currentFlow.get(id);
-//            //System.out.print("ID " + id);
-//            for (Instant time : flow.keySet()) {
-//                //System.out.print("time " +  time);
-//                System.out.println(currentFlow.get(id).get(time));
-//            }
-//        }
     }
-
-//    public void test(String fileChecks) {
-//        LinkedHashMap<Instant, Double> evaluated = conduit.getDownstreamFlowRate();
-//        List<Double> defined = dataStructure.readFileList(fileChecks);
-//
-//        int i = 0;
-//        for(Map.Entry<Instant, Double> data : evaluated.entrySet()) {
-//            //TODO check a method to do it better - not always is ordered
-//            assertEquals(data.getValue(), defined.get(i), 0.85);
-//            //System.out.println(data.getValue());
-//            //System.out.println(defined.get(i));
-//            i = i + 1;
-//        }
-//    }
 }
