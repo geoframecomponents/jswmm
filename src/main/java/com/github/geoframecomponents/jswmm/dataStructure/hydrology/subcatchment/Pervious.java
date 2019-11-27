@@ -29,7 +29,7 @@ import java.util.List;
 
 public class Pervious extends Subarea {
 
-    Double infiltration = 0.0; //TODO temporary 0.0
+    Double infiltration = 0.0;
 
     public Pervious(String name, Unitable units, Datetimeable time, Double area, Double depressionStorage, Double roughnessCoefficient,
                     Double percentageRouted, List<Subarea> connections, Double infiltration) {

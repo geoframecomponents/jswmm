@@ -58,8 +58,6 @@ public class Routing {
     @Out
     public SWMMobject dataStructure = null;
 
-    @InNode
-    public HashMap<Integer, List<Integer>> net3subtrees;
 
     @OutNode
     public HashMap<Integer, LinkedHashMap<Instant, Double>> routingFlowRate;
@@ -78,7 +76,7 @@ public class Routing {
          * Evaluate the maximum discharge over all the response curves
          */
         double maxDischarge = conduit.evaluateMaxDischarge();
-        System.out.println("Q_MAX " + maxDischarge);
+        System.out.println("Q_MAX " + String.format("%.3f", maxDischarge));
 
         /**
          * Dimensioning main method

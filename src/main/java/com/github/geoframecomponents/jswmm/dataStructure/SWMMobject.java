@@ -371,8 +371,6 @@ public class SWMMobject extends INPparser {
             upgradeStream(outLink, downstreamDepthOut - maxDepth);
         }
 
-        //System.out.println("Part 3");
-
         for (List<Integer> subtreeList : subtrees.values()) {
             String firstSon = String.valueOf(subtreeList.get(subtreeList.size() - 1));
 

@@ -118,7 +118,7 @@ public class PreRunoff {
             }
         }
         else {
-            throw new NullPointerException("Data structure is null");//TODO
+            throw new NullPointerException("Data structure is null");
         }
     }
 
@@ -176,7 +176,7 @@ public class PreRunoff {
         if ( currentTime.isBefore(finalRainfallTime) ) {
             double timeInHours = finalRainfallTime.getEpochSecond() / 3600.0;
             if (timeInHours == 0.0) {
-                timeInHours = 1.0;//TODO better way?
+                timeInHours = 1.0;
             }
             rainfallValue = aLPP * Math.pow(timeInHours, nLPP - 1.0) / 3600.0; // [mm/s]
         }

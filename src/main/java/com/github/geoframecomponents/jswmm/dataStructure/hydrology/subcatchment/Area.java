@@ -131,8 +131,6 @@ public class Area extends AbstractSubcatchment {
             }
         }
         this.totalAreaFlowRate = new LinkedHashMap<>();
-
-        //TODO report!!!
     }
 
     public LinkedHashMap<Instant, Double> evaluateTotalFlowRate(Integer id) {

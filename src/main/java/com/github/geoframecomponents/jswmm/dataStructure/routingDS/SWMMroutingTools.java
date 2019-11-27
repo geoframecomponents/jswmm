@@ -68,7 +68,6 @@ public class SWMMroutingTools {
                 }
             }
 
-            //TODO check if correct
             if (upperSFValue == null) {
                 int listSize = relationsTable.size();
                 upperSFValue = relationsTable.get(listSize).adimensionalSectionFactor;

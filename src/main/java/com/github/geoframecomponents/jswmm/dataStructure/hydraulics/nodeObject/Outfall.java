@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 
 public class Outfall extends AbstractNode {
 
-    Double fixedStage;//TODO verify from where
+    Double fixedStage;
     LinkedHashMap<Instant, Double> tidalCurve;
     LinkedHashMap<Instant, Double> stageTimeseries;
     boolean gated;

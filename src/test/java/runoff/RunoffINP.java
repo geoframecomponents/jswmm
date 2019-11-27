@@ -69,8 +69,5 @@ public class RunoffINP {
 
         runoff_1.run();
         runoff_2.run();
-
-        System.out.println( runoff_1.runoffFlowRate );
-        System.out.println( runoff_2.runoffFlowRate );
     }
 }

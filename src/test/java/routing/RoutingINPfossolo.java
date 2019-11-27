@@ -83,9 +83,6 @@ public class RoutingINPfossolo {
 
         runoff_1.run();
         runoff_2.run();
-
-        //System.out.println(runoff_1.runoffFlowRate);
-        //System.out.println(runoff_2.runoffFlowRate);
     }
 
     @Test
@@ -111,9 +108,6 @@ public class RoutingINPfossolo {
         routing1.dataStructure = data;
         routing1.linkName = "1";
 
-        routing1.net3subtrees = new HashMap<>();
-        routing1.net3subtrees.put(subtree.get(0), subtree);
-
         routing1.run();
 
         flowRateDispatcher2 = new FlowRateDispatcher();
@@ -134,12 +128,7 @@ public class RoutingINPfossolo {
         routing2.dataStructure = data;
         routing2.linkName = "2";
 
-        routing2.net3subtrees = new HashMap<>();
-        routing2.net3subtrees.put(subtree.get(0), subtree);
-
         routing2.run();
-
-        //RoutingINPSystem.out.println(routing1.routingFlowRate);
 
         flowRateDispatcher3 = new FlowRateDispatcher();
         flowRateDispatcher3.dataStructure = data;
@@ -157,9 +146,6 @@ public class RoutingINPfossolo {
 
         routing3.dataStructure = data;
         routing3.linkName = "3";
-
-        routing3.net3subtrees = new HashMap<>();
-        routing3.net3subtrees.put(subtree.get(0), subtree);
 
         routing3.run();
 

@@ -73,7 +73,6 @@ public class Runoff {
     public void run() {
 
         if (dataStructure != null && areaName != null) {
-            //TODO add evaporation
             this.area = dataStructure.getAreas(areaName);
         }
         else {

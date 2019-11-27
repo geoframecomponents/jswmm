@@ -54,19 +54,13 @@ public class ImperviousWithStorage extends Subarea {
             depthFactor = (Math.sqrt(subareaSlope) * characteristicWidth) / (roughnessCoefficient * totalImperviousArea);
         }
 
-        //TODO move somewhere else!!!
-        //if ( super.getUnits().equals(UnitsSWMM.CMS) ) {
-            this.depthFactor = 1E-6 * depthFactor; // [ mm^(-2/3)/s ]
-        //}
+        this.depthFactor = 1E-6 * depthFactor; // [ mm^(-2/3)/s ]
     }
 
     @Override
     Double getWeightedFlowRate(Integer identifier, Instant currentTime) {
 
         double weightedFlowRate = flowRate.get(identifier).get(currentTime) * subareaArea * percentageRouted;
-//        if (projectUnits.getProjectUnits() == CMS) {
-//            weightedFlowRate = weightedFlowRate * 1E3;      // [mm/s]
-//        }
         return weightedFlowRate;
     }
 
@@ -111,10 +105,7 @@ public class ImperviousWithStorage extends Subarea {
 
     @Override
     Double evaluateNextFlowRate(Double subareaSlope, Double characteristicWidth, Double currentDepth) {
-        double unitsFactor = 1.0;
-        //if (super.getUnits().equals(UnitsSWMM.CMS) ){
-            unitsFactor = 1E-6; //[mm/s]
-        //}
+        double unitsFactor = 1E-6; //[mm/s]
 
         return unitsFactor * ( Math.sqrt(subareaSlope) * characteristicWidth *
                 Math.pow(currentDepth, 5.0/3.0) ) / (totalImperviousArea * roughnessCoefficient);

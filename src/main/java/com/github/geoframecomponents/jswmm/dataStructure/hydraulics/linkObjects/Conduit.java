@@ -69,8 +69,6 @@ public class Conduit extends AbstractLink {
         this.linkLength = linkLength;
         this.linkRoughness = linkRoughness;
 
-        //TODO report!!
-
         Instant current;
         for (current = dateTime.getDateTime(AvailableDateTypes.startDate);
              current.isBefore( dateTime.getDateTime(AvailableDateTypes.endDate) );
