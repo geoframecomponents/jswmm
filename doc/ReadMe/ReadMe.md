@@ -15,7 +15,7 @@ To build the ReadMe file from the markdown one in the doc/ReadMe folder
 
 ### Implementation
 
-This project is maintained and developed by the authors on GitLab at: ~[GitLab JSWMM](https://gitlab.com/gwh-2b4/JSWMM)
+This project is maintained and developed by the authors on GitLab at: [JSWMM GitLab repository](https://gitlab.com/gwh-2b4/JSWMM)
 
 ## Documentation
 
