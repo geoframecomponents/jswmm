@@ -93,7 +93,7 @@ public class RoutingINPfossolo {
         flowRateDispatcher1.dataStructure = data;
         flowRateDispatcher1.setFlowRate1(runoff_1.runoffFlowRate);
         flowRateDispatcher1.upstreamNodeName = "J1";
-        flowRateDispatcher1.linkName = "1";
+        flowRateDispatcher1.linkName = "11";
         flowRateDispatcher1.run();
 
         //System.out.println(flowRateDispatcher1.flowRate1);
@@ -106,7 +106,7 @@ public class RoutingINPfossolo {
         //routingTest("10", subtree);
 
         routing1.dataStructure = data;
-        routing1.linkName = "1";
+        routing1.linkName = "11";
 
         routing1.run();
 
@@ -114,7 +114,7 @@ public class RoutingINPfossolo {
         flowRateDispatcher2.dataStructure = data;
         flowRateDispatcher2.setFlowRate1(runoff_2.runoffFlowRate);
         flowRateDispatcher2.upstreamNodeName = "J2";
-        flowRateDispatcher2.linkName = "2";
+        flowRateDispatcher2.linkName = "12";
         flowRateDispatcher2.run();
 
         routing2 = new Routing();
@@ -126,7 +126,7 @@ public class RoutingINPfossolo {
         //routingTest("10", subtree);
 
         routing2.dataStructure = data;
-        routing2.linkName = "2";
+        routing2.linkName = "12";
 
         routing2.run();
 
@@ -135,7 +135,7 @@ public class RoutingINPfossolo {
         flowRateDispatcher3.setFlowRate1(routing1.routingFlowRate);
         flowRateDispatcher3.setFlowRate2(routing2.routingFlowRate);
         flowRateDispatcher3.upstreamNodeName = "J3";
-        flowRateDispatcher3.linkName = "3";
+        flowRateDispatcher3.linkName = "13";
         flowRateDispatcher3.run();
 
         routing3 = new Routing();
@@ -145,7 +145,7 @@ public class RoutingINPfossolo {
         subtree.add(2, 2);
 
         routing3.dataStructure = data;
-        routing3.linkName = "3";
+        routing3.linkName = "13";
 
         routing3.run();
 
