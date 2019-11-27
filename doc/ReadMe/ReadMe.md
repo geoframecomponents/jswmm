@@ -1,6 +1,7 @@
 # JSWMM
 
 [![Build Status](https://travis-ci.org/geoframecomponents/jswmm.svg)](https://travis-ci.org/geoframecomponents/jswmm)
+[![Maven](https://maven-badges.herokuapp.com/maven-central/geoframecomponents/jswmm/badge.svg)](https://maven-badges.herokuapp.com/maven-central/geoframecomponents/jswmm)
 [![License (GPL version 3)](https://img.shields.io/badge/license-GNU%20GPL%20version%203-blue.svg)](http://opensource.org/licenses/GPL-3.0)
 
 `@author` Francesco Serafin (sidereus3), francesco.serafin.3@gmail.com ![sidereus3](https://github.com/GrowWorkingHard/logos/blob/master/sidereus/sidereus3_50X50.png "sidereus3")
