@@ -19,9 +19,14 @@ before_deploy:
 - export FAT_PKG_FILE="${GRADLE_BUILD_DIR}/jswmm-${MOD_TAG}-all.jar"
 - echo "building $FAT_PKG_FILE fat jar"
 - gradle shadowJar
+- echo "Building Docker jsmm:$MOD_TAG"
 - docker build -t "ftt01/jswmm:$MOD_TAG" .
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 - docker push ftt01/jswmm:$MOD_TAG
+- echo "Building Docker jsmm:beta"
+- docker build -f Dockerfile_beta -t "ftt01/jswmm:beta" .
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+- docker push ftt01/jswmm:beta
 - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
 - gradle -PprojVersion=$MOD_TAG -PnexusUsername="${SONATYPE_USERNAME}" -PnexusPassword="${SONATYPE_PASSWORD}"
   -PbintrayUsername="${BINTRAY_USERNAME}" -PbintrayApiKey="${BINTRAY_KEY}" -PbintrayPassphrase="${PASSPHRASE}"
